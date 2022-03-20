@@ -74,7 +74,11 @@ namespace CMap
 		tile_inferno_castle_back_d5 = 428,
 		tile_inferno_castle_back_d6 = 429,
 		tile_inferno_castle_back_d7 = 430,
-		tile_inferno_castle_back_d8 = 431
+		tile_inferno_castle_back_d8 = 431,
+
+		tile_lava = 464,
+		tile_lava_d0 = 465,
+		tile_lava_d1 = 466
 	};
 };
 
@@ -83,6 +87,15 @@ const SColor color_tile_inferno_castle(255,255,80,62);
 const SColor color_tile_inferno_castle_back(255,167,45,35);
 const SColor color_tile_inferno_ash(255,79,66,60);
 const SColor color_tile_inferno_ash_back(255,167,45,35);
+
+const SColor color_nursery(255,0,159,60);
+const SColor color_kitchenb(255,0,112,158);
+const SColor color_tinkerstable(255,110,0,35);
+const SColor color_spicetable(255,96,0,81);
+const SColor color_potionstable(255,145,0,123);
+const SColor color_blacksmith(255,122,119,0);
+const SColor color_smallsign(255,199,144,185);
+const SColor color_witchshack(255,103,8,123);
 
 void HandleCustomTile( CMap@ map, int offset, SColor pixel )
 {

@@ -319,10 +319,11 @@ void onTick(CBlob@ this)
 							}
 							else // map
 							{
-								if (map.getSectorAtPosition(hi.hitpos, "no build") !is null)
-									continue;
-
 								TileType tile = hi.tile;
+								
+								if (map.getSectorAtPosition(hi.hitpos, "no build") !is null
+								|| map.isTileCastle(tile) || map.isTileWood(tile))
+									continue;
 
 								if (isServer())
 								{
@@ -334,7 +335,7 @@ void onTick(CBlob@ this)
 
 										map.server_DestroyTile(hi.hitpos, 1.0f, this);
 
-										if (map.isTileCastle(tile) || map.isTileWood(tile) || map.isTileGold(tile))
+										if (map.isTileGold(tile))
 										{
 											Material::fromTile(holder, tile, 1.0f);
 										}

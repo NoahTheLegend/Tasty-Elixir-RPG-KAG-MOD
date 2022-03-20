@@ -63,9 +63,7 @@ bool onClientProcessChat(CRules@ this, const string& in text_in, string& out tex
 			{
 				if (isServer())
 				{
-					CBlob@ blobie = server_CreateBlob("pixie", 0, player.getBlob().getPosition());
-					blobie.server_SetPlayer(player);
-					player.getBlob().server_Die();
+					player.server_setTeamNum(getRules().getSpectatorTeamNum());
 				}
 			}
 		}
@@ -101,7 +99,7 @@ bool onClientProcessChat(CRules@ this, const string& in text_in, string& out tex
 
 		CBlob@[] signs;
 		CMap@ map = blob.getMap();
-		map.getBlobsInRadius(blob.getPosition(), 24.0f, signs);
+		map.getBlobsInRadius(blob.getPosition(), 128.0f, signs);
 
 		u16 signid;
 
@@ -128,8 +126,7 @@ bool onClientProcessChat(CRules@ this, const string& in text_in, string& out tex
 				sign.Tag("guessed");
 			}
 		}
-
-		return false;
+		return true;
 	}
 	else
 	{

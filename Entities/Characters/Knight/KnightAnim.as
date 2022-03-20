@@ -32,7 +32,7 @@ void LoadSprites(CSprite@ this)
 		if (armour == PLAYER_ARMOUR_STANDARD)
 		{
 			Accolades@ acc = getPlayerAccolades(p.getUsername());
-			if (acc.hasCape())
+			if (true)
 			{
 				armour = PLAYER_ARMOUR_CAPE;
 			}

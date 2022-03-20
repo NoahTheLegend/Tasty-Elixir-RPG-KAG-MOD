@@ -79,6 +79,7 @@ namespace map_colors
 		tile_inferno_ash_back    = 0xFF302926, // ARGB(255,  48,  41,  38);
 		tile_inferno_castle      = 0xFFFF503E, // ARGB(255, 255,  80,  62);
 		tile_inferno_castle_back = 0xFFA72D25, // ARGB(255, 167,  45,  35);
+		tile_lava                = 0xFFE8641B, // ARGB(255, 232, 100,  27);
 
 
 		// OTHER
@@ -177,6 +178,16 @@ namespace map_colors
 		kitchen                = 0xFFFFD9D9, // ARGB(255, 255, 217, 217);
 		nursery                = 0xFFD9FFDF, // ARGB(255, 217, 255, 223);
 		research               = 0xFFE1E1E1, // ARGB(255, 225, 225, 225);
+		nurseryb               = 0xFF009F3C, // ARGB(255,,,); too lazy to insert
+		kitchenb               = 0xFF00709E, // ARGB(255,,,);
+		tinkerstable           = 0xFF6E0023, // ARGB(255,,,);
+		spicetable             = 0xFF600051, // ARGB(255,,,);
+		potionstable           = 0xFF91007B, // ARGB(255,,,);
+		blacksmith             = 0xFF7A7700, // ARGB(255,,,);
+		smallsign              = 0xFFC790B9, // ARGB(255,,,);
+		witchshack             = 0xFF67087B, // ARGB(255,,,);
+		quarry                 = 0xFFCCFF09,  // ARGB(255,,,);
+
 
 		// MARKERS
 		blue_main_spawn        = 0xFF00FFFF, // ARGB(255,   0, 255, 255);

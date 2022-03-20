@@ -1,6 +1,6 @@
 THIS IS NOT FULLY ORIGINAL MOD!
 
-If you have any minds about that i took your codeand you are creator of this code, please, write NoahTheLegend #9190 to
+If you have any minds about that i took your code and you are creator of this code, please, write NoahTheLegend #9190 to
 have a conversation what i should remove and what i may change in your code.
 
 Taken & modified parts of mods below:

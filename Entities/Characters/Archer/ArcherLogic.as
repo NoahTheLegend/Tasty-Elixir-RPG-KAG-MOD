@@ -83,7 +83,7 @@ void onInit(CBlob@ this)
 	this.set_f32("damagebuff", 0);
 	this.set_f32("dealtdamage", 0);
 	//stab stuff
-	this.set_f32("stabdmg", 0.5f);
+	this.set_f32("stabdmg", 1.0f);
 	//gathered set vars
 	this.set_bool("hasrlset", false);
 	//hunger&thirst
@@ -279,7 +279,9 @@ void ManageBow(CBlob@ this, ArcherInfo@ archer, RunnerMoveVars@ moveVars)
 	}
 	else if (this.isKeyPressed(key_action1))
 	{
-		if (this.getCarriedBlob() !is null && this.getCarriedBlob().getName() == "drill") return;
+		if (this.getCarriedBlob() !is null) if (this.getCarriedBlob().getName() == "drill"
+		|| this.getCarriedBlob().getName() == "irondrill"
+		|| this.getCarriedBlob().getName() == "steeldrill") return;
 		moveVars.walkFactor *= 0.75f;
 		moveVars.canVault = false;
 
@@ -605,7 +607,13 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 
 void onTick(CBlob@ this)
 {
-	this.Sync("damagebuff", true);
+	//check if smth broke, move this to all hunger & thirst code blocks if sv lags
+	if (getGameTime() % 3 == 0)
+	{
+		if (this.get_u8("hunger") > 200) this.set_u8("hunger", 0);
+		if (this.get_u8("thirst") > 200) this.set_u8("thirst", 0);
+	}
+	//this.Sync("damagebuff", true);
 	this.Sync("dealtdamage", true);
 	//set buffs
 	if (this.get_string("armorname") == "rl_chestplate"
@@ -636,7 +644,9 @@ void onTick(CBlob@ this)
 		if (getGameTime() % 10 == 0)
 		{
 			if (this.getCarriedBlob() !is null)
-				if (this.getCarriedBlob().getName() == "drill")
+				if (this.getCarriedBlob().getName() == "drill"
+				|| this.getCarriedBlob().getName() == "irondrill"
+				|| this.getCarriedBlob().getName() == "steeldrill")
 					return;
 			this.set_u16("mana", this.get_u16("mana") - 1);
 		}
@@ -673,6 +683,34 @@ void onTick(CBlob@ this)
 	if (getGameTime() % 60 == 0 && !this.get_bool("bleeding")) this.set_u8("bleedmodifier", 1);
 
 	RunnerMoveVars@ moveVars;
+
+	bool knocked = isKnocked(this);
+	CHUD@ hud = getHUD();
+
+	//get the vars to turn various other scripts on/off
+
+	if (!this.get("moveVars", @moveVars))
+	{
+		return;
+	}
+
+	//lava stuff
+	CMap@ map = getMap();
+	Tile tile = map.getTile(this.getPosition());
+	if (tile.type > 463 && tile.type < 467) // lava indexes
+	{
+		this.setVelocity(Vec2f(0,this.getVelocity().y*0.25));
+		if (this.isKeyPressed(key_up) && !this.isKeyPressed(key_action2)) this.AddForce(Vec2f(0,-35.0f));
+		if (getGameTime()%15==0)
+		{
+			if (isServer())
+			{
+				map.server_setFireWorldspace(this.getPosition(), true);
+				this.server_Hit(this, this.getPosition(), Vec2f(0,0), 1.0f, Hitters::fire);
+			}
+		}
+	}
+
 	//regen
 	this.Sync("hpregtime", true);
 	this.Sync("manaregtime", true);
@@ -811,16 +849,6 @@ void onTick(CBlob@ this)
 
 		this.Sync("hunger", true);
 		this.Sync("thirst", true);
-	}
-
-	bool knocked = isKnocked(this);
-	CHUD@ hud = getHUD();
-
-	//get the vars to turn various other scripts on/off
-
-	if (!this.get("moveVars", @moveVars))
-	{
-		return;
 	}
 
 	if (this.get_f32("velocity") > 0 && this.get_u8("thirst") < 50 && this.get_u8("hunger") < 50)
@@ -1041,6 +1069,7 @@ CBlob@ CreateArrow(CBlob@ this, Vec2f arrowPos, Vec2f arrowVel, u8 arrowType)
 		// fire arrow?
 		arrow.set_u8("arrow type", arrowType);
 		arrow.SetDamageOwnerPlayer(this.getPlayer());
+		arrow.set_f32("damagebuff", this.get_f32("damagebuff"));
 		arrow.Init();
 
 		arrow.IgnoreCollisionWhileOverlapped(this);
@@ -1048,7 +1077,6 @@ CBlob@ CreateArrow(CBlob@ this, Vec2f arrowPos, Vec2f arrowVel, u8 arrowType)
 		arrow.setPosition(arrowPos);
 		arrow.setVelocity(arrowVel);
 
-		arrow.set_f32("damagebuff", this.get_f32("damagebuff"));
 		arrow.set_u16("shooternetid", this.getNetworkID());
 
 		if (XORRandom(100) < this.get_f32("critchance"))

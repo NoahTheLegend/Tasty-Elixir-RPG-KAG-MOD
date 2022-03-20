@@ -49,11 +49,11 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
     }
 }
 
-void onCollision( CBlob@ this, CBlob@ blob, bool solid )
+void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 {
-	if (this !is null)
+	if (this !is null && solid)
 	{
-    if ((this.getVelocity().x > 1.0 || this.getVelocity().y > 1.0) || (this.getVelocity().x < -1.0 || this.getVelocity().y < -1.0))
+    if ((this.getVelocity().x > 1.0 || this.getVelocity().y > 0.65) || (this.getVelocity().x < -1.0 || this.getVelocity().y < -0.65))
     {
       if (isClient() && this.get_u8("state") < 3 && !this.isAttached())
       {

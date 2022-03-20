@@ -303,6 +303,12 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 
 void onTick(CBlob@ this)
 {
+	//check if smth broke
+	if (getGameTime() % 3 == 0)
+	{
+		if (this.get_u8("hunger") > 200) this.set_u8("hunger", 0);
+		if (this.get_u8("thirst") > 200) this.set_u8("thirst", 0);
+	}
 	this.Sync("damagebuff", true);
 	this.Sync("dealtdamage", true);
 	//set buffs
@@ -340,7 +346,7 @@ void onTick(CBlob@ this)
 
 		if (this.get_u8("bleedmodifier") < 20) this.set_u8("bleedmodifier", this.get_u8("bleedmodifier") + 1);
 	}
-	if (this.hasTag("ded"))
+	if (getGameTime() % 60 == 0 && this.hasTag("ded"))
 	{
 		if (this.getSprite() !is null) this.getSprite().PlaySound("MigrantScream1.ogg");
 		if (isServer()) this.server_Die();
@@ -348,11 +354,29 @@ void onTick(CBlob@ this)
 
 	if (getGameTime() % 60 == 0 && !this.get_bool("bleeding")) this.set_u8("bleedmodifier", 1);
 
+	
+	//lava stuff
+	CMap@ map = getMap();
+	Tile tile = map.getTile(this.getPosition());
+	if (tile.type > 463 && tile.type < 467) // lava indexes
+	{
+		this.setVelocity(Vec2f(0,this.getVelocity().y*0.25));
+		if (this.isKeyPressed(key_up) && !this.isKeyPressed(key_action2)) this.AddForce(Vec2f(0,-35.0f));
+		if (getGameTime()%15==0)
+		{
+			if (isServer())
+			{
+				map.server_setFireWorldspace(this.getPosition(), true);
+				this.server_Hit(this, this.getPosition(), Vec2f(0,0), 1.0f, Hitters::fire);
+			}
+		}
+	}
+
 	//regen
 	this.Sync("hpregtime", true);
 	this.Sync("manaregtime", true);
 	if (this !is null && this.get_f32("hpregtime") > 0)
-		if (this.get_u16("hpregtimer") == 0)
+		if (this.get_u16("hpregtimer") == 0 && this.getHealth() < this.getInitialHealth())
 		{
 			this.set_u16("hpregtimer", this.get_f32("hpregtime"));
 			if (isServer()) 
@@ -592,7 +616,9 @@ void onTick(CBlob@ this)
 	}
 	if (this.getCarriedBlob() !is null)
 	{
-		if (this.getCarriedBlob().getName() == "drill")
+		if (this.getCarriedBlob().getName() == "drill"
+		|| this.getCarriedBlob().getName() == "irondrill"
+		|| this.getCarriedBlob().getName() == "steeldrill")
 		{
 			knight.state = KnightStates::normal; //cancel any attacks or shielding
 			knight.swordTimer = 0;
@@ -1962,90 +1988,6 @@ void DoAttack(CBlob@ this, f32 damage, f32 aimangle, f32 arcdegrees, u8 type, in
 					}
 				}
 			}
-			else  // hitmap
-				if (!dontHitMoreMap && (deltaInt == DELTA_BEGIN_ATTACK + 1))
-				{
-					bool ground = map.isTileGround(hi.tile);
-					bool dirt_stone = map.isTileStone(hi.tile);
-					bool dirt_thick_stone = map.isTileThickStone(hi.tile);
-					bool gold = map.isTileGold(hi.tile);
-					bool wood = map.isTileWood(hi.tile);
-					if (ground || wood || dirt_stone || gold)
-					{
-						Vec2f tpos = map.getTileWorldPosition(hi.tileOffset) + Vec2f(4, 4);
-						Vec2f offset = (tpos - blobPos);
-						f32 tileangle = offset.Angle();
-						f32 dif = Maths::Abs(exact_aimangle - tileangle);
-						if (dif > 180)
-							dif -= 360;
-						if (dif < -180)
-							dif += 360;
-
-						dif = Maths::Abs(dif);
-						//print("dif: "+dif);
-
-						if (dif < 20.0f)
-						{
-							//detect corner
-
-							int check_x = -(offset.x > 0 ? -1 : 1);
-							int check_y = -(offset.y > 0 ? -1 : 1);
-							if (map.isTileSolid(hi.hitpos - Vec2f(map.tilesize * check_x, 0)) &&
-							        map.isTileSolid(hi.hitpos - Vec2f(0, map.tilesize * check_y)))
-								continue;
-
-							bool canhit = true; //default true if not jab
-							if (jab) //fake damage
-							{
-								info.tileDestructionLimiter++;
-								canhit = ((info.tileDestructionLimiter % ((wood || dirt_stone) ? 3 : 2)) == 0);
-							}
-							else //reset fake dmg for next time
-							{
-								info.tileDestructionLimiter = 0;
-							}
-
-							//dont dig through no build zones
-							canhit = canhit && map.getSectorAtPosition(tpos, "no build") is null;
-
-							dontHitMoreMap = true;
-							if (canhit)
-							{
-								map.server_DestroyTile(hi.hitpos, 0.1f, this);
-								if (gold)
-								{
-									// Note: 0.1f damage doesn't harvest anything I guess
-									// This puts it in inventory - include MaterialCommon
-									//Material::fromTile(this, hi.tile, 1.f);
-									CBlob@ ore = server_CreateBlobNoInit("mat_gold");
-									if (ore !is null)
-									{
-										ore.Tag('custom quantity');
-										ore.Init();
-										ore.setPosition(hi.hitpos);
-										ore.server_SetQuantity(4);
-									}
-								}
-								else if (dirt_stone)
-								{
-									int quantity = 4;
-									if(dirt_thick_stone)
-									{
-										quantity = 6;
-									}
-									CBlob@ ore = server_CreateBlobNoInit("mat_stone");
-									if (ore !is null)
-									{
-										ore.Tag('custom quantity');
-										ore.Init();
-										ore.setPosition(hi.hitpos);
-										ore.server_SetQuantity(quantity);
-									}
-								}
-							}
-						}
-					}
-				}
 		}
 	}
 

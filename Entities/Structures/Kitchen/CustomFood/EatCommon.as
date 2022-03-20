@@ -33,25 +33,11 @@ void Heal(CBlob@ this, CBlob@ food)
 		f32 heal_amount = 0.5; //in quarter hearts, 255 means full hp
 
 		//hunger
-		if (this.get_u8("hunger") > food.get_u8("saturationhunger"))
-		{
-			this.set_u8("hunger", this.get_u8("hunger") - food.get_u8("saturationhunger"));
-		}
-		else
-		{
-			this.set_u8("hunger", this.get_u8("hunger") - (food.get_u8("saturationhunger") + (this.get_u8("hunger") - food.get_u8("saturationhunger"))));
-		}
+		this.set_u8("hunger", this.get_u8("hunger") - food.get_u8("saturationhunger"));
 		//thirst
-		if (this.get_u8("thirst") >= 25)
-		{
-            this.set_u8("thirst", this.get_u8("thirst") - food.get_u8("saturationthirst"));
-			this.set_u8("thirst", this.get_u8("thirst") + food.get_u8("antisaturationthirst"));
-		}
-		else
-		{ 
-            this.set_u8("thirst", this.get_u8("thirst") - (food.get_u8("saturationthirst") + (this.get_u8("thirst") - food.get_u8("saturationthirst"))));
-			this.set_u8("thirst", this.get_u8("thirst") + food.get_u8("antisaturationthirst"));
-		}
+		this.set_u8("thirst", this.get_u8("thirst") + food.get_u8("antisaturationthirst"));
+		this.set_u8("thirst", this.get_u8("thirst") - food.get_u8("saturationthirst"));
+
 		this.Sync("hunger", true);
 		this.Sync("thirst", true);
 		if (food.getName() == "heart")

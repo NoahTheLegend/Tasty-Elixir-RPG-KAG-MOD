@@ -35,8 +35,9 @@ const string[] RIDDLE_KEYS = {
 	"darkness",
 	"clocks",
 	"cards",
-	"rainbod",
+	"rainbow",
 	"death",
+	"ice",
 	"shadow",
 	"chess",
 	"moon"

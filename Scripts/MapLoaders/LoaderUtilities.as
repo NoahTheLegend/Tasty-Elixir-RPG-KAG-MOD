@@ -26,12 +26,32 @@ bool onMapTileCollapse(CMap@ map, u32 offset)
 	}
 	return true;
 }
+/*
+void DoLavaFill(u16 index, TileType up, TileType down, TileType left, TileType right, CMap@ map)
+{ // also add some sounds && incibility for lava tile
+	if (left == CMap::tile_lava_d0 || right == CMap::tile_lava_d0
+	|| left == CMap::tile_lava_d1 || right == CMap::tile_lava_d1)
+	{
+		map.SetTile(index, CMap::tile_lava_d1);
+	}
 
-
+}
+*/
 TileType server_onTileHit(CMap@ map, f32 damage, u32 index, TileType oldTileType)
 {
 	if (map.getTile(index).type > 255)
 	{
+		/*if ((oldTileType != CMap::tile_empty && map.getTile(index).type == CMap::tile_empty)
+		|| (oldTileType != CMap::tile_inferno_ash_back && map.getTile(index).type == CMap::tile_inferno_ash_back))
+		{ // check if lava nearby
+			printf("detected");
+			const TileType up = map.getTile(index - map.tilemapwidth).type;
+			const TileType down = map.getTile(index + map.tilemapwidth).type;
+			const TileType left = map.getTile(index - 1).type;
+			const TileType right = map.getTile(index + 1).type;
+
+			DoLavaFill(index, up, down, left, right, map);
+		}*/
 		switch (oldTileType)
 		{
 			case CMap::tile_iron: // iron start
@@ -649,6 +669,34 @@ TileType server_onTileHit(CMap@ map, f32 damage, u32 index, TileType oldTileType
 	return CMap::tile_empty;
 }
 
+void DoLeftLavaUpdate(u16 index, CMap@ map)
+{
+	index -= 1;
+	map.SetTile(index, CMap::tile_lava_d0);
+	const TileType left = map.getTile(index - 1).type;
+	if (left == CMap::tile_lava) DoLeftLavaUpdate(index, map);
+}
+
+TileType DoLavaUpdate(u16 index, TileType up, TileType down, TileType left, TileType right, CMap@ map)
+{
+	if (up == CMap::tile_empty
+	|| up == CMap::tile_inferno_ash || up ==  CMap::tile_inferno_ash_d0 || up ==  CMap::tile_inferno_ash_d1
+	|| up == CMap::tile_inferno_ash_d2 || up ==  CMap::tile_inferno_ash_d3 || up ==  CMap::tile_inferno_ash_d4
+	|| up == CMap::tile_inferno_ash_d5 || up ==  CMap::tile_inferno_ash_d6 || up ==  CMap::tile_inferno_ash_d7
+	|| up == CMap::tile_inferno_ash_d8
+	|| left == CMap::tile_lava_d1
+	|| right == CMap::tile_lava_d1)
+	{
+		return CMap::tile_lava_d1;
+	}
+	else if (up == CMap::tile_lava_d1 || left == CMap::tile_lava_d0 || right == CMap::tile_lava_d0)
+	{
+		if (left == CMap::tile_lava || left == CMap::tile_empty) DoLeftLavaUpdate(index, map);
+		if (right == CMap::tile_lava || right == CMap::tile_empty) map.SetTile(index + 1, CMap::tile_lava_d0);
+		return CMap::tile_lava_d0;
+	}
+	else return CMap::tile_lava;
+}
 
 void onSetTile(CMap@ map, u32 index, TileType tile_new, TileType tile_old)
 {
@@ -661,14 +709,37 @@ void onSetTile(CMap@ map, u32 index, TileType tile_new, TileType tile_old)
 		const TileType left = map.getTile(index - 1).type;
 		const TileType right = map.getTile(index + 1).type;
 
-		if (map.getTile(index).type > 431 && map.getTile(index).type < 448)
+		
+		if (map.getTile(index).type > 463  && map.getTile(index).type < 500)
+		{
+			switch (tile_new)
+			{
+				case CMap::tile_lava:
+				case CMap::tile_lava_d0:
+				case CMap::tile_lava_d1:
+				{
+					//map.SetTile(index, CMap::tile_lava);
+					map.SetTile(index, DoLavaUpdate(index, up, down, left, right, map));
+
+					if (index == CMap::tile_lava
+					&& left == CMap::tile_lava_d0) map.SetTile(index, CMap::tile_lava_d0);
+					if (index == CMap::tile_lava
+					&& right == CMap::tile_lava_d0) map.SetTile(index, CMap::tile_lava_d0);
+
+					map.RemoveTileFlag(index, Tile::SOLID | Tile::COLLISION | Tile::WATER_PASSES);
+					map.AddTileFlag(index, Tile::LIGHT_SOURCE);
+					break;
+				}
+			}
+		}
+		else if (map.getTile(index).type > 431 && map.getTile(index).type < 448)
 		{
 			switch (tile_new)
 			{
 				case CMap::tile_inferno_ash:
 				{ // flags in basepngloaders
 					//map.AddTileFlag(index, Tile::SOLID | Tile::COLLISION);
-					//map.RemoveTileFlag( index, Tile::LIGHT_PASSES | Tile::LIGHT_SOURCE | Tile::WATER_PASSES);
+					map.RemoveTileFlag( index, Tile::LIGHT_PASSES | Tile::LIGHT_SOURCE | Tile::WATER_PASSES);
 					break;
 				}
 				case CMap::tile_inferno_ash_d6:
@@ -713,7 +784,7 @@ void onSetTile(CMap@ map, u32 index, TileType tile_new, TileType tile_old)
 				case CMap::tile_iron_d5:
 				{
 					map.SetTileSupport(index, 255);
-					map.RemoveTileFlag( index, Tile::LIGHT_PASSES |Tile::LIGHT_SOURCE );
+					map.RemoveTileFlag( index, Tile::LIGHT_PASSES | Tile::LIGHT_SOURCE );
 					map.AddTileFlag(index, Tile::SOLID | Tile::COLLISION);
 					break;
 				}

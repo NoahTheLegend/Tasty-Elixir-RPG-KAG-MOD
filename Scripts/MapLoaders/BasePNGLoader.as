@@ -237,6 +237,7 @@ class PNGLoader
 				map.server_setFloodWaterOffset(offset, true);
 				map.SetTile(offset, CMap::tile_ground_back);
 			break;
+			case map_colors::tile_lava:                 map.SetTile(offset, CMap::tile_lava);               break;
 
 			// Princess & necromancer
 			case map_colors::princess:             autotile(offset); spawnBlob(map, "princess",    offset, 6); break;
@@ -282,6 +283,16 @@ class PNGLoader
 			case map_colors::kitchen:         autotile(offset); spawnBlob(map, "kitchen",     offset); break;
 			case map_colors::nursery:         autotile(offset); spawnBlob(map, "nursery",     offset); break;
 			case map_colors::research:        autotile(offset); spawnBlob(map, "research",    offset); break;
+			// Custom
+			case map_colors::nurseryb:        autotile(offset); spawnBlob(map, "nursery",     offset); break;
+			case map_colors::kitchenb:        autotile(offset); spawnBlob(map, "kitchenb",    offset); break;
+			case map_colors::tinkerstable:    autotile(offset); spawnBlob(map, "tinkertable", offset); break;
+			case map_colors::spicetable:      autotile(offset); spawnBlob(map, "spicetable",  offset); break;
+			case map_colors::potionstable:    autotile(offset); spawnBlob(map, "potionstable",offset); break;
+			case map_colors::blacksmith:      autotile(offset); spawnBlob(map, "blacksmith",  offset); break;
+			case map_colors::smallsign:       autotile(offset); spawnBlob(map, "smallsign",   offset); break;
+			case map_colors::witchshack:      autotile(offset); spawnBlob(map, "witchshack",  offset, 0); break;
+			case map_colors::quarry:          autotile(offset); spawnBlob(map, "quarry",      offset); break;
 
 			case map_colors::workbench:       autotile(offset); spawnBlob(map, "workbench",   offset, 255, true); break;
 			case map_colors::campfire:        autotile(offset); spawnBlob(map, "fireplace",   offset, 255); break;

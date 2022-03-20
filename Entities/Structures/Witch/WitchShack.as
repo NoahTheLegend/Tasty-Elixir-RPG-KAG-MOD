@@ -16,7 +16,7 @@ void onInit(CBlob@ this)
 
 	getMap().server_SetTile(this.getPosition(), CMap::tile_wood_back);
 
-	this.getCurrentScript().tickFrequency = 30 * 5;
+	this.getCurrentScript().tickFrequency = 25;
 
 	// SHOP
 	this.set_Vec2f("shop offset", Vec2f(0, 0));
@@ -28,7 +28,7 @@ void onInit(CBlob@ this)
 
 	if (sprite !is null)
 	{
-		CSpriteLayer@ trader = sprite.addSpriteLayer("trader", "witch", 16, 24, 0, 0);
+		CSpriteLayer@ trader = sprite.addSpriteLayer("trader", "witch.png", 16, 24, 0, 0);
 		trader.SetRelativeZ(20);
 		Animation@ stop = trader.addAnimation("stop", 1, false);
 		stop.AddFrame(0);
@@ -44,46 +44,6 @@ void onInit(CBlob@ this)
 		this.set_bool("moving left", false);
 		this.set_u32("move timer", getGameTime() + (traderRandom.NextRanged(5) + 5)*getTicksASecond());
 		this.set_u32("next offset", traderRandom.NextRanged(16));
-	}
-
-  
-
-}
-
-void onTick(CBlob@ this)
-{
-	// CBlob@[] blobs;
-
-	u8 myTeam = this.getTeamNum();
-	if (myTeam >= 100) return;
-
-	CPlayer@[] players;
-	for (int i = 0; i < getPlayerCount(); i++)
-	{
-		CPlayer@ p = getPlayer(i);
-		if (p.getTeamNum() == this.getTeamNum()) 
-		{
-			CBlob@ blob = p.getBlob();
-			if (blob !is null)
-			{
-				f32 maxHealth = Maths::Ceil(blob.getInitialHealth() * 1.25f);
-				if (blob.getHealth() < maxHealth)
-				{
-					if (isServer())
-					{
-						blob.server_SetHealth(Maths::Min(blob.getHealth() + 0.125f, maxHealth));
-					}
-
-					if (isClient())
-					{
-						for (int i = 0; i < 4; i++)
-						{
-							ParticleAnimated("HealParticle.png", blob.getPosition() + Vec2f(XORRandom(16) - 8, XORRandom(16) - 8), Vec2f(0, f32(XORRandom(100) * -0.02f)) * 0.25f, 0, 0.5f, 10, 0, true);
-						}
-					}
-				}
-			}
-		}
 	}
 }
 
@@ -159,6 +119,7 @@ void onTick(CSprite@ this)
 	bool moving_left = blob.get_bool("moving left");
 	u32 move_timer = blob.get_u32("move timer");
 	u32 next_offset = blob.get_u32("next offset");
+
 	if (!trader_moving)
 	{
 		if (move_timer <= getGameTime())
@@ -184,7 +145,7 @@ void onTick(CSprite@ this)
 		{
 			blob.set_bool("trader moving", false);
 			blob.set_bool("moving left", false);
-			blob.set_u32("move timer", getGameTime() + (traderRandom.NextRanged(5) + 5)*getTicksASecond());
+			blob.set_u32("move timer", getGameTime() + (traderRandom.NextRanged(8) + 5)*getTicksASecond());
 			blob.set_u32("next offset", traderRandom.NextRanged(16));
 			trader.SetAnimation("stop");
 		}
@@ -197,7 +158,7 @@ void onTick(CSprite@ this)
 		{
 			blob.set_bool("trader moving", false);
 			blob.set_bool("moving left", true);
-			blob.set_u32("move timer", getGameTime() + (traderRandom.NextRanged(5) + 5)*getTicksASecond());
+			blob.set_u32("move timer", getGameTime() + (traderRandom.NextRanged(5) + 7)*getTicksASecond());
 			blob.set_u32("next offset", traderRandom.NextRanged(16));
 			trader.SetAnimation("stop");
 		}

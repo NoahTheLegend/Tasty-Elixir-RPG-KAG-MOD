@@ -45,10 +45,11 @@ void onInit(CBlob@ this)
 
 	const u8 arrowType = this.get_u8("arrow type");
 
-	if (arrowType == ArrowType::bomb)			 // bomb arrow
+	if (arrowType == ArrowType::bomb) // bomb arrow
 	{
-		SetupBomb(this, bomb_fuse, 48.0f, 1.5f, 24.0f, 0.5f, true);
+		SetupBomb(this, bomb_fuse, 48.0f, 1.5f + this.get_f32("damagebuff")/2, 0, 0, true);
 		this.set_u8("custom_hitter", Hitters::bomb_arrow);
+		//printf(""+this.get_f32("damagebuff"));
 	}
 
     if(arrowType == ArrowType::water)
@@ -86,8 +87,6 @@ void onInit(CBlob@ this)
 		if (arrowType == ArrowType::bomb)
 			sprite.SetAnimation(anim);
 	}
-
-	this.set_f32("damagebuff", 0);
 }
 
 void turnOffFire(CBlob@ this)
@@ -639,6 +638,7 @@ void onHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@
 {
 	const u8 arrowType = this.get_u8("arrow type");
 	// unbomb, stick to blob
+
 	if (this !is hitBlob && customData == Hitters::arrow)
 	{
 		// affect players velocity
@@ -684,17 +684,16 @@ f32 getArrowDamage(CBlob@ this, f32 vellen = -1.0f)
 			else
 				vellen = this.getShape().getVars().oldvel.Length();
 		}
-
 		if (vellen >= arrowFastSpeed)
 		{
-			return (1.0f + this.get_f32("damagebuff")*2)*2;
+			return (1.0f + this.get_f32("damagebuff"))*2;
 		}
 		else if (vellen >= arrowMediumSpeed)
 		{
-			return (1.0f + this.get_f32("damagebuff")*2)*2;
+			return (1.0f + this.get_f32("damagebuff"))*2;
 		}
 
-		return (0.5f + this.get_f32("damagebuff"))*2;	
+		return 0.5f + this.get_f32("damagebuff");	
 	}
 	else
 	{
@@ -709,14 +708,14 @@ f32 getArrowDamage(CBlob@ this, f32 vellen = -1.0f)
 
 		if (vellen >= arrowFastSpeed)
 		{
-			return 1.0f + this.get_f32("damagebuff")*2;
+			return 1.0f + this.get_f32("damagebuff");
 		}
 		else if (vellen >= arrowMediumSpeed)
 		{
-			return 1.0f + this.get_f32("damagebuff")*2;
+			return 1.0f + this.get_f32("damagebuff");
 		}
 
-		return 0.5f + this.get_f32("damagebuff");
+		return 0.5f + this.get_f32("damagebuff")/2;
 	}
 }
 

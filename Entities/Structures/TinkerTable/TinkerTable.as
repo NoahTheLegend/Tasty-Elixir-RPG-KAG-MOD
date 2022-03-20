@@ -6,7 +6,7 @@
 
 void onInit(CBlob@ this)
 {
-	this.set_TileType("background tile", CMap::tile_wood_back);
+	//this.set_TileType("background tile", CMap::tile_wood_back);
 
 	//this.Tag("upkeep building");
 	//this.set_u8("upkeep cap increase", 0);
@@ -42,6 +42,7 @@ void onInit(CBlob@ this)
 		AddRequirement(s.requirements, "coin", "", "Coins", 750);
 
 		s.spawnNothing = true;
+	}
 	{
 		ShopItem@ s = addShopItem(this, "Iron Drill", "$irondrill$", "irondrill", "A drill for mining iron and less hard materials.\nCapable to drill longer, but cools slower.", false);
 		AddRequirement(s.requirements, "coin", "", "Coins", 1500);
@@ -50,7 +51,7 @@ void onInit(CBlob@ this)
 		s.spawnNothing = true;
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Steel Drill", "$steeldrill$", "irondrill", "A drill for mining *ore* and less hard materials.\nDrills faster.", false);
+		ShopItem@ s = addShopItem(this, "Steel Drill", "$steeldrill$", "steeldrill", "A drill for mining *ore* and less hard materials.\nDrills faster.", false);
 		AddRequirement(s.requirements, "coin", "", "Coins", 1500);
 		AddRequirement(s.requirements, "blob", "mat_iron", "Iron", 50); //change to bars
 

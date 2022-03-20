@@ -36,6 +36,8 @@ void onInit(CBlob@ this)
 		this.set_u32("next offset", traderRandom.NextRanged(16));
 	}
 
+	this.getCurrentScript().tickFrequency = 35;
+
 	AddIconToken("$filled_bucket$", "bucket.png", Vec2f(16, 16), 1);
 
 	this.set_Vec2f("shop offset", Vec2f(0,0));
@@ -95,6 +97,7 @@ void onTick(CSprite@ this)
 	bool moving_left = blob.get_bool("moving left");
 	u32 move_timer = blob.get_u32("move timer");
 	u32 next_offset = blob.get_u32("next offset");
+
 	if (!trader_moving)
 	{
 		if (move_timer <= getGameTime() && trader !is null)
@@ -120,7 +123,7 @@ void onTick(CSprite@ this)
 		{
 			blob.set_bool("trader moving", false);
 			blob.set_bool("moving left", false);
-			blob.set_u32("move timer", getGameTime() + (traderRandom.NextRanged(5) + 5)*getTicksASecond());
+			blob.set_u32("move timer", getGameTime() + (traderRandom.NextRanged(9) + 4)*getTicksASecond());
 			blob.set_u32("next offset", traderRandom.NextRanged(16));
 			trader.SetAnimation("stop");
 		}
@@ -133,7 +136,7 @@ void onTick(CSprite@ this)
 		{
 			blob.set_bool("trader moving", false);
 			blob.set_bool("moving left", true);
-			blob.set_u32("move timer", getGameTime() + (traderRandom.NextRanged(5) + 5)*getTicksASecond());
+			blob.set_u32("move timer", getGameTime() + (traderRandom.NextRanged(6) + 5)*getTicksASecond());
 			blob.set_u32("next offset", traderRandom.NextRanged(16));
 			trader.SetAnimation("stop");
 		}

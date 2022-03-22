@@ -281,6 +281,7 @@ void onTick(CBlob@ this)
 				map.server_setFireWorldspace(this.getPosition(), true);
 				this.server_Hit(this, this.getPosition(), Vec2f(0,0), 1.0f, Hitters::fire);
 			}
+			if (this.isMyPlayer()) SetScreenFlash(125, 255, 0, 0, 0.5f);
 		}
 	}
 

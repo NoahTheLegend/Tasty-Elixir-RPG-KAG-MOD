@@ -43,10 +43,14 @@ void onInit(CBlob@ this)
 	this.getCurrentScript().tickFrequency = 5;
 
 	AddIconToken("$filled_bucket$", "bucket.png", Vec2f(16, 16), 1);
+	
+	AddIconToken("$ironbar$", "Bars.png", Vec2f(16, 16), 12);
+	AddIconToken("$steelbar$", "Bars.png", Vec2f(16, 16), 13);
+	AddIconToken("$goldbar$", "Bars.png", Vec2f(16, 16), 14);
 
 	this.set_Vec2f("shop offset", Vec2f(0,0));
-	this.set_Vec2f("shop menu size", Vec2f(5, 2));
-	this.set_string("shop description", "Potions table");
+	this.set_Vec2f("shop menu size", Vec2f(3, 1));
+	this.set_string("shop description", "Blacksmith");
 	this.set_u8("shop icon", 15);
 
 	this.set_u16("animstate", 0);
@@ -55,8 +59,20 @@ void onInit(CBlob@ this)
 	this.addCommandID("refuel");
 
 	{
-		ShopItem@ s = addShopItem(this, "Buy egg", "$egg$", "egg", "Chicken egg. Definitely not duck.", true);
-		AddRequirement(s.requirements, "coin", "", "Coins", 150);
+		ShopItem@ s = addShopItem(this, "Iron bar (1)", "$ironbar$", "mat_ironbar-1", "Smelt iron ore into an iron bar", true);
+		AddRequirement(s.requirements, "blob", "mat_iron", "Iron", 50);
+
+		s.spawnNothing = true;
+	}
+	{
+		ShopItem@ s = addShopItem(this, "Steel bar (1)", "$steelbar$", "mat_steelbar-1", "Smelt iron bars into a steel bar", true);
+		AddRequirement(s.requirements, "blob", "mat_ironbar", "Iron bar", 2);
+
+		s.spawnNothing = true;
+	}
+	{
+		ShopItem@ s = addShopItem(this, "Gold bar (1)", "$goldbar$", "mat_goldbar-1", "Smelt gold ore into a precious gold bar", true);
+		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 150);
 
 		s.spawnNothing = true;
 	}
@@ -64,6 +80,7 @@ void onInit(CBlob@ this)
 
 void onTick(CBlob@ this)
 {
+	if (this is null) return;
 	//printf(""+this.get_u16("fuel"));
 	CSprite@ sprite = this.getSprite();
 	if (this.get_u16("fuel") <= 4)
@@ -71,7 +88,7 @@ void onTick(CBlob@ this)
 		sprite.SetFrameIndex(0); // idfk why it is working so
 		sprite.SetEmitSoundPaused(true);
 	}
-	else if (this.get_u16("fuel") >= 5)
+	if (this.get_u16("fuel") >= 5)
 	{
 		sprite.SetFrameIndex(this.get_u16("animstate"));
 		this.set_u16("animstate", this.get_u16("animstate") + 1);
@@ -79,12 +96,9 @@ void onTick(CBlob@ this)
 		sprite.SetEmitSoundPaused(false);
 	}
 
-	if (getGameTime() % 30 == 0 && this !is null) 
-	{
-		if (this.get_u16("fuel") > 1000) this.set_u16("fuel", 500);
-		if (this.get_u16("fuel")>=5)
-			this.set_u16("fuel", this.get_u16("fuel") - 5);
-	}
+	if (this.get_u16("fuel") > 1000) this.set_u16("fuel", 500);
+	if (this.get_u16("fuel")>=5)
+		this.set_u16("fuel", this.get_u16("fuel") - 1);
 }
 
 void onTick(CSprite@ this)
@@ -161,16 +175,22 @@ void onRender(CSprite@ this)
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
+	//printf(""+this.get_u16("fuel"));
+	if (this.get_u16("fuel") <= 4) this.set_bool("shop available", false);
+	else this.set_bool("shop available", this.isOverlapping(caller));
 	if (this.get_u16("fuel") < this.get_u16("maxfuel"))
 	{
-		if (caller is null || caller.getCarriedBlob() is null || caller.getCarriedBlob().getName() != "mat_wood") return;
+		if (caller is null
+		|| caller.getCarriedBlob() is null
+		|| caller.getCarriedBlob().getName() != "mat_wood") return;
 
      	CBitStream params;
 	    params.write_u16(caller.getCarriedBlob().getNetworkID());
 	    caller.CreateGenericButton("$mat_wood$", Vec2f(8, 4), this, this.getCommandID("refuel"), "Refuel blacksmith furnace", params); 
 	}
-	if (this.get_u16("fuel") >= 5)
-	{
+	if (this.get_u16("fuel") <= 4) return;
+	if (this.get_u16("fuel") >= 10)
+	{ 
 		if(caller.getName() == this.get_string("required class"))
 		{
 			this.set_Vec2f("shop offset", Vec2f_zero);
@@ -181,7 +201,6 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 		}
 		this.set_bool("shop available", this.isOverlapping(caller));
 	}
-	else this.set_bool("shop available", false);
 }
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
@@ -197,21 +216,61 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	}
 	else if (cmd == this.getCommandID("shop made item"))
 	{
+		this.getSprite().PlaySound("ConstructShort");
+		
 		u16 caller, item;
-
+		
 		if(!params.saferead_netid(caller) || !params.saferead_netid(item))
 			return;
-
+		
 		string name = params.read_string();
 		CBlob@ callerBlob = getBlobByNetworkID(caller);
-
-		//string[] spl = name.split("_");
-
+		
 		if (callerBlob is null) return;
-
+		
 		if (isServer())
 		{
-		
+			string[] spl = name.split("-");
+
+			if (spl[0] == "coin")
+			{
+				CPlayer@ callerPlayer = callerBlob.getPlayer();
+				if (callerPlayer is null) return;
+				
+				callerPlayer.server_setCoins(callerPlayer.getCoins() +  parseInt(spl[1]));
+			}
+			else if (name.findFirst("mat_") != -1)
+			{
+				CPlayer@ callerPlayer = callerBlob.getPlayer();
+				if (callerPlayer is null) return;
+				
+				CBlob@ mat = server_CreateBlob(spl[0]);
+							
+				if (mat !is null)
+				{
+					mat.Tag("do not set materials");
+					mat.server_SetQuantity(parseInt(spl[1]));
+					if (!callerBlob.server_PutInInventory(mat))
+					{
+						mat.setPosition(callerBlob.getPosition());
+					}
+				}
+			}
+			else
+			{
+				CBlob@ blob = server_CreateBlob(spl[0], callerBlob.getTeamNum(), this.getPosition());
+				
+				if (blob is null) return;
+			   
+				if (!blob.canBePutInInventory(callerBlob))
+				{
+					callerBlob.server_Pickup(blob);
+				}
+				else if (callerBlob.getInventory() !is null && !callerBlob.getInventory().isFull())
+				{
+					callerBlob.server_PutInInventory(blob);
+				}
+			}
 		}
 	}
 }

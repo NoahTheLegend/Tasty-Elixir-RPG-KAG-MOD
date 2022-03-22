@@ -238,6 +238,18 @@ class PNGLoader
 				map.SetTile(offset, CMap::tile_ground_back);
 			break;
 			case map_colors::tile_lava:                 map.SetTile(offset, CMap::tile_lava);               break;
+			case map_colors::tile_abyss_dirt:           map.SetTile(offset, CMap::tile_abyss_dirt);
+			{
+				map.AddTileFlag(offset, Tile::SOLID | Tile::COLLISION);
+				map.RemoveTileFlag(offset, Tile::LIGHT_PASSES | Tile::LIGHT_SOURCE | Tile::WATER_PASSES);
+				break;
+			}
+			case map_colors::tile_abyss_dirt_back:      map.SetTile(offset, CMap::tile_abyss_dirt_back_d2);
+			{
+				map.AddTileFlag(offset, Tile::BACKGROUND);
+				map.RemoveTileFlag(offset, Tile::LIGHT_SOURCE);
+				break;	
+			}
 
 			// Princess & necromancer
 			case map_colors::princess:             autotile(offset); spawnBlob(map, "princess",    offset, 6); break;
@@ -284,6 +296,7 @@ class PNGLoader
 			case map_colors::nursery:         autotile(offset); spawnBlob(map, "nursery",     offset); break;
 			case map_colors::research:        autotile(offset); spawnBlob(map, "research",    offset); break;
 			// Custom
+			case map_colors::tdm_spawn:       autotile(offset); spawnBlob(map, "tdm_spawn",   offset); break;
 			case map_colors::nurseryb:        autotile(offset); spawnBlob(map, "nursery",     offset); break;
 			case map_colors::kitchenb:        autotile(offset); spawnBlob(map, "kitchenb",    offset); break;
 			case map_colors::tinkerstable:    autotile(offset); spawnBlob(map, "tinkertable", offset); break;
@@ -584,6 +597,11 @@ void PlaceMostLikelyTile(CMap@ map, int offset)
 		         (neighborhood.find(CMap::tile_inferno_ash_back) != -1))
 		{
 			map.SetTile(offset, CMap::tile_inferno_ash_back);
+		}
+		else if ((neighborhood.find(CMap::tile_abyss_dirt) != -1) ||
+		         (neighborhood.find(CMap::tile_abyss_dirt_back) != -1))
+		{
+			map.SetTile(offset, CMap::tile_abyss_dirt_back);
 		}
 	}
 	else if(map.isTileSolid(down) && (map.isTileGrass(left) || map.isTileGrass(right)))

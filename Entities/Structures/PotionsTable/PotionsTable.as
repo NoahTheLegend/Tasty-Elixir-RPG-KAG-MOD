@@ -4,7 +4,7 @@
 #include "Descriptions.as";
 
 Random traderRandom(Time());
-
+/*
 const string[] names = {
 	"burdockspice",
 	"burnetspice",
@@ -13,7 +13,7 @@ const string[] names = {
 	"poppyspice",
 	"thymespice"
 };
-
+*/
 void onInit(CBlob@ this)
 {
 	this.getSprite().SetZ(-50); //background
@@ -103,7 +103,7 @@ void onInit(CBlob@ this)
 	this.set_string("add2", "");
 	this.set_string("add3", "");
 	this.set_string("add4", "");
-
+/*
 	string[] combinations = names;
 
 	for (int i = 0; i < 50; i++) // shuffling
@@ -227,12 +227,12 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	        	potion.set_string("add2", this.get_string("add2"));
 	        	potion.set_string("add3", this.get_string("add3"));
 	        	potion.set_string("add4", this.get_string("add3"));
-            	potion.set_string("key1", this.get_string("key1"));
-	        	potion.set_string("key2", this.get_string("key2"));
-	        	potion.set_string("key3", this.get_string("key3"));
-	        	potion.set_string("key4", this.get_string("key4"));
-	        	potion.set_string("key5", this.get_string("key5"));
-	        	potion.set_string("key6", this.get_string("key6")); 
+            	potion.set_string("key1", getRules().get_string("key1"));
+	        	potion.set_string("key2", getRules().get_string("key2"));
+	        	potion.set_string("key3", getRules().get_string("key3"));
+	        	potion.set_string("key4", getRules().get_string("key4"));
+	        	potion.set_string("key5", getRules().get_string("key5"));
+	        	potion.set_string("key6", getRules().get_string("key6")); 
 
 				potion.setPosition(this.getPosition());
 				potion.server_setTeamNum(0);

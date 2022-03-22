@@ -8,6 +8,7 @@
 #include "KnockedCommon.as"
 #include "Help.as";
 #include "Requirements.as"
+#include "CustomBlocks.as";
 
 
 //attacks limited to the one time per-actor before reset.
@@ -158,6 +159,11 @@ void onInit(CBlob@ this)
 	this.set_string("buffs5", "");
 
 	this.addCommandID("receive_effect");
+	//soundtracks
+	this.set_string("track", "");
+	this.set_u32("tracktimer", 0);
+	this.set_u16("tracktimercd", 0);
+	this.getSprite().SetEmitSoundPaused(true);
 }
 
 void onSetPlayer(CBlob@ this, CPlayer@ player)
@@ -303,6 +309,124 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 
 void onTick(CBlob@ this)
 {
+	//soundtracks
+	if (getGameTime() % 150 == 0) // every 5 seconds check
+	{
+		CMap@ map = getMap();
+		Tile tile = map.getTile(this.getPosition());
+		CSprite@ sprite = this.getSprite();
+		if (sprite is null) return;
+		//surface
+		//caves
+		//inferno
+		int posy = this.getPosition().y;
+		//printf("pos: "+posy+" of map height*8/3: "+this.getMap().tilemapheight*8/3);
+		if (this.get_string("track") == ""
+		&& posy > this.getMap().tilemapheight*8/3
+		&& (tile.type == CMap::tile_inferno_ash_back
+		|| tile.type == CMap::tile_inferno_ash_back_d0
+		|| tile.type == CMap::tile_inferno_ash_back_d1
+		|| tile.type == CMap::tile_inferno_ash_back_d2
+		|| tile.type == CMap::tile_inferno_ash_back_d3
+		|| tile.type == CMap::tile_inferno_ash_back_d4
+		|| tile.type == CMap::tile_inferno_ash_back_d5
+		|| tile.type == CMap::tile_inferno_ash_back_d6
+		|| tile.type == CMap::tile_inferno_ash_back_d7
+		|| tile.type == CMap::tile_inferno_ash_back_d8
+		|| tile.type == CMap::tile_inferno_castle_back
+		|| tile.type == CMap::tile_inferno_castle_back_d0
+		|| tile.type == CMap::tile_inferno_castle_back_d1
+		|| tile.type == CMap::tile_inferno_castle_back_d2
+		|| tile.type == CMap::tile_inferno_castle_back_d3
+		|| tile.type == CMap::tile_inferno_castle_back_d4
+		|| tile.type == CMap::tile_inferno_castle_back_d5
+		|| tile.type == CMap::tile_inferno_castle_back_d6
+		|| tile.type == CMap::tile_inferno_castle_back_d7
+		|| tile.type == CMap::tile_inferno_castle_back_d8))
+		{
+			if (isClient() && this.isMyPlayer() && XORRandom(40) < 1 // 2.5% chance every 5 sec
+			&& this.get_u32("tracktimer") == 0 && this.get_u16("tracktimercd") == 0)
+			{
+				if (XORRandom(10) < 5)
+				{
+					sprite.SetEmitSound("Inferno_1.ogg");
+					sprite.SetEmitSoundVolume(0.5f);
+					sprite.SetEmitSoundPaused(false);
+					this.set_string("track", "Inferno_1.ogg");
+					this.set_u32("tracktimer", 295*30 + 300); // 4.95 min + cd check
+				}
+				else if (this.get_u32("tracktimer") == 0)
+				{
+					sprite.SetEmitSound("Inferno_2.ogg");
+					sprite.SetEmitSoundVolume(0.5f);
+					sprite.SetEmitSoundPaused(false);
+					this.set_string("track", "Inferno_2.ogg");
+					this.set_u32("tracktimer", 240*30 + 300); // 4 min + cd check
+				}
+				else if (this.get_u32("tracktimer") == 0)
+				{
+					sprite.SetEmitSound("Inferno_3.ogg");
+					sprite.SetEmitSoundVolume(0.5f);
+					sprite.SetEmitSoundPaused(false);
+					this.set_string("track", "Inferno_3.ogg");
+					this.set_u32("tracktimer", 75*30 + 300); // 1.25 min + cd check
+				}
+				printf("true");
+			}
+		}
+		
+		//abyss
+		else if (this.get_string("track") == ""
+		&& tile.type == CMap::tile_abyss_dirt_back
+		|| tile.type == CMap::tile_abyss_dirt_back_d0
+		|| tile.type == CMap::tile_abyss_dirt_back_d1
+		|| tile.type == CMap::tile_abyss_dirt_back_d2)
+		{
+			if (isClient() && this.isMyPlayer() && XORRandom(40) < 1 // 10% chance every 5 sec
+			&& this.get_u32("tracktimer") == 0 && this.get_u16("tracktimercd") == 0)
+			{
+				if (XORRandom(10) < 5)
+				{
+					sprite.SetEmitSound("Abyss_1.ogg");
+					sprite.SetEmitSoundVolume(0.5f);
+					sprite.SetEmitSoundPaused(false);
+					this.set_string("track", "Abyss_1.ogg");
+					this.set_u32("tracktimer", 150*30 + 300); // 2.5 min + cd check
+				}
+				else if (this.get_u32("tracktimer") == 0)
+				{
+					sprite.SetEmitSound("Abyss_2(HK-OST).ogg");
+					sprite.SetEmitSoundVolume(1.5f);
+					sprite.SetEmitSoundPaused(false);
+					this.set_string("track", "Abyss_2(HK-OST).ogg");
+					this.set_u32("tracktimer", 930*30 + 300); // 15.5 min + cd check
+				}
+			}
+		}
+		else if (XORRandom(40) == 0 // remove soundtrack if out, 2.5% chance
+		&& (this.get_string("track") == "Abyss_1.ogg"
+		|| this.get_string("track") == "Abyss_2(HK-OST).ogg"))
+		{
+			sprite.SetEmitSoundPaused(true);
+			this.set_string("track", "");
+			this.set_u32("tracktimer", 0);
+			this.set_u16("tracktimercd", 60*30); // 1 min cd
+		}
+
+		//track timer
+		if (this.get_u32("tracktimer") > 0) this.set_u32("tracktimer", this.get_u32("tracktimer") - 150);
+		if (this.get_u16("tracktimercd") > 0) this.set_u16("tracktimercd", this.get_u16("tracktimercd") - 150);
+		else if (this.get_u32("tracktimer") < 0 || this.get_u32("tracktimer") > 30000 ) this.set_u32("tracktimer", 0);
+		else if (this.get_u32("tracktimer") >= 0 && this.get_u32("tracktimer") <= 150
+		&& this.get_u16("tracktimercd") == 0 && this.get_string("track") != "")
+		{
+			sprite.SetEmitSoundPaused(true);
+			this.set_string("track", "");
+			this.set_u16("tracktimercd", 300*30); //5 min cd
+		}
+		//if (this.get_u32("tracktimer") > 0) printf(""+this.get_u32("tracktimer"));
+		//if (this.get_u16("tracktimercd") > 0) printf(""+this.get_u16("tracktimercd"));
+	}
 	//check if smth broke
 	if (getGameTime() % 3 == 0)
 	{
@@ -369,6 +493,7 @@ void onTick(CBlob@ this)
 				map.server_setFireWorldspace(this.getPosition(), true);
 				this.server_Hit(this, this.getPosition(), Vec2f(0,0), 1.0f, Hitters::fire);
 			}
+			if (this.isMyPlayer()) SetScreenFlash(125, 255, 0, 0, 0.75f);
 		}
 	}
 

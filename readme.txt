@@ -5,7 +5,7 @@ have a conversation what i should remove and what i may change in your code.
 
 Taken & modified parts of mods below:
 
-Roleplay Revived (some structure sprites, tree sprites)
+Roleplay Revived (some structures sprites, tree sprites, ingot sprites)
 
 Blavier's Tavern Brawl (rogue class, bush textures)
 

@@ -20,12 +20,12 @@ void onInit(CBlob@ this)
 
 	// SHOP
 	this.set_Vec2f("shop offset", Vec2f_zero);
-	this.set_Vec2f("shop menu size", Vec2f(4, 1));
+	this.set_Vec2f("shop menu size", Vec2f(2, 1));
 	this.set_string("shop description", "Buy");
 	this.set_u8("shop icon", 25);
 
 	// CLASS
-	this.set_Vec2f("class offset", Vec2f(-6, 0));
+	this.set_Vec2f("class offset", Vec2f(-9999, 0));
 	this.set_string("required class", "knight");
 
 	int team_num = this.getTeamNum();
@@ -50,7 +50,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	}
 	else
 	{
-		this.set_Vec2f("shop offset", Vec2f(6, 0));
+		this.set_Vec2f("shop offset", Vec2f(0, 0));
 	}
 	this.set_bool("shop available", this.isOverlapping(caller));
 }

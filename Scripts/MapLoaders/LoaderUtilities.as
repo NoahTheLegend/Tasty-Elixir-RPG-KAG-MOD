@@ -15,6 +15,14 @@ bool onMapTileCollapse(CMap@ map, u32 offset)
 		{
 			return false;
 		}
+		else if (map.getTile(offset).type == CMap::tile_abyss_dirt)
+		{
+			return false;
+		}
+		else if (map.getTile(offset).type == CMap::tile_abyss_dirt_back)
+		{
+			return false;
+		}
 	}
 	else if(isDummyTile(map.getTile(offset).type))
 	{
@@ -54,6 +62,25 @@ TileType server_onTileHit(CMap@ map, f32 damage, u32 index, TileType oldTileType
 		}*/
 		switch (oldTileType)
 		{
+			case CMap::tile_lava: // return CMap::tile_lava; // lava
+			case CMap::tile_lava_d0: // return CMap::tile_lava_d0;
+			case CMap::tile_lava_d1: return oldTileType; // return CMap::tile_lava_d1;
+			case CMap::tile_abyss_dirt:
+			case CMap::tile_abyss_dirt_d0:
+			case CMap::tile_abyss_dirt_d1:
+			case CMap::tile_abyss_dirt_d2:
+			case CMap::tile_abyss_dirt_d3:
+			{
+				map.AddTileFlag(index, Tile::SOLID | Tile::COLLISION);
+				map.RemoveTileFlag(index, Tile::LIGHT_PASSES | Tile::LIGHT_SOURCE | Tile::WATER_PASSES);
+				if (isClient())
+				{
+					Vec2f pos = map.getTileWorldPosition(index);
+					Sound::Play("dig_dirt" + (1 + XORRandom(3)) + ".ogg", pos, 0.5f, 0.5f);
+					if (XORRandom(11) < 1) Sound::Play("AbyssDirtBroke.ogg", pos, 0.5f, 1.0f);
+				}
+				return oldTileType;
+			}
 			case CMap::tile_iron: // iron start
 			{
 				if (isClient())
@@ -73,6 +100,19 @@ TileType server_onTileHit(CMap@ map, f32 damage, u32 index, TileType oldTileType
 					}
 				}
 				return CMap::tile_iron_d1;
+			}
+			case CMap::tile_abyss_dirt_back:
+			case CMap::tile_abyss_dirt_back_d0:
+			case CMap::tile_abyss_dirt_back_d1:
+			case CMap::tile_abyss_dirt_back_d2:
+			case CMap::tile_abyss_dirt_back_d3:
+			case CMap::tile_abyss_dirt_back_d4:
+			case CMap::tile_abyss_dirt_back_d5:
+			case CMap::tile_abyss_dirt_back_d6:
+			case CMap::tile_abyss_dirt_back_d7:
+			case CMap::tile_abyss_dirt_back_d8:
+			{
+				return oldTileType;
 			}
 			case CMap::tile_iron_d0:
 			{
@@ -680,10 +720,10 @@ void DoLeftLavaUpdate(u16 index, CMap@ map)
 TileType DoLavaUpdate(u16 index, TileType up, TileType down, TileType left, TileType right, CMap@ map)
 {
 	if (up == CMap::tile_empty
-	|| up == CMap::tile_inferno_ash || up ==  CMap::tile_inferno_ash_d0 || up ==  CMap::tile_inferno_ash_d1
-	|| up == CMap::tile_inferno_ash_d2 || up ==  CMap::tile_inferno_ash_d3 || up ==  CMap::tile_inferno_ash_d4
-	|| up == CMap::tile_inferno_ash_d5 || up ==  CMap::tile_inferno_ash_d6 || up ==  CMap::tile_inferno_ash_d7
-	|| up == CMap::tile_inferno_ash_d8
+	|| up == CMap::tile_inferno_ash_back || up ==  CMap::tile_inferno_ash_back_d0 || up ==  CMap::tile_inferno_ash_back_d1
+	|| up == CMap::tile_inferno_ash_back_d2 || up ==  CMap::tile_inferno_ash_back_d3 || up ==  CMap::tile_inferno_ash_back_d4
+	|| up == CMap::tile_inferno_ash_back_d5 || up ==  CMap::tile_inferno_ash_back_d6 || up ==  CMap::tile_inferno_ash_back_d7
+	|| up == CMap::tile_inferno_ash_back_d8
 	|| left == CMap::tile_lava_d1
 	|| right == CMap::tile_lava_d1)
 	{
@@ -691,8 +731,6 @@ TileType DoLavaUpdate(u16 index, TileType up, TileType down, TileType left, Tile
 	}
 	else if (up == CMap::tile_lava_d1 || left == CMap::tile_lava_d0 || right == CMap::tile_lava_d0)
 	{
-		if (left == CMap::tile_lava || left == CMap::tile_empty) DoLeftLavaUpdate(index, map);
-		if (right == CMap::tile_lava || right == CMap::tile_empty) map.SetTile(index + 1, CMap::tile_lava_d0);
 		return CMap::tile_lava_d0;
 	}
 	else return CMap::tile_lava;
@@ -710,7 +748,7 @@ void onSetTile(CMap@ map, u32 index, TileType tile_new, TileType tile_old)
 		const TileType right = map.getTile(index + 1).type;
 
 		
-		if (map.getTile(index).type > 463  && map.getTile(index).type < 500)
+		if (map.getTile(index).type > 463 && map.getTile(index).type < 477)
 		{
 			switch (tile_new)
 			{
@@ -730,6 +768,48 @@ void onSetTile(CMap@ map, u32 index, TileType tile_new, TileType tile_old)
 					map.AddTileFlag(index, Tile::LIGHT_SOURCE);
 					break;
 				}
+			}
+		}
+		else if (map.getTile(index).type > 481 && map.getTile(index).type < 492)
+		{
+			switch (tile_new)
+			{
+				case CMap::tile_abyss_dirt:
+				{
+					u8 rand = XORRandom(3);
+					switch (rand)
+					{
+						case 0: map.SetTile(index, CMap::tile_abyss_dirt);      break;
+						case 1: map.SetTile(index, CMap::tile_abyss_dirt_d0);	break;
+						case 2: map.SetTile(index, CMap::tile_abyss_dirt_d1);	break;
+					}
+					map.AddTileFlag(index, Tile::SOLID | Tile::COLLISION);
+					map.RemoveTileFlag(index, Tile::LIGHT_PASSES | Tile::LIGHT_SOURCE | Tile::WATER_PASSES);
+					break;
+				}
+				map.AddTileFlag(index, Tile::SOLID | Tile::COLLISION);
+				map.RemoveTileFlag(index, Tile::LIGHT_PASSES | Tile::LIGHT_SOURCE);
+				break;
+			}
+		}
+		else if (map.getTile(index).type > 495 && map.getTile(index).type < 507)
+		{
+			switch (tile_new)
+			{
+				case CMap::tile_abyss_dirt_back:
+				{
+					u8 rand = XORRandom(4);
+					switch (rand)
+					{
+						case 0: map.SetTile(index, CMap::tile_abyss_dirt_back);     break;
+						case 1: map.SetTile(index, CMap::tile_abyss_dirt_back_d0);	break;
+						case 2: map.SetTile(index, CMap::tile_abyss_dirt_back_d1);	break;
+						case 3: map.SetTile(index, CMap::tile_abyss_dirt_back_d2);	break;
+					}
+				}
+				map.AddTileFlag(index, Tile::BACKGROUND);
+				map.RemoveTileFlag(index, Tile::LIGHT_SOURCE);
+				break;
 			}
 		}
 		else if (map.getTile(index).type > 431 && map.getTile(index).type < 448)

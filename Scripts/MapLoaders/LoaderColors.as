@@ -80,6 +80,8 @@ namespace map_colors
 		tile_inferno_castle      = 0xFFFF503E, // ARGB(255, 255,  80,  62);
 		tile_inferno_castle_back = 0xFFA72D25, // ARGB(255, 167,  45,  35);
 		tile_lava                = 0xFFE8641B, // ARGB(255, 232, 100,  27);
+		tile_abyss_dirt          = 0xFF002352, // ARGB(255,,,);
+		tile_abyss_dirt_back     = 0xFF002332, // ARGB(255,,,);
 
 
 		// OTHER
@@ -206,6 +208,7 @@ namespace map_colors
 		aqua_spawn             = 0xFF4F9B7F, // ARGB(255,  79, 155, 127);
 		teal_spawn             = 0xFF4149F0, // ARGB(255,  65,  73, 240);
 		gray_spawn             = 0xFF97A792, // ARGB(255, 151, 167, 146);
+		tdm_spawn              = 0xFF900AC0, // ARGB(255, 151, 167, 146);
 
 		// MISC
 		workbench              = 0xFF00FF00, // ARGB(255,   0, 255,   0);

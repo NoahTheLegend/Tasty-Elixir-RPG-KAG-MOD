@@ -6,6 +6,7 @@
 #include "CTF_Structs.as";
 #include "RulesCore.as";
 #include "RespawnSystem.as";
+#include "TDM_Ruins.as";
 
 const int maxMines = 20;
 const int maxKegs = 20;
@@ -57,7 +58,19 @@ bool onClientProcessChat(CRules@ this, const string& in text_in, string& out tex
 
 	if (player.isMyPlayer())
 	{
-		if (text_in == "!epic")
+		if (text_in == "!givespice")
+		{
+			if (isServer())
+			{
+				server_CreateBlob("burdockspice", 0, blob.getPosition());
+				server_CreateBlob("burnetspice", 0, blob.getPosition());
+				server_CreateBlob("equisetumspice", 0, blob.getPosition());
+				server_CreateBlob("mindwortspice", 0, blob.getPosition());
+				server_CreateBlob("poppyspice", 0, blob.getPosition());
+				server_CreateBlob("thymespice", 0, blob.getPosition());
+			}
+		}
+		else if (text_in == "!epic")
 		{
 			if (player !is null) if (player.getUsername() == "NoahTheLegend")
 			{
@@ -220,7 +233,9 @@ shared class SandboxSpawns : RespawnSystem
 
 	void DoSpawnPlayer(PlayerInfo@ p_info)
 	{
-		if (canSpawnPlayer(p_info))
+		CBlob@ tdmspawn = getBlobByName("tdm_spawn");
+
+		if (canSpawnPlayer(p_info) && tdmspawn !is null)
 		{
 			//limit how many spawn per second
 			if (limit > 0)
@@ -255,18 +270,72 @@ shared class SandboxSpawns : RespawnSystem
 
 			if (p_info.blob_name == "") // if user is new
 			{
-				p_info.blob_name = "builder"; //hard-set the respawn blob
+				u8 rand = XORRandom(3);
+				switch (rand)
+				{
+					case 0: p_info.blob_name = "knight";
+					case 1: p_info.blob_name = "archer";
+					case 3: p_info.blob_name = "rogue";
+				}
 			}
+
+			CBlob@ playerBlob = SpawnPlayerIntoWorld(tdmspawn.getPosition(), p_info);
+
+			if (playerBlob !is null)
+			{
+				p_info.spawnsCount++;
+				RemovePlayerFromSpawn(player);
+			}
+		}
+		else if (canSpawnPlayer(p_info))
+		{
+			if (limit > 0)
+			{
+				limit--;
+				return;
+			}
+			else
+			{
+				limit = spawnspam_limit_time;
+			}
+
+			CPlayer@ player = getPlayerByUsername(p_info.username); // is still connected?
+
+			if (player is null)
+			{
+				RemovePlayerFromSpawn(p_info);
+				return;
+			}
+			if (player.getTeamNum() != int(p_info.team))
+			{
+				player.server_setTeamNum(p_info.team);
+			}
+
+			// remove previous players blob
+			if (player.getBlob() !is null)
+			{
+				CBlob @blob = player.getBlob();
+				blob.server_SetPlayer(null);
+				blob.server_Die();
+			}
+
+			if (p_info.blob_name == "") // if user is new
+			{
+				u8 rand = XORRandom(3);
+				switch (rand)
+				{
+					case 0: p_info.blob_name = "knight";
+					case 1: p_info.blob_name = "archer";
+					case 3: p_info.blob_name = "rogue";
+				}
+			}
+
 			CBlob@ playerBlob = SpawnPlayerIntoWorld(getSpawnLocation(p_info), p_info);
 
 			if (playerBlob !is null)
 			{
 				p_info.spawnsCount++;
 				RemovePlayerFromSpawn(player);
-
-				// spawn resources
-				SetMaterials(playerBlob, "mat_wood", 500);
-				SetMaterials(playerBlob, "mat_stone", 250);
 			}
 		}
 	}
@@ -286,18 +355,10 @@ shared class SandboxSpawns : RespawnSystem
 
 	Vec2f getSpawnLocation(PlayerInfo@ p_info)
 	{
-		CTFPlayerInfo@ c_info = cast < CTFPlayerInfo@ > (p_info);
-		if (c_info !is null)
-		{
-			CMap@ map = getMap();
-			if (map !is null)
-			{
-				f32 x = XORRandom(2) == 0 ? 32.0f : map.tilemapwidth * map.tilesize - 32.0f;
-				return Vec2f(x, map.getLandYAtX(s32(x / map.tilesize)) * map.tilesize - 16.0f);
-			}
-		}
-
-		return Vec2f(0, 0);
+		if (getBlobByName("tdm_spawn") !is null)
+			return getBlobByName("tdm_spawn").getPosition();
+		
+		return Vec2f(0,0);
 	}
 
 	void RemovePlayerFromSpawn(CPlayer@ player)
@@ -420,7 +481,7 @@ shared class SandboxCore : RulesCore
 
 	void AddPlayer(CPlayer@ player, u8 team = 0, string default_config = "")
 	{
-		CTFPlayerInfo p(player.getUsername(), 0, "builder");
+		CTFPlayerInfo p(player.getUsername(), 0, "knight");
 		players.push_back(p);
 		ChangeTeamPlayerCount(p.team, 1);
 	}
@@ -459,12 +520,39 @@ shared class SandboxCore : RulesCore
 
 void onInit(CRules@ this)
 {
+	this.minimap = false;
 	Reset(this);
 }
+
+
+const string[] names = {
+	"burdockspice",
+	"burnetspice",
+	"equisetumspice",
+	"mindwortspice",
+	"poppyspice",
+	"thymespice"
+};
 
 void onRestart(CRules@ this)
 {
 	Reset(this);
+
+	string[] combinations = names;
+
+	for (int i = 0; i < 50; i++) // shuffling
+	{
+		u8 rand = XORRandom(6);
+		combinations.push_back(combinations[rand]);
+		combinations.erase(rand);
+	}
+
+	this.set_string("key1", combinations[0]);
+	this.set_string("key2", combinations[1]);
+	this.set_string("key3", combinations[2]);
+	this.set_string("key4", combinations[3]);
+	this.set_string("key5", combinations[4]);
+	this.set_string("key6", combinations[5]);
 }
 
 void Reset(CRules@ this)

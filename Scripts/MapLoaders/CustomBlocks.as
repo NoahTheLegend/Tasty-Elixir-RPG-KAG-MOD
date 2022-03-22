@@ -78,24 +78,34 @@ namespace CMap
 
 		tile_lava = 464,
 		tile_lava_d0 = 465,
-		tile_lava_d1 = 466
+		tile_lava_d1 = 466,
+
+		tile_abyss_dirt = 482,
+		tile_abyss_dirt_d0 = 483,
+		tile_abyss_dirt_d1 = 484,
+		tile_abyss_dirt_d2 = 485,
+		tile_abyss_dirt_d3 = 486,
+		tile_abyss_dirt_d4 = 487,
+		tile_abyss_dirt_d5 = 488,
+		tile_abyss_dirt_d6 = 489,
+		tile_abyss_dirt_d7 = 490,
+		tile_abyss_dirt_d8 = 491,
+
+		tile_abyss_dirt_back = 496,
+		tile_abyss_dirt_back_d0 = 497,
+		tile_abyss_dirt_back_d1 = 498,
+		tile_abyss_dirt_back_d2 = 499,
+		tile_abyss_dirt_back_d3 = 500,
+		tile_abyss_dirt_back_d4 = 501,
+		tile_abyss_dirt_back_d5 = 503,
+		tile_abyss_dirt_back_d6 = 504,
+		tile_abyss_dirt_back_d7 = 505,
+		tile_abyss_dirt_back_d8 = 506
 	};
 };
 
 const SColor color_tile_iron(255,151,115,97);
-const SColor color_tile_inferno_castle(255,255,80,62);
-const SColor color_tile_inferno_castle_back(255,167,45,35);
 const SColor color_tile_inferno_ash(255,79,66,60);
-const SColor color_tile_inferno_ash_back(255,167,45,35);
-
-const SColor color_nursery(255,0,159,60);
-const SColor color_kitchenb(255,0,112,158);
-const SColor color_tinkerstable(255,110,0,35);
-const SColor color_spicetable(255,96,0,81);
-const SColor color_potionstable(255,145,0,123);
-const SColor color_blacksmith(255,122,119,0);
-const SColor color_smallsign(255,199,144,185);
-const SColor color_witchshack(255,103,8,123);
 
 void HandleCustomTile( CMap@ map, int offset, SColor pixel )
 {

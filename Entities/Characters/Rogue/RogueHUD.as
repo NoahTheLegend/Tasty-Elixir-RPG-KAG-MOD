@@ -1,6 +1,7 @@
 //knight HUD
 
 #include "ActorHUDStartPos.as";
+#include "CustomBlocks.as";
 
 const string iconsFilename = "Entities/Characters/Rogue/RogueIcons.png";
 const int slotsSize = 6;
@@ -57,7 +58,8 @@ void DrawStats(CSprite@ this)
 		GUI::DrawText("Crit chance: " + blob.get_f32("critchance") + "%", Vec2f(20, height + -155), SColor(255, 150, 210, 210));
 		GUI::DrawText("Mana regen: " + blob.get_u16("manaregtimer")/30 + " sec. Amount: "  + blob.get_u16("manareg"), Vec2f(20, height + -180), SColor(255, 90, 90, 255));
 		GUI::DrawText("HP regen: " + blob.get_u16("hpregtimer")/30 + " sec. Amount: 0.25 HP", Vec2f(20, height + -195), SColor(255, 255, 75, 85));
-	
+		if (blob.get_bool("regen")) GUI::DrawText(" + 0.25 HP", Vec2f(254, height + -195), SColor(255, 255, 75, 85));
+
 		GUI::DrawText("Last dealt damage: " + blob.get_f32("dealtdamage") + " HP", Vec2f(200, height + -35), SColor(255, 222, 222, 16));
 		GUI::DrawText("Thirst: " + blob.get_u8("thirst")+"%", Vec2f(200, height + -60), SColor(255, 11, 146, 202));
 		GUI::DrawText("Hunger: " + blob.get_u8("hunger")+"%", Vec2f(200, height + -75), SColor(255, 255, 140, 4));
@@ -73,6 +75,18 @@ void onRender(CSprite@ this)
 
 	CBlob@ blob = this.getBlob();
 	CPlayer@ player = blob.getPlayer();
+
+	CMap@ map = getMap();
+	Tile tile = map.getTile(blob.getPosition());
+
+	if (getGameTime() % 30 == 0
+	&& tile.type == CMap::tile_abyss_dirt_back
+	|| tile.type == CMap::tile_abyss_dirt_back_d0
+	|| tile.type == CMap::tile_abyss_dirt_back_d1
+	|| tile.type == CMap::tile_abyss_dirt_back_d2)
+	{
+		if (blob.isMyPlayer()) SetScreenFlash(100, 0, 0, 0, 5.0f);
+	}
 
 	ManageCursors(blob);
 

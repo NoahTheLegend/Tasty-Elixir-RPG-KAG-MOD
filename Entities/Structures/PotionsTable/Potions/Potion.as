@@ -1,3 +1,5 @@
+// should've move this mud into another file, but let it be
+
 void onInit(CBlob@ this)
 {
     this.set_string("buff1", "");
@@ -296,7 +298,7 @@ void setEffect(CBlob@ this)
         else if (a3 == k5 || a3 == k6) this.set_string("buff1", "velocity`f32`-1.90"); //agi
         else if (a4 == k5 || a4 == k6) this.set_bool("rip?", true); //ded
     }
-    //printf(this.get_string("buff1")+"_"+this.get_string("buff2")+"_"+this.get_string("buff3"));
+    printf(this.get_string("buff1")+"_"+this.get_string("buff2")+"_"+this.get_string("buff3"));
 }
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)

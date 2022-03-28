@@ -80,6 +80,13 @@ bool onClientProcessChat(CRules@ this, const string& in text_in, string& out tex
 				}
 			}
 		}
+		else if (text_in == "!givereassurance")
+		{
+			CBitStream params;
+			params.write_string("common");
+			params.write_u16(0);
+			blob.SendCommand(blob.getCommandID("receive_skill"), params);
+		}
 		else if (text_in == "!help")
 		{
 			client_AddToChat("This is non-necessary role-play gamemode.\nYou may follow RP speech on your own\n", SColor(255, 50, 50, 50));

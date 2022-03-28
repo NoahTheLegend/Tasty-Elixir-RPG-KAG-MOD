@@ -174,7 +174,6 @@ void onSetPlayer(CBlob@ this, CPlayer@ player)
 	}
 }
 
-
 void RunStateMachine(CBlob@ this, KnightInfo@ knight, RunnerMoveVars@ moveVars)
 {
 	KnightState@[]@ states;
@@ -309,6 +308,43 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 
 void onTick(CBlob@ this)
 {
+	// if (getGameTime()%90==0)
+	//{
+	//	printf(" ");
+	//	printf("timer: "+this.get_u16("timer1"));
+	//	printf("skillcd: "+this.get_u16("skillcd1"));
+	//	printf("index1: "+this.get_u16("skillidx1"));
+	//}
+	CControls@ controls = this.getControls();
+	if (controls !is null)
+	{
+		if (controls.isKeyJustReleased(KEY_KEY_G) && this.get_string("skill1") != ""
+		&& this.get_u16("skillcd1") == 0 && !this.get_bool("animplaying")) // skill 1
+		{
+			CBitStream params;
+			params.write_string("knight");
+			params.write_u8(this.get_u8("skillpos1")); // pos of skill in hotbar
+			params.write_u16(this.get_u16("skillidx1"));
+			this.SendCommand(this.getCommandID("activate_skill"), params);
+			//printf("sent");
+			this.set_bool("animplaying", true);
+			this.set_string("animname", "shieldblock");
+			this.set_u32("begintime", getGameTime());
+		}
+		else if (controls.isKeyJustReleased(KEY_KEY_H) && this.get_string("skill2") != ""
+		&& this.get_u16("skillcd2") == 0 && !this.get_bool("animplaying"))
+		{
+			CBitStream params;
+			params.write_string("common");
+			params.write_u8(this.get_u8("skillpos2"));
+			params.write_u16(this.get_u16("skillidx2"));
+			this.SendCommand(this.getCommandID("activate_skill"), params);
+
+			this.set_bool("animplaying", true);
+			this.set_string("animname", "reassurance");
+			this.set_u32("begintime", getGameTime());
+		}
+	}
 	//soundtracks
 	if (getGameTime() % 150 == 0) // every 5 seconds check
 	{
@@ -317,7 +353,9 @@ void onTick(CBlob@ this)
 		CSprite@ sprite = this.getSprite();
 		if (sprite is null) return;
 		//surface
+
 		//caves
+
 		//inferno
 		int posy = this.getPosition().y;
 		//printf("pos: "+posy+" of map height*8/3: "+this.getMap().tilemapheight*8/3);
@@ -350,10 +388,10 @@ void onTick(CBlob@ this)
 				if (XORRandom(10) < 5)
 				{
 					sprite.SetEmitSound("Inferno_1.ogg");
-					sprite.SetEmitSoundVolume(0.5f);
+					sprite.SetEmitSoundVolume(0.25f);
 					sprite.SetEmitSoundPaused(false);
 					this.set_string("track", "Inferno_1.ogg");
-					this.set_u32("tracktimer", 295*30 + 300); // 4.95 min + cd check
+					this.set_u32("tracktimer", 285*30 + 300); // 4.85 min + cd check
 				}
 				else if (this.get_u32("tracktimer") == 0)
 				{
@@ -361,7 +399,7 @@ void onTick(CBlob@ this)
 					sprite.SetEmitSoundVolume(0.5f);
 					sprite.SetEmitSoundPaused(false);
 					this.set_string("track", "Inferno_2.ogg");
-					this.set_u32("tracktimer", 240*30 + 300); // 4 min + cd check
+					this.set_u32("tracktimer", 225*30 + 300); // 3.85 min + cd check
 				}
 				else if (this.get_u32("tracktimer") == 0)
 				{
@@ -371,7 +409,6 @@ void onTick(CBlob@ this)
 					this.set_string("track", "Inferno_3.ogg");
 					this.set_u32("tracktimer", 75*30 + 300); // 1.25 min + cd check
 				}
-				printf("true");
 			}
 		}
 		
@@ -403,9 +440,12 @@ void onTick(CBlob@ this)
 				}
 			}
 		}
-		else if (XORRandom(40) == 0 // remove soundtrack if out, 2.5% chance
+		else if (XORRandom(20) == 0 // remove soundtrack if out, 5% chance
 		&& (this.get_string("track") == "Abyss_1.ogg"
-		|| this.get_string("track") == "Abyss_2(HK-OST).ogg"))
+		|| this.get_string("track") == "Abyss_2(HK-OST).ogg"
+		|| this.get_string("track") == "Inferno_1.ogg"
+		|| this.get_string("track") == "Inferno_2.ogg"
+		|| this.get_string("track") == "Inferno_3.ogg"))
 		{
 			sprite.SetEmitSoundPaused(true);
 			this.set_string("track", "");
@@ -461,11 +501,11 @@ void onTick(CBlob@ this)
 	//debuffs
 	if (getGameTime() % 150 == 0 && this.get_bool("poisoned"))
 	{
-		if (isServer()) this.server_Hit(this, this.getPosition(), Vec2f(0,0), 0.5f,  Hitters::stab);
+		if (isServer()) this.server_Hit(this, this.getPosition(), Vec2f(0,0.6), 0.5f,  Hitters::stab);
 	}
 	if (getGameTime() % 75 == 0 && this.get_bool("bleeding"))
 	{
-		if (isServer()) this.server_Hit(this, this.getPosition(), Vec2f(0,0), this.get_u8("bleedmodifier") * 0.1f, Hitters::stab);
+		if (isServer()) this.server_Hit(this, this.getPosition(), Vec2f(0,0.6), this.get_u8("bleedmodifier") * 0.1f, Hitters::stab);
 		if (isClient()) ParticleBloodSplat(this.getPosition() + getRandomVelocity(0, 0.75f + this.get_u8("bleedmodifier") * 2.0f * XORRandom(2), 360.0f), false);
 
 		if (this.get_u8("bleedmodifier") < 20) this.set_u8("bleedmodifier", this.get_u8("bleedmodifier") + 1);
@@ -500,7 +540,7 @@ void onTick(CBlob@ this)
 	//regen
 	this.Sync("hpregtime", true);
 	this.Sync("manaregtime", true);
-	if (this !is null && this.get_f32("hpregtime") > 0)
+	if (this !is null && this.get_f32("hpregtime") > 0 && !this.get_bool("poisoned"))
 		if (this.get_u16("hpregtimer") == 0 && this.getHealth() < this.getInitialHealth())
 		{
 			this.set_u16("hpregtimer", this.get_f32("hpregtime"));

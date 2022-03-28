@@ -248,7 +248,10 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 				Sound::Play("AnimeSword.ogg", this.getPosition(), 1.3f);
 
 			CBlob@ shooter = getBlobByNetworkID(this.get_u16("shooternetid"));
-			if (shooter !is null) shooter.set_f32("dealtdamage", dmg);
+			if (shooter !is null) 
+			{
+				shooter.set_f32("dealtdamage", dmg);
+			}
 			/*CBitStream@ params;
 			if (params is null) return;
 			params.write_f32(dmg);

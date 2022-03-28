@@ -229,8 +229,14 @@ void onTick(CBlob@ this)
 										else if (other.get_f32("blockchance") == 0 && other.get_f32("dodgechance") > 0)
 											chance = other.get_f32("dodgechance");
 										else chance = other.get_f32("blockchance") + other.get_f32("dodgechance");
-										
-										if (other.get_f32("damagereduction") >= 0) power = this.get_f32("bite damage") - other.get_f32("damagereduction");
+
+										if (XORRandom(100)+1.0f <= chance) 
+										{
+											//printf("ok");
+											this.set_u16("lastbite",0);
+											return;
+										}
+										else if (other.get_f32("damagereduction") >= 0) power = this.get_f32("bite damage") - other.get_f32("damagereduction");
 										else power = this.get_f32("bite damage");
 										/*if (chance > 0 && XORRandom(100) < chance) //sounds are not working in mp
 										{
@@ -249,7 +255,8 @@ void onTick(CBlob@ this)
 									else if (other.get_f32("damagereduction") >= 0) power = this.get_f32("bite damage") - other.get_f32("damagereduction");
 									else power = this.get_f32("bite damage");
 
-									if (power <= 0.1) power = 0.05;
+									//printf(""+power);
+									if (power < 0.05) power = 0.05;
 
 									this.server_Hit(other,other.getPosition(),vel,power,Hitters::bite, true);
 									this.set_u16("lastbite",0);
@@ -438,7 +445,7 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f poin
 	}
 }
 
-void onHitBlob( CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitBlob, u8 customData )
+void onHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitBlob, u8 customData)
 {
 /*	if (hitBlob !is null && customData == Hitters::flying)
 	{
@@ -446,5 +453,16 @@ void onHitBlob( CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob
 		force.y -= 7.0f;
 		hitBlob.AddForce( force);
 	}*/
+	if (hitBlob !is null && hitBlob.getName() == "knight")
+	{
+		for (int i = 0; i < 11; i++)
+		{
+			if (hitBlob.get_u16("skillidx"+i) == 0 && hitBlob.get_u16("timer"+i) != 0)
+			{
+				hitBlob.set_u16("timer"+i, 1); // set to last tick for cancelling buff
+				break;
+			}
+		}
+	}
 }
 

@@ -35,7 +35,7 @@ void Heal(CBlob@ this, CBlob@ food)
 		//hunger
 		this.set_u8("hunger", this.get_u8("hunger") - food.get_u8("saturationhunger"));
 		//thirst
-		this.set_u8("thirst", this.get_u8("thirst") + food.get_u8("antisaturationthirst"));
+		if (this.get_u8("thirst") <= 100) this.set_u8("thirst", this.get_u8("thirst") + food.get_u8("antisaturationthirst"));
 		this.set_u8("thirst", this.get_u8("thirst") - food.get_u8("saturationthirst"));
 
 		this.Sync("hunger", true);

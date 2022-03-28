@@ -16,8 +16,8 @@ void onInit(CSprite@ this)
 void onRender(CSprite@ this)
 {
     CBlob@ blob = this.getBlob();
-    //printf(blob.get_string("eff1"));
-    if (blob is null) return;
+    if (blob is null || !blob.isMyPlayer()) return;
+    
     u16 scrwidth = getDriver().getScreenWidth();
     u16 scrheight = getDriver().getScreenHeight();
 

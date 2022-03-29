@@ -321,7 +321,7 @@ void onTick(CBlob@ this)
 							{
 								TileType tile = hi.tile;
 								u16 tiletypecustom = map.getTile(hi.tileOffset).type;
-								if (tiletypecustom > 255 && tiletypecustom < 432 || tiletypecustom > 447) return;
+								if (tiletypecustom > 392 && tiletypecustom < 432 || tiletypecustom > 447) return;
 
 								if (map.getSectorAtPosition(hi.hitpos, "no build") !is null
 								|| map.isTileCastle(tile) || map.isTileWood(tile))

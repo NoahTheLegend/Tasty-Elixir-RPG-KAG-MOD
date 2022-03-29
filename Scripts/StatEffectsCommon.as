@@ -2,6 +2,7 @@ namespace Effects
 {
     shared enum effs
     {
+        PLACEHOLDER,
         POTIONBUFF,
         POISON,
         BLEED,

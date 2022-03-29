@@ -128,7 +128,7 @@ void onInit(CBlob@ this)
 	this.set_f32("gib health", -3.0f);	
 	float difficulty = getRules().get_f32("difficulty")/4.0;
 	if (difficulty<1.0) difficulty=1.0;
-	this.set_f32("bite damage", 1.0f);
+	this.set_f32("bite damage", 1.25f);
 	int bitefreq = 30-difficulty*4.0;
 	if (bitefreq<10) bitefreq=10;
 	this.set_u16("bite freq", bitefreq);
@@ -235,38 +235,66 @@ void onTick(CBlob@ this)
 						for (uint i = 0; i < hitInfos.length; i++)
 						{
 							HitInfo@ hi = hitInfos[i];
-							CBlob@ other = hi.blob;	  
+							CBlob@ other = hi.blob;
+							f32 power;
+
 							if (other !is null)
 							{
 								if (other.hasTag("flesh") && other.getTeamNum() != this.getTeamNum())
 								{
-									f32 power = this.get_f32("bite damage");
-									this.server_Hit(other,other.getPosition(),vel,power,Hitters::bite, false);
+									if (other.get_f32("blockchance") > 0 || other.get_f32("dodgechance") > 0)
+									{
+										float chance;
+
+										if (other.get_f32("blockchance") > 0 && other.get_f32("dodgechance") == 0)
+											chance = other.get_f32("blockchance");
+										else if (other.get_f32("blockchance") == 0 && other.get_f32("dodgechance") > 0)
+											chance = other.get_f32("dodgechance");
+										else chance = other.get_f32("blockchance") + other.get_f32("dodgechance");
+
+										if (XORRandom(100)+1.0f <= chance) 
+										{
+											//printf("ok");
+											this.set_u16("lastbite",0);
+											return;
+										}
+										else if (other.get_f32("damagereduction") >= 0) power = this.get_f32("bite damage") - other.get_f32("damagereduction");
+										else power = this.get_f32("bite damage");
+										/*if (chance > 0 && XORRandom(100) < chance) //sounds are not working in mp
+										{
+											CBitStream@ params;
+											if (other !is null && other.get_f32("dodgechance") == 0) params.write_string("isblock");
+											else if (other !is null && other.get_f32("blockchance") == 0 ) params.write_string("isdodge");
+											else
+											{
+												if (XORRandom(10) <= 5) params.write_string("isblock");
+												else params.write_string("isdodge");
+											}
+											other.SendCommand(other.getCommandID("hitsound"), params);
+										}*/
+										//power = this.get_f32("bite damage") - other.get_f32("damagereduction");
+									}
+									else if (other.get_f32("damagereduction") >= 0) power = this.get_f32("bite damage") - other.get_f32("damagereduction");
+									else power = this.get_f32("bite damage");
+
+									//printf(""+power);
+									if (power < 0.05) power = 0.05;
+
+									this.server_Hit(other,other.getPosition(),vel,power,Hitters::bite, true);
 									this.set_u16("lastbite",0);
-									break;
 								}
-								else if (!hit_block)
+								else
 								{
 									const bool large = other.hasTag("blocks sword") && other.isCollidable();
-									if (other.getName() == "wooden_platform" || other.getName() == "GoldBrick")
+									if (other.hasTag("large") || large || other.getTeamNum() == this.getTeamNum())
 									{
-										this.server_Hit(other,other.getPosition(),vel,0.2,Hitters::saw, false);
-										this.set_u16("lastbite",0);
-										hit_block=true;
+										break;
 									}
-									if (other.getTeamNum() != this.getTeamNum())
-									{
-										this.server_Hit(other,other.getPosition(),vel,0.2,Hitters::saw, false);
-										this.set_u16("lastbite",0);
-										hit_block=true;
-									}
-									
-									
 								}
 							}
 							else
 							{
-								//break;
+								break;
 							}
 						}
 					}
@@ -463,16 +491,26 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f poin
 	}
 }
 
-void onHitBlob( CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitBlob, u8 customData )
+void onHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitBlob, u8 customData)
 {
-/*	if (hitBlob !is null)
+/*	if (hitBlob !is null && customData == Hitters::flying)
 	{
 		Vec2f force = velocity * this.getMass() * 0.35f ;
-		force.y -= 1.0f;
+		force.y -= 7.0f;
 		hitBlob.AddForce( force);
 	}*/
+	if (hitBlob !is null && hitBlob.getName() == "knight")
+	{
+		for (int i = 0; i < 11; i++)
+		{
+			if (hitBlob.get_u16("skillidx"+i) == 0 && hitBlob.get_string("eff1") != "8_Reassurance" && hitBlob.get_u16("timer"+i) != 0)
+			{
+				hitBlob.set_u16("timer"+i, 1); // set to last tick for cancelling buff
+				break;
+			}
+		}
+	}
 }
-
 
 void dropHeart( CBlob@ this )
 {

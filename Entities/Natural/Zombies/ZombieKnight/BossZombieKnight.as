@@ -1,5 +1,4 @@
-﻿
-//script for a bison
+﻿//script for a bison
 
 #include "AnimalConsts.as";
 #include "MakeScroll.as";
@@ -12,19 +11,14 @@ const string chomp_tag = "chomping";
 void onInit(CSprite@ this)
 {
 	CBlob@ blob = this.getBlob();
-    this.ReloadSprites(blob.getTeamNum(),0); 
+    this.ReloadSprites(blob.getTeamNum(),0);
+	blob.Tag("boss");
 	this.ScaleBy(Vec2f(2.0f,2.0f));
-	blob.set_bool("firsttick",true);
 }
 
 void onTick(CSprite@ this)
 {
 	CBlob@ blob = this.getBlob();
-	if (blob.get_bool("firsttick")) 
-	{
-		Sound::Play( CFileMatcher("/ZombieKnightGrowl.ogg").getFirst() );
-		blob.set_bool("firsttick",false);
-	}
     if (this.isAnimation("revive") && !this.isAnimationEnded()) return;
 	if (this.isAnimation("bite") && !this.isAnimationEnded()) return;
     if (blob.getHealth() > 0.0)
@@ -40,6 +34,7 @@ void onTick(CSprite@ this)
 		{
 			if (!this.isAnimation("bite")) {
 			this.PlaySound( "/ZombieBite" );
+			if (XORRandom(10) == 0) this.PlaySound("/ZombieKnightGrowl");
 			this.SetAnimation("bite");
 			return;
 			}
@@ -53,9 +48,9 @@ void onTick(CSprite@ this)
 		}
 		else
 		{
-			if (XORRandom(20)==0)
+			if (XORRandom(100)==0)
 			{
-				this.PlaySound( "/ZombieKnightGrowl" );
+				this.PlaySound( "/ZombieGroan" );
 			}
 			if (!this.isAnimation("idle")) {
 			this.SetAnimation("idle");
@@ -129,11 +124,11 @@ void onInit(CBlob@ this)
 	this.set_f32("gib health", -3.0f);	
 	float difficulty = getRules().get_f32("difficulty")/4.0;
 	if (difficulty<1.0) difficulty=1.0;
-	this.set_f32("bite damage", 1.5f);
-	int bitefreq = 35-difficulty*5.0;
+	this.set_f32("bite damage", 2.75f);
+	int bitefreq = 45-difficulty*4.0;
 	if (bitefreq<5) bitefreq=5;
 	this.set_u16("bite freq", bitefreq);
-	
+
 	//brain
 	this.set_u8(personality_property, DEFAULT_PERSONALITY);
 	this.set_u8("random move freq",4);
@@ -169,10 +164,9 @@ bool canBePickedUp( CBlob@ this, CBlob@ byBlob )
 
 void onTick(CBlob@ this)
 {
-	
 	f32 x = this.getVelocity().x;
 	
-	if (getNet().isServer() && this.getHealth()<0.0 && (this.getTickSinceCreated() - this.get_u16("death ticks")) > 300)
+	if (this.getHealth()<0.0 && (this.getTickSinceCreated() - this.get_u16("death ticks")) > 300)
 	{
 		this.server_SetHealth(0.5);
 		this.getShape().setFriction( 0.3f );
@@ -207,7 +201,6 @@ void onTick(CBlob@ this)
 	*/
 	if (getNet().isServer() && this.hasTag(chomp_tag))
 	{
-		if (this.getTeamNum() != -1) this.server_setTeamNum(-1);
 		u16 lastbite = this.get_u16("lastbite");
 		u16 bitefreq = this.get_u16("bite freq");
 		if (bitefreq<0) bitefreq=15;
@@ -228,76 +221,73 @@ void onTick(CBlob@ this)
 					vel.Normalize();
 					HitInfo@[] hitInfos;
 					CMap @map = getMap();
-					if (map.getHitInfosFromArc( this.getPosition()- Vec2f(2,0).RotateBy(-vel.Angle()), -vel.Angle(), 90, this.getRadius() + 16.0f, this, @hitInfos ))
+					if (map.getHitInfosFromArc( this.getPosition()- Vec2f(2,0).RotateBy(-vel.Angle()), -vel.Angle(), 90, this.getRadius() + 6.0f, this, @hitInfos ))
 					{
 						//HitInfo objects are sorted, first come closest hits
 						bool hit_block = false;
 						for (uint i = 0; i < hitInfos.length; i++)
 						{
 							HitInfo@ hi = hitInfos[i];
-							CBlob@ other = hi.blob;	  
+							CBlob@ other = hi.blob;
+							f32 power;
+
 							if (other !is null)
 							{
 								if (other.hasTag("flesh") && other.getTeamNum() != this.getTeamNum())
 								{
-									f32 power = this.get_f32("bite damage");
-									this.server_Hit(other,other.getPosition(),vel,power,Hitters::bite, false);
+									if (other.get_f32("blockchance") > 0 || other.get_f32("dodgechance") > 0)
+									{
+										float chance;
+
+										if (other.get_f32("blockchance") > 0 && other.get_f32("dodgechance") == 0)
+											chance = other.get_f32("blockchance");
+										else if (other.get_f32("blockchance") == 0 && other.get_f32("dodgechance") > 0)
+											chance = other.get_f32("dodgechance");
+										else chance = other.get_f32("blockchance") + other.get_f32("dodgechance");
+
+										if (XORRandom(100)+1.0f <= chance) 
+										{
+											//printf("ok");
+											this.set_u16("lastbite",0);
+											return;
+										}
+										else if (other.get_f32("damagereduction") >= 0) power = this.get_f32("bite damage") - other.get_f32("damagereduction");
+										else power = this.get_f32("bite damage");
+										/*if (chance > 0 && XORRandom(100) < chance) //sounds are not working in mp
+										{
+											CBitStream@ params;
+											if (other !is null && other.get_f32("dodgechance") == 0) params.write_string("isblock");
+											else if (other !is null && other.get_f32("blockchance") == 0 ) params.write_string("isdodge");
+											else
+											{
+												if (XORRandom(10) <= 5) params.write_string("isblock");
+												else params.write_string("isdodge");
+											}
+											other.SendCommand(other.getCommandID("hitsound"), params);
+										}*/
+										//power = this.get_f32("bite damage") - other.get_f32("damagereduction");
+									}
+									else if (other.get_f32("damagereduction") >= 0) power = this.get_f32("bite damage") - other.get_f32("damagereduction");
+									else power = this.get_f32("bite damage");
+
+									//printf(""+power);
+									if (power < 0.25) power = 0.25;
+
+									this.server_Hit(other,other.getPosition(),vel,power,Hitters::bite, true);
 									this.set_u16("lastbite",0);
-									break;
 								}
-								else if (!hit_block)
+								else
 								{
 									const bool large = other.hasTag("blocks sword") && other.isCollidable();
-									
-									if (other.getName() == "wooden_platform")
+									if (other.hasTag("large") || large || other.getTeamNum() == this.getTeamNum())
 									{
-										this.server_Hit(other,other.getPosition(),vel,0.2,Hitters::saw, false);
-										this.set_u16("lastbite",0);
-										hit_block=true;
+										break;
 									}
-									//
-									else
-									{
-										f32 power = this.get_f32("bite damage");
-										if (!other.hasTag("flesh")) power=0.2;
-										
-										this.server_Hit(other,other.getPosition(),vel,power,Hitters::saw, false);
-										if (other.getTeamNum() == this.getTeamNum() && getNet().isServer())
-										{
-											if (this.getHealth()+power<this.getInitialHealth()) this.server_SetHealth(this.getHealth()+power);
-											else this.server_SetHealth(this.getInitialHealth());
-										}
-										this.set_u16("lastbite",0);
-										if (!other.hasTag("flesh")) hit_block=true;
-										if (other.hasTag("large")) break;
-									}
-									
-									
 								}
 							}
 							else
 							{
-								
-								if ( hi.tile != CMap::tile_empty ) {		
-									
-									if (!this.getMap().isTileGroundStuff( hi.tile ))
-									{
-										//if (XORRandom(2) == 0) 
-										{
-											this.getMap().server_DestroyTile(hi.hitpos, 0.4);
-											this.set_u16("lastbite",0);
-										}
-									}
-									else
-									{
-										//if (XORRandom(2) == 0) 
-										{
-											this.getMap().server_DestroyTile(hi.hitpos, 0.5);
-											this.set_u16("lastbite",0);
-										}
-									}
-								}
-								
+								break;
 							}
 						}
 					}
@@ -346,6 +336,17 @@ void onTick(CBlob@ this)
 
 	if (this.isOnGround() && (this.isKeyPressed(key_left) || this.isKeyPressed(key_right)) )
 	{
+		if (XORRandom(break_chance)==0)
+		{
+			this.Tag(chomp_tag);
+			Vec2f dir = Vec2f( XORRandom(16)-8, XORRandom(16)-8 )/8.0;
+			dir.Normalize();
+			Vec2f tp = this.getPosition() + (dir)*(this.getRadius() + 4.0f);
+			TileType tile = this.getMap().getTile( tp ).type;
+			if ( !this.getMap().isTileGroundStuff( tile ) ) {		
+			this.getMap().server_DestroyTile(tp, 0.2);
+			}
+		}
 		if ((this.getNetworkID() + getGameTime()) % 9 == 0)
 		{
 			f32 volume = Maths::Min( 0.1f + Maths::Abs(this.getVelocity().x)*0.1f, 1.0f );
@@ -365,7 +366,7 @@ void onTick(CBlob@ this)
 		if(this.get_u8(state_property) == MODE_TARGET )
 		{
 			CBlob@ b = getBlobByNetworkID(this.get_netid(target_property));
-			if(b !is null && XORRandom(2) == 0)
+			if(b !is null && this.getDistanceTo(b) < 106.0f)
 			{
 				this.Tag(chomp_tag);
 			}
@@ -451,8 +452,8 @@ f32 onHit( CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hit
 		{
 			
 			warn("SS: "+getRules().get_bool("scrolls_spawn"));
-			int r = XORRandom(4);
-			if (r<4 && getRules().get_bool("scrolls_spawn"))
+			int r = XORRandom(30);
+			if (r<3 && getRules().get_bool("scrolls_spawn"))
 			{
 				if (r == 0)
 					server_MakePredefinedScroll( hitterBlob.getPosition() + Vec2f(0,-3.0f), "carnage" );
@@ -462,10 +463,6 @@ f32 onHit( CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hit
 				else
 				if (r == 2)
 					server_MakePredefinedScroll( hitterBlob.getPosition() + Vec2f(0,-3.0f), "tame" );				
-				else
-				if (r == 3)
-					server_MakePredefinedScroll( hitterBlob.getPosition() + Vec2f(0,-3.0f), "necro" );				
-					
 			}
 			else
 			{
@@ -485,7 +482,7 @@ bool doesCollideWithBlob( CBlob@ this, CBlob@ blob )
 {
 	if (blob.hasTag("dead"))
 		return false;
-	if (!blob.hasTag("zombie") && blob.hasTag("flesh") && this.getTeamNum() == blob.getTeamNum()) return false;		
+	if (!blob.hasTag("zombie") && blob.hasTag("flesh") && this.getTeamNum() == blob.getTeamNum()) return false;
 	if (blob.hasTag("zombie") && blob.getHealth()<0.0) return false;
 	return true;
 }
@@ -504,12 +501,23 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f poin
 	}
 }
 
-void onHitBlob( CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitBlob, u8 customData )
+void onHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitBlob, u8 customData)
 {
-/*	if (hitBlob !is null)
+/*	if (hitBlob !is null && customData == Hitters::flying)
 	{
 		Vec2f force = velocity * this.getMass() * 0.35f ;
-		force.y -= 1.0f;
+		force.y -= 7.0f;
 		hitBlob.AddForce( force);
 	}*/
+	if (hitBlob !is null && hitBlob.getName() == "knight")
+	{
+		for (int i = 0; i < 11; i++)
+		{
+			if (hitBlob.get_u16("skillidx"+i) == 0 && hitBlob.get_string("eff1") != "8_Reassurance" && hitBlob.get_u16("timer"+i) != 0)
+			{
+				hitBlob.set_u16("timer"+i, 1); // set to last tick for cancelling buff
+				break;
+			}
+		}
+	}
 }

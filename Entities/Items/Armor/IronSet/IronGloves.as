@@ -25,8 +25,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
     else
     {
         CBitStream params;
-	    params.write_u16(caller.getNetworkID());
-	    caller.CreateGenericButton("$iron_gloves$", Vec2f(0, 0), this, this.getCommandID("unequip"), getTranslatedString("Unequip"), params);
+	    caller.CreateGenericButton("$iron_gloves$", Vec2f(0, 0), this, this.getCommandID("unequip"), getTranslatedString("Unequip gloves first!"), params);
     }
 }
 
@@ -49,27 +48,5 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
             caller.set_f32("damagebuff", caller.get_f32("damagebuff") + 0.15);
         }
     }
-    else if (cmd==this.getCommandID("unequip"))
-    {
-        u16 callerid = params.read_u16();
-        CBlob@ caller = getBlobByNetworkID(callerid);
-
-        if (caller !is null)
-        {
-            if (caller.get_bool("hasgloves"))
-            {
-                if (isServer())
-                {
-                    server_CreateBlob(caller.get_string("glovesname"), caller.getTeamNum(), caller.getPosition());
-                }
-            }
-
-            caller.set_bool("hasgloves", false);
-	        caller.set_string("glovesname", "");
-
-            caller.set_f32("damagereduction", caller.get_f32("damagereduction") - 0.1);
-            caller.set_f32("critchance", caller.get_f32("critchance") - 5);
-            caller.set_f32("damagebuff", caller.get_f32("damagebuff") - 0.15);
-        }
-    }
+    else if (cmd==this.getCommandID("unequip")) {}
 }

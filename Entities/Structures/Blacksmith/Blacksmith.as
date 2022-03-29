@@ -60,7 +60,7 @@ void onInit(CBlob@ this)
 
 	{
 		ShopItem@ s = addShopItem(this, "Iron bar (1)", "$ironbar$", "mat_ironbar-1", "Smelt iron ore into an iron bar", true);
-		AddRequirement(s.requirements, "blob", "mat_iron", "Iron", 50);
+		AddRequirement(s.requirements, "blob", "mat_iron", "Iron", 20);
 
 		s.spawnNothing = true;
 	}

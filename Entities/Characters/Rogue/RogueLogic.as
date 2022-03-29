@@ -116,8 +116,8 @@ void onInit(CBlob@ this)
 	this.set_f32("manaregtime", 15*30);
 	this.set_u16("manaregtimer", 10*30);
 	this.set_u16("manareg", 15);
-	this.set_u16("mana", 35);
-	this.set_u16("maxmana", 35);
+	this.set_u16("mana", 65);
+	this.set_u16("maxmana", 65);
 	this.set_f32("critchance", 5.0);
 	this.set_f32("damagebuff", 0);
 	this.set_f32("dealtdamage", 0);
@@ -138,6 +138,11 @@ void onInit(CBlob@ this)
 	this.set_u16("timer3", 0);
 	this.set_u16("timer4", 0);
 	this.set_u16("timer5", 0);
+	this.set_u16("timer6", 0);
+	this.set_u16("timer7", 0);
+	this.set_u16("timer8", 0);
+	this.set_u16("timer9", 0);
+	this.set_u16("timer10", 0);
 
 	this.addCommandID("timercheck");
 
@@ -146,6 +151,11 @@ void onInit(CBlob@ this)
 	this.set_string("buffs3", "");
 	this.set_string("buffs4", "");
 	this.set_string("buffs5", "");
+	this.set_string("buffs6", "");
+	this.set_string("buffs7", "");
+	this.set_string("buffs8", "");
+	this.set_string("buffs9", "");
+	this.set_string("buffs10", "");
 
 	this.addCommandID("receive_effect");
 }
@@ -456,110 +466,45 @@ void onTick(CBlob@ this)
 		if (this.get_u16("manaregtimer") < 0) this.set_u16("manaregtimer", 0);
 
 		//stat timers
-		if (this.get_u16("silenceskilltimer") > 0)
-		{
-			this.set_u16("silenceskilltimer", this.get_u16("silenceskilltimer") - 30);
-			if (this.get_u16("silenceskilltimer") <= 3 || this.get_u16("silenceskilltimer") > 25000)
-			{
-				this.set_u16("silenceskilltimer", 0);
-				this.set_f32("velocity", this.get_f32("velocity") - 0.75);
-			}
-		}
 		if (this.get_u16("timer1") > 0)
 		{
-			this.set_u16("timer1", this.get_u16("timer1") - 30);
-			if (this.get_u16("timer1") <= 3 || this.get_u16("timer1") > 25000) 
-			{
-				this.set_u16("timer1", 0);
-				CBitStream params;
-				params.write_string(this.get_string("buffs1"));
-				params.write_u8(1);
-				this.SendCommand(this.getCommandID("timercheck"), params);
-			}
+			TimerCheck(this, 1);
 		}
 		if (this.get_u16("timer2") > 0)
 		{
-			this.set_u16("timer2", this.get_u16("timer2") - 30);
-			if (this.get_u16("timer2") <= 3 || this.get_u16("timer2") > 25000)
-			{
-				this.set_u16("timer2", 0);
-				CBitStream params;
-				params.write_string(this.get_string("buffs2"));
-				params.write_u8(2);
-				this.SendCommand(this.getCommandID("timercheck"), params);
-			}
-			if (this.get_u16("timer1") <= 0)
-			{
-				this.set_u16("timer1", this.get_u16("timer2"));
-				this.set_string("buffs1", this.get_string("buffs2"));
-				this.set_string("eff1", this.get_string("eff2"));
-				this.set_u16("timer2", 0);
-				this.set_string("buffs2", "");
-				this.set_string("eff2", "");
-			}
+			TimerCheck(this, 2);
 		}
 		if (this.get_u16("timer3") > 0)
 		{
-			this.set_u16("timer3", this.get_u16("timer3") - 30);
-			if (this.get_u16("timer3") <= 3 || this.get_u16("timer3") > 25000)
-			{
-				this.set_u16("timer3", 0);
-				CBitStream params;
-				params.write_string(this.get_string("buffs3"));
-				params.write_u8(3);
-				this.SendCommand(this.getCommandID("timercheck"), params);
-			}
-			if (this.get_u16("timer2") <= 0)
-			{
-				this.set_u16("timer2", this.get_u16("timer3"));
-				this.set_string("buffs2", this.get_string("buffs3"));
-				this.set_string("eff2", this.get_string("eff3"));
-				this.set_u16("timer3", 0);
-				this.set_string("buffs3", "");
-				this.set_string("eff3", "");
-			}
+			TimerCheck(this, 3);
 		}
 		if (this.get_u16("timer4") > 0)
 		{
-			this.set_u16("timer4", this.get_u16("timer4") - 30);
-			if (this.get_u16("timer4") <= 3 || this.get_u16("timer4") > 25000)
-			{
-				this.set_u16("timer4", 0);
-				CBitStream params;
-				params.write_string(this.get_string("buffs4"));
-				params.write_u8(4);
-				this.SendCommand(this.getCommandID("timercheck"), params);
-			}
-			if (this.get_u16("timer3") <= 0)
-			{
-				this.set_u16("timer3", this.get_u16("timer4"));
-				this.set_string("buffs3", this.get_string("buffs4"));
-				this.set_string("eff3", this.get_string("eff4"));
-				this.set_u16("timer4", 0);
-				this.set_string("buffs4", "");
-				this.set_string("eff4", "");
-			}
+			TimerCheck(this, 4);
 		}
 		if (this.get_u16("timer5") > 0)
 		{
-			this.set_u16("timer5", this.get_u16("timer5") - 30);
-			if (this.get_u16("timer5") <= 3 || this.get_u16("timer5") > 25000)
-			{
-				this.set_u16("timer5", 0);
-				CBitStream params;
-				params.write_string(this.get_string("buffs5"));
-				params.write_u8(5);
-				this.SendCommand(this.getCommandID("timercheck"), params);
-			}
-			if (this.get_u16("timer4") <= 0)
-			{
-				this.set_u16("timer4", this.get_u16("timer5"));
-				this.set_string("buffs4", this.get_string("buffs5"));
-				this.set_string("eff4", this.get_string("eff5"));
-				this.set_u16("timer5", 0);
-				this.set_string("buffs5", "");
-				this.set_string("eff5", "");
-			}
+			TimerCheck(this, 5);
+		}
+		if (this.get_u16("timer6") > 0)
+		{
+			TimerCheck(this, 6);
+		}
+		if (this.get_u16("timer7") > 0)
+		{
+			TimerCheck(this, 7);
+		}
+		if (this.get_u16("timer8") > 0)
+		{
+			TimerCheck(this, 8);
+		}
+		if (this.get_u16("timer9") > 0)
+		{
+			TimerCheck(this, 9);
+		}
+		if (this.get_u16("timer10") > 0)
+		{
+			TimerCheck(this, 10);
 		}
 	}
 	//hunger & thirst
@@ -1040,6 +985,144 @@ void onTick(CBlob@ this)
 	}
 }
 
+void TimerCheck(CBlob@ this, u8 index)
+{
+	this.set_u16("timer"+index, this.get_u16("timer"+index) - 30);
+	if (this.get_u16("timer"+index) <= 3 || this.get_u16("timer"+index) > 25000) 
+	{
+		this.set_u16("timer"+index, 0);
+		CBitStream params;
+		params.write_string(this.get_string("buffs"+index));
+		params.write_u8(index);
+		this.SendCommand(this.getCommandID("timercheck"), params);
+	}
+	if (index > 1)
+	{
+		if (this.get_u16("timer"+(index-1)) <= 0)
+		{
+			this.set_u16("timer"+(index-1), this.get_u16("timer"+index));
+			this.set_string("buffs"+(index-1), this.get_string("buffs"+index));
+			this.set_string("eff"+(index-1), this.get_string("eff"+index));
+			this.set_u16("timer"+index, 0);
+			this.set_string("buffs"+index, "");
+			this.set_string("eff"+index, "");
+		}
+	}
+}
+
+void SetToFreeSlot(CBlob@ this, string name, string buff, u16 time)
+{
+		if (this.get_string("eff1") == "")
+	{
+		this.set_u16("timer1", time);
+		this.set_string("eff1", name);
+		this.Sync("eff1", true); // for onRender
+		this.set_string("buffs1", buff);
+		this.Sync("buffs1", true);
+	} 
+	else if (this.get_string("eff2") == "") 
+	{
+		this.set_u16("timer2", time);
+		this.set_string("eff2", name);
+		this.Sync("eff2", true);
+		this.set_string("buffs2", buff);
+		this.Sync("buffs2", true);
+	}
+	else if (this.get_string("eff3") == "")
+	{
+		this.set_u16("timer3", time);
+		this.set_string("eff3", name);
+		this.Sync("eff3", true);
+		this.set_string("buffs3", buff);
+		this.Sync("buffs3", true);
+	}
+	else if (this.get_string("eff4") == "")
+	{
+		this.set_u16("timer4", time);
+		this.set_string("eff4", name);
+		this.Sync("eff4", true);
+		this.set_string("buffs4", buff);
+		this.Sync("buffs4", true);
+	}
+	else if (this.get_string("eff5") == "")
+	{
+		this.set_u16("timer5", time);
+		this.set_string("eff5", name);
+		this.Sync("eff5", true);
+		this.set_string("buffs5", buff);
+		this.Sync("buffs5", true);
+	}
+	else if (this.get_string("eff6") == "")
+	{
+		this.set_u16("timer6", time);
+		this.set_string("eff6", name);
+		this.Sync("eff6", true); // for onRender
+		this.set_string("buffs6", buff);
+		this.Sync("buffs6", true);
+	} 
+	else if (this.get_string("eff7") == "") 
+	{
+		this.set_u16("timer7", time);
+		this.set_string("eff7", name);
+		this.Sync("eff7", true);
+		this.set_string("buffs7", buff);
+		this.Sync("buffs7", true);
+	}
+	else if (this.get_string("eff8") == "")
+	{
+		this.set_u16("timer8", time);
+		this.set_string("eff8", name);
+		this.Sync("eff8", true);
+		this.set_string("buffs8", buff);
+		this.Sync("buffs8", true);
+	}
+	else if (this.get_string("eff9") == "")
+	{
+		this.set_u16("timer9", time);
+		this.set_string("eff9", name);
+		this.Sync("eff9", true);
+		this.set_string("buffs9", buff);
+		this.Sync("buffs9", true);
+	}
+	else if (this.get_string("eff10") == "")
+	{
+		this.set_u16("timer10", time);
+		this.set_string("eff10", name);
+		this.Sync("eff10", true);
+		this.set_string("buffs10", buff);
+		this.Sync("buff10", true);
+	}
+}
+
+void UpdateStats(CBlob@ this, CBlob@ blob)
+{
+	if (blob.get_f32("velocity")>0) 		this.set_f32("velocity", this.get_f32("velocity") - (blob.get_f32("velocity"))*-1);
+    if (blob.get_f32("dodgechance")>0) 		this.set_f32("dodgechance", this.get_f32("dodgechance") - blob.get_f32("dodgechance"));
+	if (blob.get_f32("blockchance")>0) 		this.set_f32("blockchance", this.get_f32("blockchance") - blob.get_f32("blockchance"));
+    if (blob.get_f32("damagereduction")>0)	this.set_f32("damagereduction", this.get_f32("damagereduction") - blob.get_f32("damagereduction"));
+	if (blob.get_f32("hpregtime")>0) 		this.set_f32("hpregtime", this.get_f32("hpregtime") - (blob.get_f32("hpregtime"))*-1);
+	if (blob.get_f32("manaregtime")>0)		this.set_f32("manaregtime", this.get_f32("manaregtime") - (blob.get_f32("manaregtime"))*-1);
+	if (blob.get_u16("manareg")>0) 			this.set_u16("manareg", this.get_u16("manareg") - blob.get_u16("manareg"));
+	if (blob.get_u16("mana")>0) 			this.set_u16("mana", this.get_u16("mana") - blob.get_u16("mana"));
+	if (blob.get_u16("maxmana")>0) 			this.set_u16("maxmana", this.get_u16("maxmana") - blob.get_u16("maxmana"));
+	if (blob.get_f32("critchance")>0) 		this.set_f32("critchance", this.get_f32("critchance") - blob.get_f32("critchance"));
+	if (blob.get_f32("damagebuff")>0) 		this.set_f32("damagebuff", this.get_f32("damagebuff") - blob.get_f32("damagebuff"));
+	if (blob.get_f32("dealtdamage")>0) 		this.set_f32("dealtdamage", this.get_f32("dealtdamage") - blob.get_f32("dealtdamage"));
+
+	this.Sync("velocity", true);
+	this.Sync("dodgechance", true);
+	this.Sync("blockchance", true);
+	this.Sync("damagereduction", true);
+	this.Sync("hpregtime", true);
+	this.Sync("manaregtime", true);
+	this.Sync("manareg", true);
+	this.Sync("mana", true);
+	this.Sync("maxmana", true);
+	this.Sync("critchance", true);
+	this.Sync("damagebuff", true);
+	this.Sync("dealtdamage", true);
+}
+
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
 	if (cmd == this.getCommandID("timercheck"))
@@ -1110,28 +1193,53 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		{
 			case 1:
 			{
-				this.set_string("buffs5", "");
+				this.set_string("buffs1", "");
 				this.Sync("buffs1", true);
 			}
 			case 2:
 			{
-				this.set_string("buffs5", "");
+				this.set_string("buffs2", "");
 				this.Sync("buffs2", true);
 			}
 			case 3:
 			{
-				this.set_string("buffs5", "");
+				this.set_string("buffs3", "");
 				this.Sync("buffs3", true);
 			}
 			case 4:
 			{
-				this.set_string("buffs5", "");
+				this.set_string("buffs4", "");
 				this.Sync("buffs4", true);
 			}
 			case 5:
 			{
 				this.set_string("buffs5", "");
 				this.Sync("buffs5", true);
+			}
+			case 6:
+			{
+				this.set_string("buffs6", "");
+				this.Sync("buffs6", true);
+			}
+			case 7:
+			{
+				this.set_string("buffs7", "");
+				this.Sync("buffs7", true);
+			}
+			case 8:
+			{
+				this.set_string("buffs8", "");
+				this.Sync("buffs8", true);
+			}
+			case 9:
+			{
+				this.set_string("buffs9", "");
+				this.Sync("buffs9", true);
+			}
+			case 10:
+			{
+				this.set_string("buffs10", "");
+				this.Sync("buffs10", true);
 			}
 		}
 		this.Untag("potioned");
@@ -1143,136 +1251,19 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		{
 			this.set_bool("poisoned", true);
 			this.Sync("poisoned", true);
-			if (this.get_string("eff1") == "")
-			{
-				this.set_u16("timer1", XORRandom(900)+900);
-				this.set_string("eff1", "2_poison");
-				this.Sync("eff1", true); // for onRender
-				this.set_string("buffs1", "poisoned`bool`true");
-				this.Sync("buffs1", true);
-			} 
-			else if (this.get_string("eff2") == "") 
-			{
-				this.set_u16("timer2", XORRandom(900)+900);
-				this.set_string("eff2", "2_poison");
-				this.Sync("eff2", true);
-				this.set_string("buffs2", "poisoned`bool`true");
-				this.Sync("buffs2", true);
-			}
-			else if (this.get_string("eff3") == "")
-			{
-				this.set_u16("timer3", XORRandom(900)+900);
-				this.set_string("eff3", "2_poison");
-				this.Sync("eff3", true);
-				this.set_string("buffs3", "poisoned`bool`true");
-				this.Sync("buffs3", true);
-			}
-			else if (this.get_string("eff4") == "")
-			{
-				this.set_u16("timer4", XORRandom(900)+900);
-				this.set_string("eff4", "2_poison");
-				this.Sync("eff4", true);
-				this.set_string("buffs4", "poisoned`bool`true");
-				this.Sync("buffs4", true);
-			}
-			else if (this.get_string("eff5") == "")
-			{
-				this.set_u16("timer5", XORRandom(900)+900);
-				this.set_string("eff5", "2_poison");
-				this.Sync("eff5", true);
-				this.set_string("buffs5", "poisoned`bool`true");
-				this.Sync("buffs5", true);
-			}
+			SetToFreeSlot(this, "2_poison", "poisoned`bool`true", XORRandom(600)+900);
 		}
 		else if (eff == 3)
 		{
 			this.set_bool("bleeding", true);
 			this.Sync("bleeding", true);
-			if (this.get_string("eff1") == "")
-			{
-				this.set_u16("timer1", XORRandom(300)+300);
-				this.set_string("eff1", "3_bleed");
-				this.Sync("eff1", true); // for onRender
-				this.set_string("buffs1", "bleeding`bool`true");
-				this.Sync("buffs1", true);
-			} 
-			else if (this.get_string("eff2") == "") 
-			{
-				this.set_u16("timer2", XORRandom(300)+300);
-				this.set_string("eff2", "3_bleed");
-				this.Sync("eff2", true);
-				this.set_string("buffs2", "bleeding`bool`true");
-				this.Sync("buffs2", true);
-			}
-			else if (this.get_string("eff3") == "")
-			{
-				this.set_u16("timer3", XORRandom(300)+300);
-				this.set_string("eff3", "3_bleed");
-				this.Sync("eff3", true);
-				this.set_string("buffs3", "bleeding`bool`true");
-				this.Sync("buffs3", true);
-			}
-			else if (this.get_string("eff4") == "")
-			{
-				this.set_u16("timer4", XORRandom(300)+300);
-				this.set_string("eff4", "3_bleed");
-				this.Sync("eff4", true);
-				this.set_string("buffs4", "bleeding`bool`true");
-				this.Sync("buffs4", true);
-			}
-			else if (this.get_string("eff5") == "")
-			{
-				this.set_u16("timer5", XORRandom(300)+300);
-				this.set_string("eff5", "3_bleed");
-				this.Sync("eff5", true);
-				this.set_string("buffs5", "bleeding`bool`true");
-				this.Sync("buffs5", true);
-			}
+			SetToFreeSlot(this, "3_bleed", "bleeding`bool`true", XORRandom(300)+300);
 		}
 		else if (eff == 4)
 		{
 			this.set_bool("regen", true);
 			this.Sync("regen", true);
-			if (this.get_string("eff1") == "")
-			{
-				this.set_u16("timer1", XORRandom(1200)+1800);
-				this.set_string("eff1", "4_regen");
-				this.Sync("eff1", true); // for onRender
-				this.set_string("buffs1", "regen`bool`true");
-				this.Sync("buffs1", true);
-			} 
-			else if (this.get_string("eff2") == "") 
-			{
-				this.set_u16("timer2", XORRandom(1200)+1800);
-				this.set_string("eff2", "4_regen");
-				this.Sync("eff2", true);
-				this.set_string("buffs2", "regen`bool`true");
-				this.Sync("buffs2", true);
-			}
-			else if (this.get_string("eff3") == "")
-			{
-				this.set_u16("timer3", XORRandom(1200)+1800);
-				this.set_string("eff3", "3_regen");
-				this.Sync("eff3", true);
-				this.set_string("buffs3", "regen`bool`true");
-				this.Sync("buffs3", true);
-			}
-			else if (this.get_string("eff4") == "")
-			{
-				this.set_u16("timer4", XORRandom(1200)+1800);
-				this.set_string("eff4", "3_regen");
-				this.Sync("eff4", true);
-				this.set_string("buffs4", "regen`bool`true");
-				this.Sync("buffs4", true);
-			}
-			else if (this.get_string("eff5") == "")
-			{
-				this.set_u16("timer5", XORRandom(1200)+1800);
-				this.set_string("eff5", "3_regen");
-				this.Sync("eff5", true);
-				this.set_string("buffs5", "regen`bool`true");
-				this.Sync("buffs5", true);
-			}
+			SetToFreeSlot(this, "4_regen", "regen`bool`true", XORRandom(1200)+900);
 		}
 	}
 	else if (cmd == this.getCommandID("unequiphelmet"))
@@ -1286,18 +1277,8 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
                 	CBlob@ blob = server_CreateBlob(this.get_string("helmetname"), this.getTeamNum(), this.getPosition());
 					this.set_bool("hashelmet", false);
 	       			this.set_string("helmetname", "");
-					if (blob.get_f32("velocity")>0) 		this.set_f32("velocity", this.get_f32("velocity") - blob.get_f32("velocity"));
-    				if (blob.get_f32("dodgechance")>0) 		this.set_f32("dodgechance", this.get_f32("dodgechance") - blob.get_f32("dodgechance"));
-					if (blob.get_f32("blockchance")>0) 		this.set_f32("blockchance", this.get_f32("blockchance") - blob.get_f32("blockchance"));
-    				if (blob.get_f32("damagereduction")>0)	this.set_f32("damagereduction", this.get_f32("damagereduction") - blob.get_f32("damagereduction"));
-					if (blob.get_f32("hpregtime")>0) 		this.set_f32("hpregtime", this.get_f32("hpregtime") - blob.get_f32("hpregtime"));
-					if (blob.get_f32("manaregtime")>0)		this.set_f32("manaregtime", this.get_f32("manaregtime") - blob.get_f32("manaregtime"));
-					if (blob.get_u16("manareg")>0) 			this.set_u16("manareg", this.get_u16("manareg") - blob.get_u16("manareg"));
-					if (blob.get_u16("mana")>0) 			this.set_u16("mana", this.get_u16("mana") - blob.get_u16("mana"));
-					if (blob.get_u16("maxmana")>0) 			this.set_u16("maxmana", this.get_u16("maxmana") - blob.get_u16("maxmana"));
-					if (blob.get_f32("critchance")>0) 		this.set_f32("critchance", this.get_f32("critchance") - blob.get_f32("critchance"));
-					if (blob.get_f32("damagebuff")>0) 		this.set_f32("damagebuff", this.get_f32("damagebuff") - blob.get_f32("damagebuff"));
-					if (blob.get_f32("dealtdamage")>0) 		this.set_f32("dealtdamage", this.get_f32("dealtdamage") - blob.get_f32("dealtdamage"));
+					
+					UpdateStats(this, blob);
 				}
             }
 		}
@@ -1313,18 +1294,8 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
                 	CBlob@ blob = server_CreateBlob(this.get_string("armorname"), this.getTeamNum(), this.getPosition());
 					this.set_bool("hasarmor", false);
 	       			this.set_string("armorname", "");
-					if (blob.get_f32("velocity")>0) 		this.set_f32("velocity", this.get_f32("velocity") - blob.get_f32("velocity"));
-    				if (blob.get_f32("dodgechance")>0) 		this.set_f32("dodgechance", this.get_f32("dodgechance") - blob.get_f32("dodgechance"));
-					if (blob.get_f32("blockchance")>0) 		this.set_f32("blockchance", this.get_f32("blockchance") - blob.get_f32("blockchance"));
-    				if (blob.get_f32("damagereduction")>0)	this.set_f32("damagereduction", this.get_f32("damagereduction") - blob.get_f32("damagereduction"));
-					if (blob.get_f32("hpregtime")>0) 		this.set_f32("hpregtime", this.get_f32("hpregtime") - blob.get_f32("hpregtime"));
-					if (blob.get_f32("manaregtime")>0)		this.set_f32("manaregtime", this.get_f32("manaregtime") - blob.get_f32("manaregtime"));
-					if (blob.get_u16("manareg")>0) 			this.set_u16("manareg", this.get_u16("manareg") - blob.get_u16("manareg"));
-					if (blob.get_u16("mana")>0) 			this.set_u16("mana", this.get_u16("mana") - blob.get_u16("mana"));
-					if (blob.get_u16("maxmana")>0) 			this.set_u16("maxmana", this.get_u16("maxmana") - blob.get_u16("maxmana"));
-					if (blob.get_f32("critchance")>0) 		this.set_f32("critchance", this.get_f32("critchance") - blob.get_f32("critchance"));
-					if (blob.get_f32("damagebuff")>0) 		this.set_f32("damagebuff", this.get_f32("damagebuff") - blob.get_f32("damagebuff"));
-					if (blob.get_f32("dealtdamage")>0) 		this.set_f32("dealtdamage", this.get_f32("dealtdamage") - blob.get_f32("dealtdamage"));
+
+					UpdateStats(this, blob);
 				}
             }
 		}
@@ -1340,18 +1311,8 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
                 	CBlob@ blob = server_CreateBlob(this.get_string("glovesname"), this.getTeamNum(), this.getPosition());
 					this.set_bool("hasgloves", false);
 	       			this.set_string("glovesname", "");
-					if (blob.get_f32("velocity")>0) 		this.set_f32("velocity", this.get_f32("velocity") - blob.get_f32("velocity"));
-    				if (blob.get_f32("dodgechance")>0) 		this.set_f32("dodgechance", this.get_f32("dodgechance") - blob.get_f32("dodgechance"));
-					if (blob.get_f32("blockchance")>0) 		this.set_f32("blockchance", this.get_f32("blockchance") - blob.get_f32("blockchance"));
-    				if (blob.get_f32("damagereduction")>0)	this.set_f32("damagereduction", this.get_f32("damagereduction") - blob.get_f32("damagereduction"));
-					if (blob.get_f32("hpregtime")>0) 		this.set_f32("hpregtime", this.get_f32("hpregtime") - blob.get_f32("hpregtime"));
-					if (blob.get_f32("manaregtime")>0)		this.set_f32("manaregtime", this.get_f32("manaregtime") - blob.get_f32("manaregtime"));
-					if (blob.get_u16("manareg")>0) 			this.set_u16("manareg", this.get_u16("manareg") - blob.get_u16("manareg"));
-					if (blob.get_u16("mana")>0) 			this.set_u16("mana", this.get_u16("mana") - blob.get_u16("mana"));
-					if (blob.get_u16("maxmana")>0) 			this.set_u16("maxmana", this.get_u16("maxmana") - blob.get_u16("maxmana"));
-					if (blob.get_f32("critchance")>0) 		this.set_f32("critchance", this.get_f32("critchance") - blob.get_f32("critchance"));
-					if (blob.get_f32("damagebuff")>0) 		this.set_f32("damagebuff", this.get_f32("damagebuff") - blob.get_f32("damagebuff"));
-					if (blob.get_f32("dealtdamage")>0) 		this.set_f32("dealtdamage", this.get_f32("dealtdamage") - blob.get_f32("dealtdamage"));
+
+					UpdateStats(this, blob);
 				}
             }
 		}
@@ -1367,18 +1328,8 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
                 	CBlob@ blob = server_CreateBlob(this.get_string("bootsname"), this.getTeamNum(), this.getPosition());
 					this.set_bool("hasboots", false);
 	       			this.set_string("bootsname", "");
-					if (blob.get_f32("velocity")>0) 		this.set_f32("velocity", this.get_f32("velocity") - blob.get_f32("velocity"));
-    				if (blob.get_f32("dodgechance")>0) 		this.set_f32("dodgechance", this.get_f32("dodgechance") - blob.get_f32("dodgechance"));
-					if (blob.get_f32("blockchance")>0) 		this.set_f32("blockchance", this.get_f32("blockchance") - blob.get_f32("blockchance"));
-    				if (blob.get_f32("damagereduction")>0)	this.set_f32("damagereduction", this.get_f32("damagereduction") - blob.get_f32("damagereduction"));
-					if (blob.get_f32("hpregtime")>0) 		this.set_f32("hpregtime", this.get_f32("hpregtime") - blob.get_f32("hpregtime"));
-					if (blob.get_f32("manaregtime")>0)		this.set_f32("manaregtime", this.get_f32("manaregtime") - blob.get_f32("manaregtime"));
-					if (blob.get_u16("manareg")>0) 			this.set_u16("manareg", this.get_u16("manareg") - blob.get_u16("manareg"));
-					if (blob.get_u16("mana")>0) 			this.set_u16("mana", this.get_u16("mana") - blob.get_u16("mana"));
-					if (blob.get_u16("maxmana")>0) 			this.set_u16("maxmana", this.get_u16("maxmana") - blob.get_u16("maxmana"));
-					if (blob.get_f32("critchance")>0) 		this.set_f32("critchance", this.get_f32("critchance") - blob.get_f32("critchance"));
-					if (blob.get_f32("damagebuff")>0) 		this.set_f32("damagebuff", this.get_f32("damagebuff") - blob.get_f32("damagebuff"));
-					if (blob.get_f32("dealtdamage")>0) 		this.set_f32("dealtdamage", this.get_f32("dealtdamage") - blob.get_f32("dealtdamage"));
+
+					UpdateStats(this, blob);
 				}
 			}
 		}

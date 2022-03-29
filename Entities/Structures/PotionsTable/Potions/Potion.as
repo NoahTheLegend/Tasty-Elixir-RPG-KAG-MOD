@@ -298,7 +298,7 @@ void setEffect(CBlob@ this)
         else if (a3 == k5 || a3 == k6) this.set_string("buff1", "velocity`f32`-1.90"); //agi
         else if (a4 == k5 || a4 == k6) this.set_bool("rip?", true); //ded
     }
-    printf(this.get_string("buff1")+"_"+this.get_string("buff2")+"_"+this.get_string("buff3"));
+    //printf(this.get_string("buff1")+"_"+this.get_string("buff2")+"_"+this.get_string("buff3"));
 }
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
@@ -368,6 +368,36 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
                 blob.set_string("eff5", "1_potion_"+effdata);
                 blob.set_string("buffs5", buffs);
                 blob.set_u16("timer5", spl.length * XORRandom(300) + XORRandom(1800)+900);
+            }
+            else if (blob.get_string("eff6") == "")
+            {
+                blob.set_string("eff6", "1_potion_"+effdata);
+                blob.set_string("buffs6", buffs);
+                blob.set_u16("timer6", spl.length * XORRandom(300) + XORRandom(1800)+900);
+            }
+            else if (blob.get_string("eff7") == "")
+            {
+                blob.set_string("eff7", "1_potion_"+effdata);
+                blob.set_string("buffs7", buffs);
+                blob.set_u16("timer7", spl.length * XORRandom(300) + XORRandom(1800)+900);
+            }
+            else if (blob.get_string("eff8") == "")
+            {
+                blob.set_string("eff8", "1_potion_"+effdata);
+                blob.set_string("buffs8", buffs);
+                blob.set_u16("timer8", spl.length * XORRandom(300) + XORRandom(1800)+900);
+            }
+            else if (blob.get_string("eff9") == "")
+            {
+                blob.set_string("eff9", "1_potion_"+effdata);
+                blob.set_string("buffs9", buffs);
+                blob.set_u16("timer9", spl.length * XORRandom(300) + XORRandom(1800)+900);
+            }
+            else if (blob.get_string("eff10") == "")
+            {
+                blob.set_string("eff10", "1_potion_"+effdata);
+                blob.set_string("buffs10", buffs);
+                blob.set_u16("timer10", spl.length * XORRandom(300) + XORRandom(1800)+900);
             }
 
             if (buff1 != "")

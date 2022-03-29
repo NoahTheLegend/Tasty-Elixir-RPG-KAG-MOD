@@ -57,7 +57,27 @@ void onInit( CBrain@ this )
 
 void onTick( CBrain@ this )
 {
-	CBlob @blob = this.getBlob();
+	CBlob@ blob = this.getBlob();
+	if (blob is null) return;
+
+	if (getGameTime() % 60 == 0) 
+	{
+		CBlob@[] blobcheck;
+		getMap().getBlobsInRadius(blob.getPosition(), 512.0f, blobcheck);
+		CBlob@[] playerfilter;
+
+		for (int i = 0; i < blobcheck.length; i++)
+		{	
+			if (blobcheck[i] is null) continue;
+			if (blobcheck[i].hasTag("player")) playerfilter.push_back(blobcheck[i]);
+		}
+
+		if (playerfilter.length() == 0 || blobcheck.length > 200) blob.Tag("wait");
+		else if (blob.hasTag("wait")) blob.Untag("wait");
+		if (blob.hasTag("wait") && XORRandom(38) == 0 && isServer() && !blob.hasTag("boss")) blob.server_Die(); // ~3% chance every 2 seconds to remove blob
+	}
+
+	if (blob is null || blob.hasTag("wait")) return;
 	u8 delay = blob.get_u8(delay_property);
 	delay--;
 	

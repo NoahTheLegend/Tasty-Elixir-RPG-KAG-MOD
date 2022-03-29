@@ -2,7 +2,6 @@
 
 #include "Requirements.as";
 #include "ShopCommon.as";
-#include "CTFShopCommon.as";
 
 void onInit(CBlob@ this)
 {
@@ -26,34 +25,34 @@ void onInit(CBlob@ this)
 
 	{
 		ShopItem@ s = addShopItem(this, "Lantern", "$lantern$", "lantern", "A lantern for seeing through darkness.", false);
-		AddRequirement(s.requirements, "coin", "", "Coins", 250);
+		AddRequirement(s.requirements, "coin", "", "Coins", 175);
 
 		s.spawnNothing = true;
 	}
 	{
 		ShopItem@ s = addShopItem(this, "Lava lantern", "$lavalantern$", "lavalantern", "A lantern, that is resistable to oxidized and damp air.", false);
-		AddRequirement(s.requirements, "coin", "", "Coins", 1000);
+		AddRequirement(s.requirements, "coin", "", "Coins", 500);
 		AddRequirement(s.requirements, "blob", "mat_hellstone", "Hellstone", 50);
 
 		s.spawnNothing = true;
 	}
 	{
 		ShopItem@ s = addShopItem(this, "Drill", "$drill$", "drill", "A drill for mining stone and gold.", false);
-		AddRequirement(s.requirements, "coin", "", "Coins", 750);
+		AddRequirement(s.requirements, "coin", "", "Coins", 500);
 
 		s.spawnNothing = true;
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Iron Drill", "$irondrill$", "irondrill", "A drill for mining iron and less hard materials.\nCapable to drill longer, but cools slower.", false);
-		AddRequirement(s.requirements, "coin", "", "Coins", 1500);
-		AddRequirement(s.requirements, "blob", "mat_iron", "Iron", 50); //change to bars
+		ShopItem@ s = addShopItem(this, "Iron Drill", "$irondrill$", "irondrill", "A drill for mining *ore* and less hard materials.\nCapable to drill longer, but cools slower.", false);
+		AddRequirement(s.requirements, "coin", "", "Coins", 750);
+		AddRequirement(s.requirements, "blob", "mat_ironbar", "Iron Bar", 12);
 
 		s.spawnNothing = true;
 	}
 	{
 		ShopItem@ s = addShopItem(this, "Steel Drill", "$steeldrill$", "steeldrill", "A drill for mining *ore* and less hard materials.\nDrills faster.", false);
-		AddRequirement(s.requirements, "coin", "", "Coins", 1500);
-		AddRequirement(s.requirements, "blob", "mat_iron", "Iron", 50); //change to bars
+		AddRequirement(s.requirements, "coin", "", "Coins", 1000);
+		AddRequirement(s.requirements, "blob", "mat_steelbar", "Steel bar", 6);
 
 		s.spawnNothing = true;
 	}

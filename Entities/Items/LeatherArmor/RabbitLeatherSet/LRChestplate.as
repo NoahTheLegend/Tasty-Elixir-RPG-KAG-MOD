@@ -8,7 +8,7 @@ void onInit(CBlob@ this)
     this.set_f32("velocity", 0.1);
     this.set_f32("dodgechance", 10.0);
     this.set_f32("damagereduction", 0.10);
-    this.set_f32("hpregtime", -1*30);
+    this.set_f32("hpregtime", 1*30);
 }
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
@@ -26,8 +26,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
     else
     {
         CBitStream params;
-	    params.write_u16(caller.getNetworkID());
-	    caller.CreateGenericButton("$rl_chestplate$", Vec2f(0, 0), this, this.getCommandID("unequip"), getTranslatedString("Unequip"), params);
+	    caller.CreateGenericButton("$rl_chestplate$", Vec2f(0, 0), this, this.getCommandID("unequip"), getTranslatedString("Unequip chestplate first!"), params);
     }
 }
 
@@ -51,28 +50,5 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
             caller.set_f32("hpregtime", caller.get_f32("hpregtime") - 1*30);
         }
     }
-    else if (cmd==this.getCommandID("unequip"))
-    {
-        u16 callerid = params.read_u16();
-        CBlob@ caller = getBlobByNetworkID(callerid);
-
-        if (caller !is null)
-        {
-            if (caller.get_bool("hasarmor"))
-            {
-                if (isServer())
-                {
-                    server_CreateBlob(caller.get_string("armorname"), caller.getTeamNum(), caller.getPosition());
-                }
-            }
-
-            caller.set_bool("hasarmor", false);
-	        caller.set_string("armorname", "");
-
-	        caller.set_f32("velocity", caller.get_f32("velocity") - 0.1);
-            caller.set_f32("dodgechance", caller.get_f32("dodgechance") - 10.0);
-            caller.set_f32("damagereduction", caller.get_f32("damagereduction") - 0.10);
-            caller.set_f32("hpregtime", caller.get_f32("hpregtime") + 1*30);
-        }
-    }
+    else if (cmd==this.getCommandID("unequip")) {}
 }

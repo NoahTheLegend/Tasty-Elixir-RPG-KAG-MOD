@@ -74,7 +74,51 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
                 blob.Sync("buffs5", true);
                 blob.Sync("eff5", true);
             }
-            else return;
+            if (blob.get_string("eff6") == "3_bleed")
+            {
+                blob.set_u16("timer6", 0);
+                blob.set_string("buffs6", "");
+                blob.set_string("eff6", "");
+                blob.Sync("timer6", true);
+                blob.Sync("buffs6", true);
+                blob.Sync("eff6", true);
+            }
+            else if (blob.get_string("eff7") == "3_bleed")
+            {
+                blob.set_u16("timer7", 0);
+                blob.set_string("buffs7", "");
+                blob.set_string("eff7", "");
+                blob.Sync("timer7", true);
+                blob.Sync("buffs7", true);
+                blob.Sync("eff7", true);
+            }
+            else if (blob.get_string("eff8") == "3_bleed")
+            {
+                blob.set_u16("timer8", 0);
+                blob.set_string("buffs8", "");
+                blob.set_string("eff8", "");
+                blob.Sync("timer8", true);
+                blob.Sync("buffs8", true);
+                blob.Sync("eff8", true);                
+            }
+            else if (blob.get_string("eff9") == "3_bleed")
+            {
+                blob.set_u16("timer9", 0);
+                blob.set_string("buffs9", "");
+                blob.set_string("eff9", "");
+                blob.Sync("timer9", true);
+                blob.Sync("buffs9", true);
+                blob.Sync("eff9", true);
+            }
+            else if (blob.get_string("eff10") == "3_bleed")
+            {
+                blob.set_u16("timer10", 0);
+                blob.set_string("buffs10", "");
+                blob.set_string("eff10", "");
+                blob.Sync("timer10", true);
+                blob.Sync("buffs10", true);
+                blob.Sync("eff10", true);
+            }
 
             blob.set_bool("bleeding", false);
             blob.Sync("bleeding", true);

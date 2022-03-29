@@ -35,14 +35,18 @@ void ManageCursors(CBlob@ this)
 
 void DrawStats(CSprite@ this)
 {
-	Vec2f myPos =  this.getBlob().getInterpolatedScreenPos();
+	CBlob@ blob = this.getBlob();
+	
+	if (this is null || blob is null) return;
+	if (blob.getPlayer() is null) return;
+
+	Vec2f myPos =  blob.getInterpolatedScreenPos();
 	Vec2f cam_offset = getCamera().getInterpolationOffset();
 	Vec2f mouseWorld = getControls().getMouseWorldPos();
-	bool mouseOnBlob = (mouseWorld - this.getBlob().getPosition()).getLength() < this.getBlob().getRadius();
+	bool mouseOnBlob = (mouseWorld - blob.getPosition()).getLength() < blob.getRadius();
 	u32 height = getDriver().getScreenHeight();
-	CBlob@ blob = this.getBlob();
 
-	if (this !is null && blob.getPlayer().isMyPlayer() && isClient())
+	if (blob.getPlayer().isMyPlayer() && isClient())
 	{
 		GUI::SetFont("menu"); 
 		GUI::DrawText("Mana / stamina: " + blob.get_u16("mana")+"/"+ blob.get_u16("maxmana"), Vec2f(20, height + -35), SColor(255, 130, 130, 255)); // stats show layout
@@ -112,6 +116,8 @@ void onRender(CSprite@ this)
 	DrawCoinsOnHUD(blob, coins, tl, slotsSize - 2);
 
 	// draw class icon
+
+	if (player is null) return;
 
 	GUI::DrawIcon(iconsFilename, frame, Vec2f(16, 32), tl + Vec2f(8 + (slotsSize - 1) * 40, -16), 1.0f);
 }

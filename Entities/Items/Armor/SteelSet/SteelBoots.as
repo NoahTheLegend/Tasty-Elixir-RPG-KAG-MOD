@@ -4,28 +4,28 @@ void onInit(CBlob@ this)
     this.addCommandID("unequip");
 
     this.Tag("armor");
-    //move these vars to code bodies. My bad.
-    this.set_f32("velocity", 0.05);
-    this.set_f32("dodgechance", 2.0);
-    this.set_f32("damagereduction", 0.05);
+
+	this.set_f32("velocity", 0.15);
+    this.set_f32("blockchance", 3.0);
+    this.set_f32("damagereduction", 0.2);
 }
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
     if (this is null || caller is null) return;
     if (!this.isAttached()) return;
-    if (caller.getName() != "archer" && caller.getName() != "rogue") return;
+    if (caller.getName() != "knight") return;
 
     if (!caller.get_bool("hasboots"))
     {
         CBitStream params;
 	    params.write_u16(caller.getNetworkID());
-	    caller.CreateGenericButton("$rl_boots$", Vec2f(0, 0), this, this.getCommandID("equip"), getTranslatedString("Equip"), params);
+	    caller.CreateGenericButton("$steel_boots$", Vec2f(0, 0), this, this.getCommandID("equip"), getTranslatedString("Equip"), params);
     }
     else
     {
         CBitStream params;
-	    caller.CreateGenericButton("$rl_boots$", Vec2f(0, 0), this, this.getCommandID("unequip"), getTranslatedString("Unequip boots first!"), params);
+	    caller.CreateGenericButton("$steel_boots$", Vec2f(0, 0), this, this.getCommandID("unequip"), getTranslatedString("Unequip helmet first!"), params);
     }
 }
 
@@ -41,11 +41,11 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
             if (caller.getCarriedBlob() !is null) caller.getCarriedBlob().server_Die();
 
             caller.set_bool("hasboots", true);
-	        caller.set_string("bootsname", "rl_boots");
+	        caller.set_string("bootsname", "steel_boots");
 
-	        caller.set_f32("velocity", caller.get_f32("velocity") + 0.05);
-            caller.set_f32("dodgechance", caller.get_f32("dodgechance") + 2.0);
-            caller.set_f32("damagereduction", caller.get_f32("damagereduction") + 0.05);
+	        caller.set_f32("velocity", caller.get_f32("velocity") - 0.15);
+            caller.set_f32("blockchance", caller.get_f32("blockchance") + 3.0);
+            caller.set_f32("damagereduction", caller.get_f32("damagereduction") + 0.2);
         }
     }
     else if (cmd==this.getCommandID("unequip")) {}

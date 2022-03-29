@@ -35,14 +35,18 @@ void ManageCursors(CBlob@ this)
 
 void DrawStats(CSprite@ this)
 {
-	Vec2f myPos =  this.getBlob().getInterpolatedScreenPos();
+	CBlob@ blob = this.getBlob();
+	
+	if (this is null || blob is null) return;
+	if (blob.getPlayer() is null) return;
+
+	Vec2f myPos =  blob.getInterpolatedScreenPos();
 	Vec2f cam_offset = getCamera().getInterpolationOffset();
 	Vec2f mouseWorld = getControls().getMouseWorldPos();
-	bool mouseOnBlob = (mouseWorld - this.getBlob().getPosition()).getLength() < this.getBlob().getRadius();
+	bool mouseOnBlob = (mouseWorld - blob.getPosition()).getLength() < blob.getRadius();
 	u32 height = getDriver().getScreenHeight();
-	CBlob@ blob = this.getBlob();
 
-	if (this !is null && blob.getPlayer().isMyPlayer() && isClient())
+	if (blob.getPlayer().isMyPlayer() && isClient())
 	{
 		//if (mouseOnBlob) // debuff show layout
 		//	GUI::DrawText("test", myPos + cam_offset + Vec2f(-10, 50), myPos + cam_offset + Vec2f(-10, 50), color_white, false, false, false);
@@ -113,6 +117,8 @@ void onRender(CSprite@ this)
 	DrawCoinsOnHUD(blob, coins, tl, slotsSize - 2);
 
 	// draw class icon
+
+	if (player is null) return;
 
 	GUI::DrawIcon(iconsFilename, frame, Vec2f(16, 32), tl + Vec2f(8 + (slotsSize - 1) * 40, -16), 1.0f, player.getTeamNum());
 }

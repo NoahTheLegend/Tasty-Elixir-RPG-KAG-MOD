@@ -273,17 +273,6 @@ void RunStateMachine(CBlob@ this, KnightInfo@ knight, RunnerMoveVars@ moveVars)
 	}
 }
 
-void onDie(CBlob@ this)
-{
-	if (isServer())
-	{
-		server_CreateBlob(this.get_string("armorname"), this.getTeamNum(), this.getPosition());
-		server_CreateBlob(this.get_string("helmetname"), this.getTeamNum(), this.getPosition());
-		server_CreateBlob(this.get_string("bootsname"), this.getTeamNum(), this.getPosition());
-		server_CreateBlob(this.get_string("glovesname"), this.getTeamNum(), this.getPosition());
-	}
-}
-
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
     if (this is null) return;
@@ -319,7 +308,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 
 void onTick(CBlob@ this)
 {
-	//if (getGameTime()%60==0)
+	//if (getGameTime()%30 ==0) printf(""+this.get_f32("velocity"));
 	//{
 	//	printf(" ");
 	//	printf("timer: "+this.get_u16("timer1"));
@@ -1569,7 +1558,7 @@ void SwordCursorUpdate(CBlob@ this, KnightInfo@ knight)
 void TimerCheck(CBlob@ this, u8 index)
 {
 	this.set_u16("timer"+index, this.get_u16("timer"+index) - 30);
-	if (this.get_u16("timer"+index) <= 3 || this.get_u16("timer"+index) > 25000) 
+	if (this.get_u16("timer"+index) <= 1 || this.get_u16("timer"+index) > 25000) 
 	{
 		this.set_u16("timer"+index, 0);
 		CBitStream params;
@@ -1593,7 +1582,7 @@ void TimerCheck(CBlob@ this, u8 index)
 
 void SetToFreeSlot(CBlob@ this, string name, string buff, u16 time)
 {
-		if (this.get_string("eff1") == "")
+	if (this.get_string("eff1") == "")
 	{
 		this.set_u16("timer1", time);
 		this.set_string("eff1", name);
@@ -1637,7 +1626,7 @@ void SetToFreeSlot(CBlob@ this, string name, string buff, u16 time)
 	{
 		this.set_u16("timer6", time);
 		this.set_string("eff6", name);
-		this.Sync("eff6", true); // for onRender
+		this.Sync("eff6", true);
 		this.set_string("buffs6", buff);
 		this.Sync("buffs6", true);
 	} 
@@ -1677,7 +1666,7 @@ void SetToFreeSlot(CBlob@ this, string name, string buff, u16 time)
 
 void UpdateStats(CBlob@ this, CBlob@ blob)
 {
-	if (blob.get_f32("velocity")>0) 		this.set_f32("velocity", this.get_f32("velocity") - (blob.get_f32("velocity")*-1));
+											this.set_f32("velocity", this.get_f32("velocity") + blob.get_f32("velocity"));
     if (blob.get_f32("dodgechance")>0) 		this.set_f32("dodgechance", this.get_f32("dodgechance") - blob.get_f32("dodgechance"));
 	if (blob.get_f32("blockchance")>0) 		this.set_f32("blockchance", this.get_f32("blockchance") - blob.get_f32("blockchance"));
     if (blob.get_f32("damagereduction")>0)	this.set_f32("damagereduction", this.get_f32("damagereduction") - blob.get_f32("damagereduction"));
@@ -1828,23 +1817,25 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	else if (cmd == this.getCommandID("receive_effect"))
 	{
 		u16 eff = params.read_u16();
+		u32 time = params.read_u32();
+
 		if (eff == 2)
 		{
 			this.set_bool("poisoned", true);
 			this.Sync("poisoned", true);
-			SetToFreeSlot(this, "2_poison", "poisoned`bool`true", XORRandom(600)+900);
+			SetToFreeSlot(this, "2_poison", "poisoned`bool`true", time);
 		}
 		else if (eff == 3)
 		{
 			this.set_bool("bleeding", true);
 			this.Sync("bleeding", true);
-			SetToFreeSlot(this, "3_bleed", "bleeding`bool`true", XORRandom(300)+300);
+			SetToFreeSlot(this, "3_bleed", "bleeding`bool`true", time);
 		}
 		else if (eff == 4)
 		{
 			this.set_bool("regen", true);
 			this.Sync("regen", true);
-			SetToFreeSlot(this, "4_regen", "regen`bool`true", XORRandom(1200)+900);
+			SetToFreeSlot(this, "4_regen", "regen`bool`true", time);
 		}
 	}
 	else if (cmd == this.getCommandID("unequiphelmet"))

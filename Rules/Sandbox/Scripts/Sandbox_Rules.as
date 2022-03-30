@@ -102,6 +102,7 @@ bool onClientProcessChat(CRules@ this, const string& in text_in, string& out tex
 			{
 				CBitStream params;
 				params.write_u16(2);
+				params.write_u32(XORRandom(600)+600);
 				blob.SendCommand(blob.getCommandID("receive_effect"), params);
 				return false;
 			}

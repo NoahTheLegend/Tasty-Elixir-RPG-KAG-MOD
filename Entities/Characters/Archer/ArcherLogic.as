@@ -579,17 +579,6 @@ void ManageBow(CBlob@ this, ArcherInfo@ archer, RunnerMoveVars@ moveVars)
 
 }
 
-void onDie(CBlob@ this)
-{
-	if (isServer())
-	{
-		server_CreateBlob(this.get_string("armorname"), this.getTeamNum(), this.getPosition());
-		server_CreateBlob(this.get_string("helmetname"), this.getTeamNum(), this.getPosition());
-		server_CreateBlob(this.get_string("bootsname"), this.getTeamNum(), this.getPosition());
-		server_CreateBlob(this.get_string("glovesname"), this.getTeamNum(), this.getPosition());
-	}
-}
-
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
     if (this is null) return;
@@ -1299,7 +1288,7 @@ void SetToFreeSlot(CBlob@ this, string name, string buff, u16 time)
 
 void UpdateStats(CBlob@ this, CBlob@ blob)
 {
-	if (blob.get_f32("velocity")>0) 		this.set_f32("velocity", this.get_f32("velocity") - (blob.get_f32("velocity"))*-1);
+											this.set_f32("velocity", this.get_f32("velocity") + blob.get_f32("velocity"));
     if (blob.get_f32("dodgechance")>0) 		this.set_f32("dodgechance", this.get_f32("dodgechance") - blob.get_f32("dodgechance"));
 	if (blob.get_f32("blockchance")>0) 		this.set_f32("blockchance", this.get_f32("blockchance") - blob.get_f32("blockchance"));
     if (blob.get_f32("damagereduction")>0)	this.set_f32("damagereduction", this.get_f32("damagereduction") - blob.get_f32("damagereduction"));

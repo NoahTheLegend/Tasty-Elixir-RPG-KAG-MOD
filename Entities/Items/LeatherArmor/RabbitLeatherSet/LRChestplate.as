@@ -5,7 +5,7 @@ void onInit(CBlob@ this)
 
     this.Tag("armor");
     //move these vars to code bodies. My bad.
-    this.set_f32("velocity", 0.1);
+    this.set_f32("velocity", -0.1);
     this.set_f32("dodgechance", 10.0);
     this.set_f32("damagereduction", 0.10);
     this.set_f32("hpregtime", 1*30);

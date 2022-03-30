@@ -2,6 +2,7 @@
 //script for a bison
 
 #include "AnimalConsts.as";
+#include "StatEffectsCommon.as";
 
 const u8 DEFAULT_PERSONALITY = AGGRO_BIT;
 const s16 MAD_TIME = 600;
@@ -499,11 +500,22 @@ void onHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@
 		force.y -= 7.0f;
 		hitBlob.AddForce( force);
 	}*/
+
+	u32 poisontime = XORRandom(300)+150;
+
+	if (XORRandom(25) == 0 && !hitBlob.get_bool("poisoned"))
+	{
+		CBitStream params;
+		params.write_u16(2);
+		params.write_u32(poisontime);
+		hitBlob.SendCommand(hitBlob.getCommandID("receive_effect"), params);
+	}
 	if (hitBlob !is null && hitBlob.getName() == "knight")
 	{
 		for (int i = 0; i < 11; i++)
 		{
-			if (hitBlob.get_u16("skillidx"+i) == 0 && hitBlob.get_string("eff1") != "8_Reassurance" && hitBlob.get_u16("timer"+i) != 0)
+			if (hitBlob.get_u16("skillidx"+i) == 0 && hitBlob.get_string("eff1") != "8_Reassurance"
+			&& hitBlob.get_string("eff"+i) != "2_poison" && hitBlob.get_u16("timer"+i) != 0)
 			{
 				hitBlob.set_u16("timer"+i, 1); // set to last tick for cancelling buff
 				break;

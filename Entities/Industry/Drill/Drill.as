@@ -321,7 +321,12 @@ void onTick(CBlob@ this)
 							{
 								TileType tile = hi.tile;
 								u16 tiletypecustom = map.getTile(hi.tileOffset).type;
-								if (tiletypecustom > 392 && tiletypecustom < 432 || tiletypecustom > 447) return;
+								if (tiletypecustom > 392 && tiletypecustom < 432 || tiletypecustom > 447) 
+								{
+									sprite.PlaySound("metal_stone.ogg");
+									sparks(hi.hitpos, attackVel.Angle(), 1.0f);
+									return;
+								}
 
 								if (map.getSectorAtPosition(hi.hitpos, "no build") !is null
 								|| map.isTileCastle(tile) || map.isTileWood(tile))

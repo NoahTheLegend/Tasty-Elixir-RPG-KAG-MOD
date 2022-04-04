@@ -59,8 +59,8 @@ void DrawStats(CSprite@ this)
 		else
 			GUI::DrawText("Agility: " + 2.5, Vec2f(20, height + -90), SColor(255, 50, 225, 100));
 		GUI::DrawText("Damage reduction: " + blob.get_f32("damagereduction") + " hearts", Vec2f(20, height + -105), SColor(255, 50, 225, 100));
-		GUI::DrawText("Block chance: " + blob.get_f32("blockchance") + "%", Vec2f(20, height + -125), SColor(255, 150, 210, 210));
-		GUI::DrawText("Dodge chance: " + blob.get_f32("dodgechance") + "%", Vec2f(20, height + -140), SColor(255, 150, 210, 210));
+		GUI::DrawText("Attack speed: " + blob.get_f32("attackspeed"), Vec2f(20, height + -125), SColor(255, 150, 210, 210));
+		GUI::DrawText("Block chance: " + blob.get_f32("blockchance") + "%", Vec2f(20, height + -140), SColor(255, 150, 210, 210));
 		GUI::DrawText("Crit chance: " + blob.get_f32("critchance") + "%", Vec2f(20, height + -155), SColor(255, 150, 210, 210));
 		GUI::DrawText("Mana regen: " + blob.get_u16("manaregtimer")/30 + " sec. Amount: "  + blob.get_u16("manareg"), Vec2f(20, height + -180), SColor(255, 90, 90, 255));
 		GUI::DrawText("HP regen: " + blob.get_u16("hpregtimer")/30 + " sec. Amount: 0.25 HP", Vec2f(20, height + -195), SColor(255, 255, 75, 85));

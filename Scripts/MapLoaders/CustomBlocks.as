@@ -100,7 +100,31 @@ namespace CMap
 		tile_abyss_dirt_back_d5 = 503,
 		tile_abyss_dirt_back_d6 = 504,
 		tile_abyss_dirt_back_d7 = 505,
-		tile_abyss_dirt_back_d8 = 506
+		tile_abyss_dirt_back_d8 = 506,
+
+		tile_chromium = 512,
+		tile_chromium_d0 = 513,
+		tile_chromium_d1 = 514,
+		tile_chromium_d2 = 515,
+		tile_chromium_d3 = 516,
+
+		tile_paladium = 518,
+		tile_paladium_d0 = 519,
+		tile_paladium_d1 = 520,
+		tile_paladium_d2 = 521,
+		tile_paladium_d3 = 522,
+		
+		tile_platinum = 524,
+		tile_platinum_d0 = 525,
+		tile_platinum_d1 = 526,
+		tile_platinum_d2 = 527,
+		tile_platinum_d3 = 528,
+
+		tile_titanium = 530,
+		tile_titanium_d0 = 531,
+		tile_titanium_d1 = 532,
+		tile_titanium_d2 = 533,
+		tile_titanium_d3 = 534
 	};
 };
 

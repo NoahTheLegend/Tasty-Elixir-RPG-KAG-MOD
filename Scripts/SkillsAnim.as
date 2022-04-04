@@ -57,7 +57,7 @@ void onTick(CSprite@ this)
     CBlob@ blob = this.getBlob();
     if (blob !is null && blob.get_bool("animplaying"))
     {
-        if (blob.get_string("animname") == "shieldblock") // shieldblock, found out that transparent pixels cant be used in spritelayers
+        if (blob.get_string("animname") == "Shield block") // shieldblock, found out that transparent pixels cant be used in spritelayers
         {
             u32 begin = blob.get_u32("begintime");
             CSpriteLayer@ shieldblock = this.getSpriteLayer("shieldblock");
@@ -119,7 +119,7 @@ void onTick(CSprite@ this)
                 shbanim.SetFrameIndex(0);
             }
         }
-        else if (blob.get_string("animname") == "concentration")
+        else if (blob.get_string("animname") == "Concentration")
         {
             u32 begin = blob.get_u32("begintime");
             CSpriteLayer@ concentration = this.getSpriteLayer("concentration");
@@ -196,7 +196,7 @@ void onTick(CSprite@ this)
                 concanim.SetFrameIndex(0);
             }
         }
-        else if (blob.get_string("animname") == "reassurance")
+        else if (blob.get_string("animname") == "Reassurance")
         {
             u32 begin = blob.get_u32("begintime");
             CSpriteLayer@ reassurance = this.getSpriteLayer("reassurance");

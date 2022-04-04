@@ -44,12 +44,16 @@ void onInit(CBlob@ this)
 
 	AddIconToken("$filled_bucket$", "bucket.png", Vec2f(16, 16), 1);
 	
-	AddIconToken("$ironbar$", "Bars.png", Vec2f(16, 16), 12);
-	AddIconToken("$steelbar$", "Bars.png", Vec2f(16, 16), 13);
-	AddIconToken("$goldbar$", "Bars.png", Vec2f(16, 16), 14);
+	AddIconToken("$ironbar$", "Bars.png", Vec2f(16, 16), 16);
+	AddIconToken("$steelbar$", "Bars.png", Vec2f(16, 16), 17);
+	AddIconToken("$goldbar$", "Bars.png", Vec2f(16, 16), 18);
+	AddIconToken("$chromiumbar$", "Bars.png", Vec2f(16, 16), 19);
+	AddIconToken("$paladiumbar$", "Bars.png", Vec2f(16, 16), 20);
+	AddIconToken("$platinumbar$", "Bars.png", Vec2f(16, 16), 21);
+	AddIconToken("$titaniumbar$", "Bars.png", Vec2f(16, 16), 22);
 
 	this.set_Vec2f("shop offset", Vec2f(0,0));
-	this.set_Vec2f("shop menu size", Vec2f(3, 1));
+	this.set_Vec2f("shop menu size", Vec2f(4, 2));
 	this.set_string("shop description", "Blacksmith");
 	this.set_u8("shop icon", 15);
 
@@ -65,7 +69,7 @@ void onInit(CBlob@ this)
 		s.spawnNothing = true;
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Steel bar (1)", "$steelbar$", "mat_steelbar-1", "Smelt iron bars into a steel bar", true);
+		ShopItem@ s = addShopItem(this, "Steel bar (1)", "$steelbar$", "mat_steelbar-1", "Smelt iron bars into a forceful steel bar", true);
 		AddRequirement(s.requirements, "blob", "mat_ironbar", "Iron bar", 2);
 
 		s.spawnNothing = true;
@@ -73,6 +77,30 @@ void onInit(CBlob@ this)
 	{
 		ShopItem@ s = addShopItem(this, "Gold bar (1)", "$goldbar$", "mat_goldbar-1", "Smelt gold ore into a precious gold bar", true);
 		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 150);
+
+		s.spawnNothing = true;
+	}
+	{
+		ShopItem@ s = addShopItem(this, "Chromium bar (1)", "$chromiumbar$", "mat_chromiumbar-1", "Smelt chromium ore into a shiny bar of chromium", true);
+		AddRequirement(s.requirements, "blob", "mat_chromium", "Chromium", 20);
+
+		s.spawnNothing = true;
+	}
+	{
+		ShopItem@ s = addShopItem(this, "Palladium bar (1)", "$paladiumbar$", "mat_paladiumbar-1", "Smelt palladium ore into a warm palladium bar", true);
+		AddRequirement(s.requirements, "blob", "mat_paladium", "Paladium", 25);
+
+		s.spawnNothing = true;
+	}
+	{
+		ShopItem@ s = addShopItem(this, "Platinum bar (1)", "$platinumbar$", "mat_platinumbar-1", "Smelt platinum ore into a valuable platinum bar", true);
+		AddRequirement(s.requirements, "blob", "mat_platinum", "Platinum", 50);
+
+		s.spawnNothing = true;
+	}
+	{
+		ShopItem@ s = addShopItem(this, "Titanium bar (1)", "$titaniumbar$", "mat_titaniumbar-1", "Smelt titanium ore into a strong titanium bar", true);
+		AddRequirement(s.requirements, "blob", "mat_titanium", "Titanium", 30);
 
 		s.spawnNothing = true;
 	}

@@ -80,8 +80,12 @@ namespace map_colors
 		tile_inferno_castle      = 0xFFFF503E, // ARGB(255, 255,  80,  62);
 		tile_inferno_castle_back = 0xFFA72D25, // ARGB(255, 167,  45,  35);
 		tile_lava                = 0xFFE8641B, // ARGB(255, 232, 100,  27);
-		tile_abyss_dirt          = 0xFF002352, // ARGB(255,,,);
-		tile_abyss_dirt_back     = 0xFF002332, // ARGB(255,,,);
+		tile_abyss_dirt          = 0xFF002352,
+		tile_abyss_dirt_back     = 0xFF002332,
+		tile_chromium            = 0xFF9C9C9C,
+		tile_paladium            = 0xFFDE4623,
+		tile_platinum            = 0xFFCBCACC,
+		tile_titanium            = 0xFF192524,
 
 
 		// OTHER

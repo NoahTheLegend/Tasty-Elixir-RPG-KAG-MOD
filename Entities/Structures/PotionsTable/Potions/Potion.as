@@ -40,16 +40,15 @@ void onInit(CBlob@ this)
 // mana regen time
 // hp regen time
 //
-// NOT DONE BUFFS YET, REQUIRES BUFFDEBUFF BAR (for some)
+// NOT DONE BUFFS YET
 //
 // attack speed
-// armor (damagereduction) penetration
+// armor penetration (delayed until mob levelling)
 // vampirism
-// glownesss
-// gravity reducing
+// glowness
+// gravity resist
 // stun/bash chance
-// magic damage reduction
-// inc crit chance / damage reduction
+// magic damage reduction (delayed until wizard update)
 // 
 void setEffect(CBlob@ this)
 {
@@ -298,7 +297,7 @@ void setEffect(CBlob@ this)
         else if (a3 == k5 || a3 == k6) this.set_string("buff1", "velocity`f32`-1.90"); //agi
         else if (a4 == k5 || a4 == k6) this.set_bool("rip?", true); //ded
     }
-    //printf(this.get_string("buff1")+"_"+this.get_string("buff2")+"_"+this.get_string("buff3"));
+    printf(this.get_string("buff1")+"_"+this.get_string("buff2")+"_"+this.get_string("buff3"));
 }
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
@@ -418,9 +417,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
                 {
                     f32 stat = blob.get_f32(splb1[0]);
                     blob.set_f32(splb1[0], blob.get_f32(splb1[0]) + parseFloat(splb1[2]));
-                    //if (blob.get_f32(splb1[0]) + parseFloat(splb1[2]) > 200 || blob.get_f32(splb1[0]) + parseFloat(splb1[2]) < 0)
-                    //    blob.set_f32(splb1[0], stat);
-                    //printf(blob.get_f32(splb1[0])+"");
+                    if (splb1[0] == "attackspeed") blob.Tag("updateattackspeed");
                 }
                 blob.Sync(splb1[0], true);
             }
@@ -434,17 +431,12 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
                 {
                     u16 stat = blob.get_f32(splb2[0]);
                     blob.set_u16(splb2[0], blob.get_u16(splb2[0]) + parseFloat(splb2[2]));
-                    //if (blob.get_u16(splb2[0]) + parseFloat(splb2[2]) > 200 || blob.get_u16(splb2[0]) + parseFloat(splb2[2]) < 0)
-                    //    blob.set_u16(splb2[0], stat);
-                    //printf(blob.get_u16(splb2[0])+"");
                 }
                 else if (splb2[1] == "f32")
                 {
                     f32 stat = blob.get_f32(splb2[0]);
                     blob.set_f32(splb2[0], blob.get_f32(splb2[0]) + parseFloat(splb2[2]));
-                    //if (blob.get_f32(splb2[0]) > 500 || blob.get_f32(splb2[0]) < 0)
-                    //    blob.set_f32(splb2[0], stat);
-                    //printf(blob.get_f32(splb2[0])+"");
+                    if (splb2[0] == "attackspeed") blob.Tag("updateattackspeed");
                 }
                 blob.Sync(splb2[0], true);
             }
@@ -458,17 +450,12 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
                 {
                     u16 stat = blob.get_f32(splb3[0]);
                     blob.set_u16(splb3[0], blob.get_u16(splb3[0]) + parseFloat(splb3[2]));
-                    //if (blob.get_u16(splb3[0]) + parseFloat(splb3[2]) > 500 || blob.get_u16(splb3[0]) + parseFloat(splb3[2]) < 0)
-                    //    blob.set_u16(splb3[0], stat);
-                    //printf(blob.get_u16(splb3[0])+"");
                 }
                 else if (splb3[1] == "f32")
                 {
                     f32 stat = blob.get_f32(splb3[0]);
                     blob.set_f32(splb3[0], blob.get_f32(splb3[0]) + parseFloat(splb3[2]));
-                    //if (blob.get_f32(splb3[0]) + parseFloat(splb3[2]) > 500 || blob.get_f32(splb3[0]) + parseFloat(splb3[2]) < 0)
-                    //    blob.set_f32(splb3[0], stat);
-                    //printf(blob.get_f32(splb3[0])+"");
+                    if (splb3[0] == "attackspeed") blob.Tag("updateattackspeed");
                 }
                 blob.Sync(splb3[0], true);
 

@@ -120,9 +120,12 @@ void onInit(CBlob@ this)
 
 	this.set_bool("hashelmet", false);
 	this.set_string("helmetname", "");
+	//skills stuff
+	this.set_u8("stimer", 0);
 	//stats
 	this.set_f32("velocity", 2.5);
-    this.set_f32("blockchance", 0);
+    this.set_f32("blockchance", 0); // %
+	this.set_f32("critchance", 0); // %
     this.set_f32("damagereduction", 0.05);
 	this.set_f32("hpregtime", 15*30);
 	this.set_u16("hpregtimer", 15*30);
@@ -132,7 +135,16 @@ void onInit(CBlob@ this)
 	this.set_u16("mana", 115);
 	this.set_u16("maxmana", 115);
 	this.set_f32("damagebuff", 0);
+
+	this.set_f32("attackspeed", 0);
+	this.set_f32("armorpenetration", 0); // %
+	this.set_f32("vampirism", 0);
+	this.set_bool("glowness", false);
+	this.set_bool("glowness2", false);
 	this.set_f32("dealtdamage", 0);
+	this.set_f32("gravityresist", 0);
+	this.set_f32("bashchance", 0); // %
+	
 	//gathered set vars
 	this.set_bool("hasironset", false);
 	this.set_bool("hassteelset", false);
@@ -306,42 +318,58 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	}
 }
 
+void DoAttackSpeedChange(f32 speed, bool increase)
+{
+	if (increase)
+	{
+		KnightVars::slash_charge -= speed * 10;
+		KnightVars::slash_charge_level2 -= speed * 10;
+		KnightVars::resheath_cut_time -= speed;
+	}
+	else 
+	{
+		KnightVars::slash_charge += speed * 10;
+		KnightVars::slash_charge_level2 += speed * 10;
+		KnightVars::resheath_cut_time += speed;
+	}
+}
+
 void onTick(CBlob@ this)
 {
-	//if (getGameTime()%30 ==0) printf(""+this.get_f32("velocity"));
-	//{
-	//	printf(" ");
-	//	printf("timer: "+this.get_u16("timer1"));
-	//	printf("skillcd: "+this.get_u16("skillcd1"));
-	//	printf("index1: "+this.get_u16("skillidx1"));
-	//}
+	if (getGameTime()%90==0)
+	{
+		printf(" ");
+		printf("timer: "+this.get_u16("timer1"));
+		printf("skillcd: "+this.get_u16("skillcd1"));
+		printf(this.get_string("skill1"));
+	}
 	CControls@ controls = this.getControls();
-	if (controls !is null)
+	if (controls !is null && this.getTickSinceCreated() >= 5)
 	{
 		if (controls.isKeyJustReleased(KEY_KEY_G) && this.get_string("skill1") != ""
 		&& this.get_u16("skillcd1") == 0 && !this.get_bool("animplaying")) // skill 1
 		{
 			CBitStream params;
-			params.write_string("knight");
+			params.write_string(this.get_string("skilltype1"));
 			params.write_u8(this.get_u8("skillpos1")); // pos of skill in hotbar
 			params.write_u16(this.get_u16("skillidx1"));
 			this.SendCommand(this.getCommandID("activate_skill"), params);
 			//printf("sent");
 			this.set_bool("animplaying", true);
-			this.set_string("animname", "shieldblock");
+			this.set_string("animname", this.get_string("skill1"));
 			this.set_u32("begintime", getGameTime());
 		}
 		else if (controls.isKeyJustReleased(KEY_KEY_H) && this.get_string("skill2") != ""
 		&& this.get_u16("skillcd2") == 0 && !this.get_bool("animplaying"))
 		{
 			CBitStream params;
-			params.write_string("common");
+			params.write_string(this.get_string("skilltype2"));
 			params.write_u8(this.get_u8("skillpos2"));
 			params.write_u16(this.get_u16("skillidx2"));
 			this.SendCommand(this.getCommandID("activate_skill"), params);
 
 			this.set_bool("animplaying", true);
-			this.set_string("animname", "reassurance");
+			this.set_string("animname", this.get_string("skill2"));
 			this.set_u32("begintime", getGameTime());
 		}
 	}
@@ -468,13 +496,22 @@ void onTick(CBlob@ this)
 		//if (this.get_u16("tracktimercd") > 0) printf(""+this.get_u16("tracktimercd"));
 	}
 	//check if smth broke
-	if (getGameTime() % 3 == 0)
+	if (getGameTime() % 5 == 0)
 	{
+		string lengthie = ""+this.get_f32("attackspeed");
 		if (this.get_u8("hunger") > 150) this.set_u8("hunger", 0);
 		if (this.get_u8("thirst") > 150) this.set_u8("thirst", 0);
+		if (this.get_f32("attackspeed") < 0
+		|| this.get_f32("attackspeed") > 3
+		|| lengthie.length >= 8) this.set_f32("attackspeed", 0);
 	}
 	this.Sync("damagebuff", true);
 	this.Sync("dealtdamage", true);
+	if (this.hasTag("updateattackspeed"))
+	{
+		DoAttackSpeedChange(this.get_f32("attackspeed"), true);
+		this.Untag("updateattackspeed");
+	}
 	//set buffs
 	if (this.get_string("armorname") == "iron_chestplate"
 	&& this.get_string("helmetname") == "iron_helmet"
@@ -560,7 +597,20 @@ void onTick(CBlob@ this)
 			if (this.isMyPlayer()) SetScreenFlash(125, 255, 0, 0, 0.75f);
 		}
 	}
-
+	//glowness & fishbreathing
+	if (this.get_bool("glowness"))
+	{
+		this.SetLight(true);
+		this.SetLightColor(SColor(255, 200, 200, 0));
+		this.SetLightRadius(50.0f);
+	}
+	else if (this.get_bool("glowness2"))
+	{
+		this.SetLight(true);
+		this.SetLightColor(SColor(255, 200, 200, 0));
+		this.SetLightRadius(100.0f);
+	}
+	else this.SetLight(false);
 	//regen
 	this.Sync("hpregtime", true);
 	this.Sync("manaregtime", true);
@@ -751,7 +801,9 @@ void onTick(CBlob@ this)
 	{
 		if (this.getCarriedBlob().getName() == "drill"
 		|| this.getCarriedBlob().getName() == "irondrill"
-		|| this.getCarriedBlob().getName() == "steeldrill")
+		|| this.getCarriedBlob().getName() == "steeldrill"
+		|| this.getCarriedBlob().getName() == "palladiumdrill"
+		|| this.getCarriedBlob().getName() == "platinumdrill")
 		{
 			knight.state = KnightStates::normal; //cancel any attacks or shielding
 			knight.swordTimer = 0;
@@ -1709,6 +1761,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		if (spl.length > 0) splb1 = spl[0].split("`");
 		if (spl.length > 1) splb2 = spl[1].split("`");
 		if (spl.length > 2) splb3 = spl[2].split("`");
+
 		//reminder: name`type`val_
 		if (splb1.length >= 3)
 		{
@@ -1722,6 +1775,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			}
 			else
 			{
+				if (splb1[0] == "attackspeed") DoAttackSpeedChange(this.get_f32("attackspeed"), false);
 				this.set_f32(splb1[0], this.get_f32(splb1[0]) - parseFloat(splb1[2]));
 			}
 			this.Sync(splb1[0], true);
@@ -1738,6 +1792,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			}
 			else
 			{
+				if (splb2[0] == "attackspeed") DoAttackSpeedChange(this.get_f32("attackspeed"), false);
 				this.set_f32(splb2[0], this.get_f32(splb2[0]) - parseFloat(splb2[2]));
 			}
 			this.Sync(splb2[0], true);
@@ -1754,6 +1809,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			}
 			else
 			{
+				if (splb3[0] == "attackspeed") DoAttackSpeedChange(this.get_f32("attackspeed"), false);
 				this.set_f32(splb3[0], this.get_f32(splb3[0]) - parseFloat(splb3[2]));
 			}
 			this.Sync(splb3[0], true);

@@ -19,7 +19,7 @@ void onInit(CBlob@ this)
 	// getMap().server_SetTile(this.getPosition(), CMap::tile_wood_back);
 
 	this.set_Vec2f("shop offset", Vec2f(0,0));
-	this.set_Vec2f("shop menu size", Vec2f(4, 2));
+	this.set_Vec2f("shop menu size", Vec2f(4, 3));
 	this.set_string("shop description", "Mechanist's Workshop");
 	this.set_u8("shop icon", 15);
 
@@ -37,22 +37,36 @@ void onInit(CBlob@ this)
 		s.spawnNothing = true;
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Drill", "$drill$", "drill", "A drill for mining stone and gold.", false);
+		ShopItem@ s = addShopItem(this, "Drill", "$drill$", "drill", "A drill for mining stone, iron and gold.", false);
 		AddRequirement(s.requirements, "coin", "", "Coins", 500);
 
 		s.spawnNothing = true;
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Iron Drill", "$irondrill$", "irondrill", "A drill for mining *ore* and less hard materials.\nCapable to drill longer, but cools slower.", false);
+		ShopItem@ s = addShopItem(this, "Iron Drill", "$irondrill$", "irondrill", "A drill for mining chromium, palladium and less hard materials.\nCapable to drill longer, but cools slower.", false);
 		AddRequirement(s.requirements, "coin", "", "Coins", 750);
-		AddRequirement(s.requirements, "blob", "mat_ironbar", "Iron Bar", 12);
+		AddRequirement(s.requirements, "blob", "mat_ironbar", "Iron Bar", 16);
 
 		s.spawnNothing = true;
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Steel Drill", "$steeldrill$", "steeldrill", "A drill for mining *ore* and less hard materials.\nDrills faster.", false);
+		ShopItem@ s = addShopItem(this, "Steel Drill", "$steeldrill$", "steeldrill", "A drill for mining chromium, palladium and less hard materials.\nDrills faster.", false);
 		AddRequirement(s.requirements, "coin", "", "Coins", 1000);
-		AddRequirement(s.requirements, "blob", "mat_steelbar", "Steel bar", 6);
+		AddRequirement(s.requirements, "blob", "mat_steelbar", "Steel Bar", 8);
+
+		s.spawnNothing = true;
+	}
+	{
+		ShopItem@ s = addShopItem(this, "Palladium Drill", "$palladiumdrill$", "palladiumdrill", "A drill for mining platinum and less hard materials.\nDoes not fall from hands on overheat!", false);
+		AddRequirement(s.requirements, "coin", "", "Coins", 1750);
+		AddRequirement(s.requirements, "blob", "mat_palladiumbar", "Palladium Bar", 12);
+
+		s.spawnNothing = true;
+	}
+	{
+		ShopItem@ s = addShopItem(this, "Platinum Drill", "$platinumdrill$", "platinumdrill", "A drill for mining titanium and less hard materials.\nDrills faster.", false);
+		AddRequirement(s.requirements, "coin", "", "Coins", 2500);
+		AddRequirement(s.requirements, "blob", "mat_platinumbar", "Platinum Bar", 10);
 
 		s.spawnNothing = true;
 	}

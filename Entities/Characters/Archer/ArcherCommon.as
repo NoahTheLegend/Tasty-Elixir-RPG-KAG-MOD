@@ -14,9 +14,9 @@ namespace ArcherParams
 		legolas_charging
 	}
 
-	const ::s32 ready_time = 11;
+	::f32 ready_time = 11;
 
-	const ::s32 shoot_period = 30;
+	::f32 shoot_period = 30;
 	const ::s32 shoot_period_1 = ArcherParams::shoot_period / 3;
 	const ::s32 shoot_period_2 = 2 * ArcherParams::shoot_period / 3;
 	const ::s32 legolas_period = ArcherParams::shoot_period * 3;

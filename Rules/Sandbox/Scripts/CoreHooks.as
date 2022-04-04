@@ -183,7 +183,7 @@ void DoSetStats(CPlayer@ player)
 	}
 	if (getRules().get_f32(player.getUsername()+"hpregtime")>0) 		
 	{
-		blob.set_f32("hpregtime", blob.get_f32("hpregtime") - getRules().get_f32(player.getUsername()+"hpregtime"));
+		blob.set_f32("hpregtime", blob.get_f32("hpregtime") -(getRules().get_f32(player.getUsername()+"hpregtime")));
 		getRules().set_f32(player.getUsername()+"hpregtime", 0);
 	}
 	if (getRules().get_f32(player.getUsername()+"manaregtime")>0)		

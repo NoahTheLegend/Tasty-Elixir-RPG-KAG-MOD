@@ -219,8 +219,13 @@ class PNGLoader
 				map.AddTileFlag(offset, Tile::ROTATE);
 				break;
 			}
-			case map_colors::tile_inferno_ash:		  	map.SetTile(offset, CMap::tile_inferno_ash);
+			case map_colors::tile_chromium:				map.SetTile(offset, CMap::tile_chromium);			break;
+			case map_colors::tile_paladium:				map.SetTile(offset, CMap::tile_paladium);			break;
+			case map_colors::tile_platinum:				map.SetTile(offset, CMap::tile_platinum);			break;
+			case map_colors::tile_titanium:				map.SetTile(offset, CMap::tile_titanium);			break;
+			case map_colors::tile_inferno_ash:
 			{
+				map.SetTile(offset, CMap::tile_inferno_ash);
 				map.AddTileFlag(offset, Tile::SOLID | Tile::COLLISION);
 				map.RemoveTileFlag(offset, Tile::LIGHT_PASSES | Tile::LIGHT_SOURCE | Tile::WATER_PASSES);
 				break;

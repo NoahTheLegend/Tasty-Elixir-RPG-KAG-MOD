@@ -81,6 +81,19 @@ TileType server_onTileHit(CMap@ map, f32 damage, u32 index, TileType oldTileType
 				}
 				return oldTileType;
 			}
+			case CMap::tile_abyss_dirt_back:
+			case CMap::tile_abyss_dirt_back_d0:
+			case CMap::tile_abyss_dirt_back_d1:
+			case CMap::tile_abyss_dirt_back_d2:
+			case CMap::tile_abyss_dirt_back_d3:
+			case CMap::tile_abyss_dirt_back_d4:
+			case CMap::tile_abyss_dirt_back_d5:
+			case CMap::tile_abyss_dirt_back_d6:
+			case CMap::tile_abyss_dirt_back_d7:
+			case CMap::tile_abyss_dirt_back_d8:
+			{
+				return oldTileType;
+			}
 			case CMap::tile_iron: // iron start
 			{
 				if (isClient())
@@ -100,19 +113,6 @@ TileType server_onTileHit(CMap@ map, f32 damage, u32 index, TileType oldTileType
 					}
 				}
 				return CMap::tile_iron_d1;
-			}
-			case CMap::tile_abyss_dirt_back:
-			case CMap::tile_abyss_dirt_back_d0:
-			case CMap::tile_abyss_dirt_back_d1:
-			case CMap::tile_abyss_dirt_back_d2:
-			case CMap::tile_abyss_dirt_back_d3:
-			case CMap::tile_abyss_dirt_back_d4:
-			case CMap::tile_abyss_dirt_back_d5:
-			case CMap::tile_abyss_dirt_back_d6:
-			case CMap::tile_abyss_dirt_back_d7:
-			case CMap::tile_abyss_dirt_back_d8:
-			{
-				return oldTileType;
 			}
 			case CMap::tile_iron_d0:
 			{
@@ -233,6 +233,406 @@ TileType server_onTileHit(CMap@ map, f32 damage, u32 index, TileType oldTileType
 					}
 				}
 				return CMap::tile_ground_back;
+			}
+			case CMap::tile_chromium: // chromium start
+			{
+				if (isClient())
+				{
+					Vec2f pos = map.getTileWorldPosition(index);
+					Sound::Play("dig_stone.ogg", pos, 0.85f, 1.05f);
+				}
+				if (isServer()) 
+				{
+					CBlob@ iron = server_CreateBlobNoInit("mat_chromium");
+					if (iron !is null)
+					{
+						iron.Tag("custom quantity");
+						iron.Init();
+						iron.setPosition(Vec2f(map.getTileWorldPosition(index)));
+						iron.server_SetQuantity(XORRandom(3)+2);
+					}
+				}
+				return CMap::tile_chromium_d0;
+			}
+			case CMap::tile_chromium_d0:
+			{
+				if (isClient())
+				{
+					Vec2f pos = map.getTileWorldPosition(index);
+					Sound::Play("dig_stone.ogg", pos, 0.84f, 1.06f);
+				}
+				if (isServer()) 
+				{
+					CBlob@ iron = server_CreateBlobNoInit("mat_chromium");
+					if (iron !is null)
+					{
+						iron.Tag("custom quantity");
+						iron.Init();
+						iron.setPosition(Vec2f(map.getTileWorldPosition(index)));
+						iron.server_SetQuantity(XORRandom(3)+2);
+					}
+				}
+				return CMap::tile_chromium_d1;
+			}
+			case CMap::tile_chromium_d1:
+			{
+				if (isClient())
+				{
+					Vec2f pos = map.getTileWorldPosition(index);
+					Sound::Play("dig_stone.ogg", pos, 0.85f, 1.05f);
+				}
+				if (isServer()) 
+				{
+					CBlob@ iron = server_CreateBlobNoInit("mat_chromium");
+					if (iron !is null)
+					{
+						iron.Tag("custom quantity");
+						iron.Init();
+						iron.setPosition(Vec2f(map.getTileWorldPosition(index)));
+						iron.server_SetQuantity(XORRandom(3)+1);
+					}
+				}
+				return CMap::tile_chromium_d2;
+			}
+			case CMap::tile_chromium_d2:
+			{
+				if (isClient())
+				{
+					Vec2f pos = map.getTileWorldPosition(index);
+					Sound::Play("dig_stone.ogg", pos, 0.86f, 1.04f);
+				}
+				if (isServer()) 
+				{
+					CBlob@ iron = server_CreateBlobNoInit("mat_chromium");
+					if (iron !is null)
+					{
+						iron.Tag("custom quantity");
+						iron.Init();
+						iron.setPosition(Vec2f(map.getTileWorldPosition(index)));
+						iron.server_SetQuantity(XORRandom(3)+1);
+					}
+				}
+				return CMap::tile_chromium_d3;
+			}
+			case CMap::tile_chromium_d3:
+			{
+				if (isClient())
+				{
+					Vec2f pos = map.getTileWorldPosition(index);
+					Sound::Play("destroy_stone.ogg", pos, 0.87f, 1.03f);
+				}
+				if (isServer()) 
+				{
+					CBlob@ iron = server_CreateBlobNoInit("mat_chromium");
+					if (iron !is null)
+					{
+						iron.Tag("custom quantity");
+						iron.Init();
+						iron.setPosition(Vec2f(map.getTileWorldPosition(index)));
+						iron.server_SetQuantity(XORRandom(3)+1);
+					}
+				}
+				return CMap::tile_ground_back;
+			}
+			case CMap::tile_paladium: // paladium start
+			{
+				if (isClient())
+				{
+					Vec2f pos = map.getTileWorldPosition(index);
+					Sound::Play("dig_stone.ogg", pos, 0.75f, 0.90f);
+				}
+				if (isServer()) 
+				{
+					CBlob@ iron = server_CreateBlobNoInit("mat_paladium");
+					if (iron !is null)
+					{
+						iron.Tag("custom quantity");
+						iron.Init();
+						iron.setPosition(Vec2f(map.getTileWorldPosition(index)));
+						iron.server_SetQuantity(XORRandom(3)+2);
+					}
+				}
+				return CMap::tile_paladium_d0;
+			}
+			case CMap::tile_paladium_d0:
+			{
+				if (isClient())
+				{
+					Vec2f pos = map.getTileWorldPosition(index);
+					Sound::Play("dig_stone.ogg", pos, 0.75f, 0.93f);
+				}
+				if (isServer()) 
+				{
+					CBlob@ iron = server_CreateBlobNoInit("mat_paladium");
+					if (iron !is null)
+					{
+						iron.Tag("custom quantity");
+						iron.Init();
+						iron.setPosition(Vec2f(map.getTileWorldPosition(index)));
+						iron.server_SetQuantity(XORRandom(3)+2);
+					}
+				}
+				return CMap::tile_paladium_d1;
+			}
+			case CMap::tile_paladium_d1:
+			{
+				if (isClient())
+				{
+					Vec2f pos = map.getTileWorldPosition(index);
+					Sound::Play("dig_stone.ogg", pos, 0.75f, 0.96f);
+				}
+				if (isServer()) 
+				{
+					CBlob@ iron = server_CreateBlobNoInit("mat_paladium");
+					if (iron !is null)
+					{
+						iron.Tag("custom quantity");
+						iron.Init();
+						iron.setPosition(Vec2f(map.getTileWorldPosition(index)));
+						iron.server_SetQuantity(XORRandom(3)+1);
+					}
+				}
+				return CMap::tile_paladium_d2;
+			}
+			case CMap::tile_paladium_d2:
+			{
+				if (isClient())
+				{
+					Vec2f pos = map.getTileWorldPosition(index);
+					Sound::Play("dig_stone.ogg", pos, 0.75f, 0.99f);
+				}
+				if (isServer()) 
+				{
+					CBlob@ iron = server_CreateBlobNoInit("mat_paladium");
+					if (iron !is null)
+					{
+						iron.Tag("custom quantity");
+						iron.Init();
+						iron.setPosition(Vec2f(map.getTileWorldPosition(index)));
+						iron.server_SetQuantity(XORRandom(3)+1);
+					}
+				}
+				return CMap::tile_paladium_d3;
+			}
+			case CMap::tile_paladium_d3:
+			{
+				if (isClient())
+				{
+					Vec2f pos = map.getTileWorldPosition(index);
+					Sound::Play("destroy_stone.ogg", pos, 0.75f, 1.02f);
+				}
+				if (isServer()) 
+				{
+					CBlob@ iron = server_CreateBlobNoInit("mat_paladium");
+					if (iron !is null)
+					{
+						iron.Tag("custom quantity");
+						iron.Init();
+						iron.setPosition(Vec2f(map.getTileWorldPosition(index)));
+						iron.server_SetQuantity(XORRandom(3)+1);
+					}
+				}
+				return CMap::tile_inferno_ash_back;
+			}
+			case CMap::tile_platinum: // platinum start
+			{
+				if (isClient())
+				{
+					Vec2f pos = map.getTileWorldPosition(index);
+					Sound::Play("dig_stone.ogg", pos, 0.95f, 1.07f);
+				}
+				if (isServer()) 
+				{
+					CBlob@ iron = server_CreateBlobNoInit("mat_platinum");
+					if (iron !is null)
+					{
+						iron.Tag("custom quantity");
+						iron.Init();
+						iron.setPosition(Vec2f(map.getTileWorldPosition(index)));
+						iron.server_SetQuantity(XORRandom(3)+2);
+					}
+				}
+				return CMap::tile_platinum_d0;
+			}
+			case CMap::tile_platinum_d0:
+			{
+				if (isClient())
+				{
+					Vec2f pos = map.getTileWorldPosition(index);
+					Sound::Play("dig_stone.ogg", pos, 0.95f, 1.09f);
+				}
+				if (isServer()) 
+				{
+					CBlob@ iron = server_CreateBlobNoInit("mat_platinum");
+					if (iron !is null)
+					{
+						iron.Tag("custom quantity");
+						iron.Init();
+						iron.setPosition(Vec2f(map.getTileWorldPosition(index)));
+						iron.server_SetQuantity(XORRandom(3)+2);
+					}
+				}
+				return CMap::tile_platinum_d1;
+			}
+			case CMap::tile_platinum_d1:
+			{
+				if (isClient())
+				{
+					Vec2f pos = map.getTileWorldPosition(index);
+					Sound::Play("dig_stone.ogg", pos, 0.95f, 1.11f);
+				}
+				if (isServer()) 
+				{
+					CBlob@ iron = server_CreateBlobNoInit("mat_platinum");
+					if (iron !is null)
+					{
+						iron.Tag("custom quantity");
+						iron.Init();
+						iron.setPosition(Vec2f(map.getTileWorldPosition(index)));
+						iron.server_SetQuantity(XORRandom(3)+1);
+					}
+				}
+				return CMap::tile_platinum_d2;
+			}
+			case CMap::tile_platinum_d2:
+			{
+				if (isClient())
+				{
+					Vec2f pos = map.getTileWorldPosition(index);
+					Sound::Play("dig_stone.ogg", pos, 0.95f, 1.13f);
+				}
+				if (isServer()) 
+				{
+					CBlob@ iron = server_CreateBlobNoInit("mat_platinum");
+					if (iron !is null)
+					{
+						iron.Tag("custom quantity");
+						iron.Init();
+						iron.setPosition(Vec2f(map.getTileWorldPosition(index)));
+						iron.server_SetQuantity(XORRandom(3)+1);
+					}
+				}
+				return CMap::tile_platinum_d3;
+			}
+			case CMap::tile_platinum_d3:
+			{
+				if (isClient())
+				{
+					Vec2f pos = map.getTileWorldPosition(index);
+					Sound::Play("destroy_stone.ogg", pos, 1.0f, 1.15f);
+				}
+				if (isServer()) 
+				{
+					CBlob@ iron = server_CreateBlobNoInit("mat_platinum");
+					if (iron !is null)
+					{
+						iron.Tag("custom quantity");
+						iron.Init();
+						iron.setPosition(Vec2f(map.getTileWorldPosition(index)));
+						iron.server_SetQuantity(XORRandom(3)+1);
+					}
+				}
+				return CMap::tile_ground_back;
+			}
+			case CMap::tile_titanium: // titanium start
+			{
+				if (isClient())
+				{
+					Vec2f pos = map.getTileWorldPosition(index);
+					Sound::Play("dig_stone.ogg", pos, 1.0f, 0.9f);
+				}
+				if (isServer()) 
+				{
+					CBlob@ iron = server_CreateBlobNoInit("mat_titanium");
+					if (iron !is null)
+					{
+						iron.Tag("custom quantity");
+						iron.Init();
+						iron.setPosition(Vec2f(map.getTileWorldPosition(index)));
+						iron.server_SetQuantity(XORRandom(3)+3);
+					}
+				}
+				return CMap::tile_titanium_d0;
+			}
+			case CMap::tile_titanium_d0:
+			{
+				if (isClient())
+				{
+					Vec2f pos = map.getTileWorldPosition(index);
+					Sound::Play("dig_stone.ogg", pos, 1.0f, 0.88f);
+				}
+				if (isServer()) 
+				{
+					CBlob@ iron = server_CreateBlobNoInit("mat_titanium");
+					if (iron !is null)
+					{
+						iron.Tag("custom quantity");
+						iron.Init();
+						iron.setPosition(Vec2f(map.getTileWorldPosition(index)));
+						iron.server_SetQuantity(XORRandom(3)+2);
+					}
+				}
+				return CMap::tile_titanium_d1;
+			}
+			case CMap::tile_titanium_d1:
+			{
+				if (isClient())
+				{
+					Vec2f pos = map.getTileWorldPosition(index);
+					Sound::Play("dig_stone.ogg", pos, 1.0f, 0.86f);
+				}
+				if (isServer()) 
+				{
+					CBlob@ iron = server_CreateBlobNoInit("mat_titanium");
+					if (iron !is null)
+					{
+						iron.Tag("custom quantity");
+						iron.Init();
+						iron.setPosition(Vec2f(map.getTileWorldPosition(index)));
+						iron.server_SetQuantity(XORRandom(3)+1);
+					}
+				}
+				return CMap::tile_titanium_d2;
+			}
+			case CMap::tile_titanium_d2:
+			{
+				if (isClient())
+				{
+					Vec2f pos = map.getTileWorldPosition(index);
+					Sound::Play("dig_stone.ogg", pos, 1.0f, 0.84f);
+				}
+				if (isServer()) 
+				{
+					CBlob@ iron = server_CreateBlobNoInit("mat_titanium");
+					if (iron !is null)
+					{
+						iron.Tag("custom quantity");
+						iron.Init();
+						iron.setPosition(Vec2f(map.getTileWorldPosition(index)));
+						iron.server_SetQuantity(XORRandom(3)+1);
+					}
+				}
+				return CMap::tile_titanium_d3;
+			}
+			case CMap::tile_titanium_d3:
+			{
+				if (isClient())
+				{
+					Vec2f pos = map.getTileWorldPosition(index);
+					Sound::Play("destroy_stone.ogg", pos, 1.0f, 0.8f);
+				}
+				if (isServer()) 
+				{
+					CBlob@ iron = server_CreateBlobNoInit("mat_titanium");
+					if (iron !is null)
+					{
+						iron.Tag("custom quantity");
+						iron.Init();
+						iron.setPosition(Vec2f(map.getTileWorldPosition(index)));
+						iron.server_SetQuantity(XORRandom(3)+1);
+					}
+				}
+				return CMap::tile_abyss_dirt_back;
 			}
 			case CMap::tile_inferno_ash: // ash start
 			{
@@ -770,6 +1170,58 @@ void onSetTile(CMap@ map, u32 index, TileType tile_new, TileType tile_old)
 				}
 			}
 		}
+		else if (map.getTile(index).type > 511 && map.getTile(index).type < 517)
+		{
+			map.AddTileFlag(index, Tile::SOLID | Tile::COLLISION);
+			map.RemoveTileFlag(index, Tile::LIGHT_PASSES | Tile::LIGHT_SOURCE | Tile::WATER_PASSES);
+			map.SetTileSupport(index, 255);
+			//switch (XORRandom(4))
+			//{
+			//	case 0: break;
+			//	case 1: map.AddTileFlag(index, Tile::ROTATE); break;
+			//	case 2: map.AddTileFlag(index, Tile::FLIP); break;
+			//	case 3: map.AddTileFlag(index, Tile::ROTATE); map.AddTileFlag(index, Tile::FLIP); break;
+			//}
+		}
+		else if (map.getTile(index).type > 517 && map.getTile(index).type < 523)
+		{
+			map.AddTileFlag(index, Tile::SOLID | Tile::COLLISION);
+			map.RemoveTileFlag(index, Tile::LIGHT_PASSES | Tile::LIGHT_SOURCE | Tile::WATER_PASSES);
+			map.SetTileSupport(index, 255);
+			//switch (XORRandom(4))
+			//{
+			//	case 0: break;
+			//	case 1: map.AddTileFlag(index, Tile::ROTATE); break;
+			//	case 2: map.AddTileFlag(index, Tile::FLIP); break;
+			//	case 3: map.AddTileFlag(index, Tile::ROTATE); map.AddTileFlag(index, Tile::FLIP); break;
+			//}
+		}
+		else if (map.getTile(index).type > 523 && map.getTile(index).type < 529)
+		{
+			map.AddTileFlag(index, Tile::SOLID | Tile::COLLISION);
+			map.RemoveTileFlag(index, Tile::LIGHT_PASSES | Tile::LIGHT_SOURCE | Tile::WATER_PASSES);
+			map.SetTileSupport(index, 255);
+			//switch (XORRandom(4))
+			//{
+			//	case 0: break;
+			//	case 1: map.AddTileFlag(index, Tile::ROTATE); break;
+			//	case 2: map.AddTileFlag(index, Tile::FLIP); break;
+			//	case 3: map.AddTileFlag(index, Tile::ROTATE); map.AddTileFlag(index, Tile::FLIP); break;
+			//}
+		}
+		else if (map.getTile(index).type > 529 && map.getTile(index).type < 535)
+		{
+			map.AddTileFlag(index, Tile::SOLID | Tile::COLLISION);
+			map.RemoveTileFlag(index, Tile::LIGHT_PASSES | Tile::LIGHT_SOURCE | Tile::WATER_PASSES);
+			map.SetTileSupport(index, 255);
+			//switch (XORRandom(4))
+			//{
+			//	case 0: break;
+			//	case 1: map.AddTileFlag(index, Tile::ROTATE); break;
+			//	case 2: map.AddTileFlag(index, Tile::FLIP); break;
+			//	case 3: map.AddTileFlag(index, Tile::ROTATE); map.AddTileFlag(index, Tile::FLIP); break;
+			//}
+		}
 		else if (map.getTile(index).type > 481 && map.getTile(index).type < 492)
 		{
 			switch (tile_new)
@@ -788,7 +1240,7 @@ void onSetTile(CMap@ map, u32 index, TileType tile_new, TileType tile_old)
 					break;
 				}
 				map.AddTileFlag(index, Tile::SOLID | Tile::COLLISION);
-				map.RemoveTileFlag(index, Tile::LIGHT_PASSES | Tile::LIGHT_SOURCE);
+				map.RemoveTileFlag(index, Tile::LIGHT_PASSES | Tile::LIGHT_SOURCE | Tile::WATER_PASSES);
 				break;
 			}
 		}

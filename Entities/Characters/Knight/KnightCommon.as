@@ -23,15 +23,15 @@ namespace KnightStates
 
 namespace KnightVars
 {
-	const ::s32 resheath_cut_time = 2;
+	::f32 resheath_cut_time = 2;
 	const ::s32 resheath_slash_time = 2;
 
-	const ::s32 slash_charge = 15;
-	const ::s32 slash_charge_level2 = 38;
+	::s32 slash_charge = 15;
+	::s32 slash_charge_level2 = 38;
 	const ::s32 slash_charge_limit = slash_charge_level2 + slash_charge + 10;
 	const ::s32 slash_move_time = 4;
-	const ::s32 slash_time = 13;
-	const ::s32 double_slash_time = 8;
+	::s32 slash_time = 13;
+	::s32 double_slash_time = 8;
 
 	const ::f32 slash_move_max_speed = 3.5f;
 

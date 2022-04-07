@@ -87,8 +87,8 @@ void onInit(CBlob@ this)
 		s.spawnNothing = true;
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Palladium bar (1)", "$paladiumbar$", "mat_paladiumbar-1", "Smelt palladium ore into a warm palladium bar", true);
-		AddRequirement(s.requirements, "blob", "mat_paladium", "Paladium", 25);
+		ShopItem@ s = addShopItem(this, "Palladium bar (1)", "$paladiumbar$", "mat_palladiumbar-1", "Smelt palladium ore into a warm palladium bar", true);
+		AddRequirement(s.requirements, "blob", "mat_palladium", "Paladium", 25);
 
 		s.spawnNothing = true;
 	}

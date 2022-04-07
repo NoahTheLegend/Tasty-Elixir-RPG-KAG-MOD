@@ -1,4 +1,6 @@
 
+#include "MakeDustParticle.as";
+
 void onInit(CSprite@ this)
 {
     CBlob@ blob = this.getBlob();
@@ -195,6 +197,14 @@ void onTick(CSprite@ this)
                 concentration.SetVisible(false);
                 concanim.SetFrameIndex(0);
             }
+        }
+        else if (blob.get_string("animname") == "Silence")
+        {
+            ParticleAnimated("Entities/Effects/Sprites/LargeSmoke.png", blob.getPosition(), Vec2f(0, 0.0f), 0.0f, 1.0f, 1.75, 0.0f, true);
+            this.PlaySound("Silence.ogg", 1.0f, 1.75f);
+            blob.set_bool("animplaying", false);
+			blob.set_string("animname", "");
+			blob.set_u32("begintime", 0);
         }
         else if (blob.get_string("animname") == "Reassurance")
         {

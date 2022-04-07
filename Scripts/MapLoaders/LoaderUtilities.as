@@ -343,7 +343,7 @@ TileType server_onTileHit(CMap@ map, f32 damage, u32 index, TileType oldTileType
 				}
 				if (isServer()) 
 				{
-					CBlob@ iron = server_CreateBlobNoInit("mat_paladium");
+					CBlob@ iron = server_CreateBlobNoInit("mat_palladium");
 					if (iron !is null)
 					{
 						iron.Tag("custom quantity");
@@ -363,7 +363,7 @@ TileType server_onTileHit(CMap@ map, f32 damage, u32 index, TileType oldTileType
 				}
 				if (isServer()) 
 				{
-					CBlob@ iron = server_CreateBlobNoInit("mat_paladium");
+					CBlob@ iron = server_CreateBlobNoInit("mat_palladium");
 					if (iron !is null)
 					{
 						iron.Tag("custom quantity");
@@ -383,7 +383,7 @@ TileType server_onTileHit(CMap@ map, f32 damage, u32 index, TileType oldTileType
 				}
 				if (isServer()) 
 				{
-					CBlob@ iron = server_CreateBlobNoInit("mat_paladium");
+					CBlob@ iron = server_CreateBlobNoInit("mat_palladium");
 					if (iron !is null)
 					{
 						iron.Tag("custom quantity");
@@ -403,7 +403,7 @@ TileType server_onTileHit(CMap@ map, f32 damage, u32 index, TileType oldTileType
 				}
 				if (isServer()) 
 				{
-					CBlob@ iron = server_CreateBlobNoInit("mat_paladium");
+					CBlob@ iron = server_CreateBlobNoInit("mat_palladium");
 					if (iron !is null)
 					{
 						iron.Tag("custom quantity");
@@ -423,7 +423,7 @@ TileType server_onTileHit(CMap@ map, f32 damage, u32 index, TileType oldTileType
 				}
 				if (isServer()) 
 				{
-					CBlob@ iron = server_CreateBlobNoInit("mat_paladium");
+					CBlob@ iron = server_CreateBlobNoInit("mat_palladium");
 					if (iron !is null)
 					{
 						iron.Tag("custom quantity");

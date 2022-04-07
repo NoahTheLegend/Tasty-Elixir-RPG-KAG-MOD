@@ -18,6 +18,7 @@ void onInit(CBlob@ this)
         this.get_string("key6"),
     };
     u8 rand = XORRandom(20);
+    
     CSprite@ sprite = this.getSprite();
     Animation@ anim = sprite.addAnimation("potions", 0, false);
     int[] frames = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19};
@@ -88,6 +89,7 @@ void setEffect(CBlob@ this)
     // buffs that are fit in their main category get x3 multiplier
     if (a1 == k1) // defining main buff type
     { // Strength
+    printf("atk");
         if (a2 == k2) this.set_string("buff1", "damagebuff`f32`2.25"); //str
         else if (a2 == k3) this.set_string("buff1", "damagereduction`f32`0.50"); //def
         else if (a2 == k4) this.set_string("buff1", "velocity`f32`0.30"); //agi
@@ -139,6 +141,7 @@ void setEffect(CBlob@ this)
     }
     else if (a2 == k1)
     { // Defence
+    printf("def");
         if (a1 == k2) this.set_string("buff1", "damagebuff`f32`0.75"); //str
         else if (a1 == k3) this.set_string("buff1", "damagereduction`f32`1.50"); //def
         else if (a1 == k4) this.set_string("buff1", "velocity`f32`0.30"); //agi
@@ -190,6 +193,7 @@ void setEffect(CBlob@ this)
     }
     else if (a3 == k1)
     { // Agility
+    printf("agi");
         if (a2 == k2) this.set_string("buff1", "damagebuff`f32`0.75"); //str
         else if (a2 == k3) this.set_string("buff1", "damagereduction`f32`0.50"); //def
         else if (a2 == k4) this.set_string("buff1", "velocity`f32`0.90"); //agi
@@ -241,6 +245,7 @@ void setEffect(CBlob@ this)
     }
     else if (a4 == k1)
     { // Other
+    printf("oth");
         if (a2 == k2) this.set_string("buff1", "damagebuff`f32`0.75"); //str
         else if (a2 == k3) this.set_string("buff1", "damagereduction`f32`0.50"); //def
         else if (a2 == k4) this.set_string("buff1", "velocity`f32`0.30"); //agi
@@ -292,6 +297,7 @@ void setEffect(CBlob@ this)
     }
     else
     { // Debuff. Better luck next time!
+    printf("deb");
         if (a1 == k5 || a1 == k6) this.set_string("buff1", "damagebuff`f32`-5.0"); //str
         else if (a2 == k5 || a2 == k6) this.set_string("buff2", "damagereduction`f32`-100.0"); //def
         else if (a3 == k5 || a3 == k6) this.set_string("buff1", "velocity`f32`-1.90"); //agi
@@ -320,7 +326,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
         CBlob@ blob = getBlobByNetworkID(blobid);
         string buffs = params.read_string();
 
-        if (blob !is null)
+        if (blob !is null && isServer())
         {
             string[] spl = buffs.split("_"); // split buffs
 
@@ -343,60 +349,90 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
                 blob.set_string("eff1", "1_potion_"+effdata);
                 blob.set_string("buffs1", buffs);
                 blob.set_u16("timer1", spl.length * XORRandom(300) + XORRandom(1800)+900);
+                blob.Sync("eff1", true);
+                blob.Sync("buffs1", true);
+                blob.Sync("timer1", true);
             }
             else if (blob.get_string("eff2") == "")
             {
                 blob.set_string("eff2", "1_potion_"+effdata);
                 blob.set_string("buffs2", buffs);
                 blob.set_u16("timer2", spl.length * XORRandom(300) + XORRandom(1800)+900);
+                blob.Sync("eff2", true);
+                blob.Sync("buffs2", true);
+                blob.Sync("timer2", true);
             }
             else if (blob.get_string("eff3") == "")
             {
                 blob.set_string("eff3", "1_potion_"+effdata);
                 blob.set_string("buffs3", buffs);
                 blob.set_u16("timer3", spl.length * XORRandom(300) + XORRandom(1800)+900);
+                blob.Sync("eff3", true);
+                blob.Sync("buffs3", true);
+                blob.Sync("timer3", true);
             }
             else if (blob.get_string("eff4") == "")
             {
                 blob.set_string("eff4", "1_potion_"+effdata);
                 blob.set_string("buffs4", buffs);
                 blob.set_u16("timer4", spl.length * XORRandom(300) + XORRandom(1800)+900);
+                blob.Sync("eff4", true);
+                blob.Sync("buffs4", true);
+                blob.Sync("timer4", true);
             }
             else if (blob.get_string("eff5") == "")
             {
                 blob.set_string("eff5", "1_potion_"+effdata);
                 blob.set_string("buffs5", buffs);
                 blob.set_u16("timer5", spl.length * XORRandom(300) + XORRandom(1800)+900);
+                blob.Sync("eff5", true);
+                blob.Sync("buffs5", true);
+                blob.Sync("timer5", true);
             }
             else if (blob.get_string("eff6") == "")
             {
                 blob.set_string("eff6", "1_potion_"+effdata);
                 blob.set_string("buffs6", buffs);
                 blob.set_u16("timer6", spl.length * XORRandom(300) + XORRandom(1800)+900);
+                blob.Sync("eff6", true);
+                blob.Sync("buffs6", true);
+                blob.Sync("timer6", true);
             }
             else if (blob.get_string("eff7") == "")
             {
                 blob.set_string("eff7", "1_potion_"+effdata);
                 blob.set_string("buffs7", buffs);
                 blob.set_u16("timer7", spl.length * XORRandom(300) + XORRandom(1800)+900);
+                blob.Sync("eff7", true);
+                blob.Sync("buffs7", true);
+                blob.Sync("timer7", true);
             }
             else if (blob.get_string("eff8") == "")
             {
                 blob.set_string("eff8", "1_potion_"+effdata);
                 blob.set_string("buffs8", buffs);
                 blob.set_u16("timer8", spl.length * XORRandom(300) + XORRandom(1800)+900);
+                blob.Sync("eff8", true);
+                blob.Sync("buffs8", true);
+                blob.Sync("timer8", true);
             }
             else if (blob.get_string("eff9") == "")
             {
                 blob.set_string("eff9", "1_potion_"+effdata);
                 blob.set_string("buffs9", buffs);
                 blob.set_u16("timer9", spl.length * XORRandom(300) + XORRandom(1800)+900);
+                blob.Sync("eff9", true);
+                blob.Sync("buffs9", true);
+                blob.Sync("timer9", true);
             }
             else if (blob.get_string("eff10") == "")
             {
                 blob.set_string("eff10", "1_potion_"+effdata);
                 blob.set_string("buffs10", buffs);
                 blob.set_u16("timer10", spl.length * XORRandom(300) + XORRandom(1800)+900);
+                blob.Sync("eff10", true);
+                blob.Sync("buffs10", true);
+                blob.Sync("timer10", true);
             }
 
             if (buff1 != "")
@@ -463,8 +499,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
                 if (this.get_bool("rip?")) blob.Tag("ded");
                 blob.Tag("potioned");
             }
-            blob.Tag("potioned");
-            this.server_Die();
         }
+        this.server_Die();
     }
 }

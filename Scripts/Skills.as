@@ -131,26 +131,11 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
         u8 index = params.read_u8(); // skill pos
         u16 skill = params.read_u16(); // skill tag\index\number
 
-        if (type == "knight")
-        {
-            this.set_string("skilltype", "knight");
-            this.Sync("skilltype", true);
-        }
-        else if (type == "archer")
-        {
-            this.set_string("skilltype", "archer");
-            this.Sync("skilltype", true);
-        }
-        else if (type == "rogue")
-        {
-            this.set_string("skilltype", "rogue");
-            this.Sync("skilltype", true);
-        }
-        else if (type == "common")
-        {
-            this.set_string("skilltype", "common");
-            this.Sync("skilltype", true);
-        }
+        CPlayer@ player = this.getPlayer();
+        if (player is null || !player.isMyPlayer()) return;
+
+        this.set_string("skilltype", type);
+        this.Sync("skilltype", true);
 
         if (this.get_u16("mana") > getSkillMana(this.get_string("skilltype"), skill))
         {
@@ -163,7 +148,8 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
         u16 cooldown = getSkillCooldown(this.get_string("skilltype"), skill);
         u16 time = getSkillTime(this.get_string("skilltype"), skill);
         u8 skillpos = getSkillPosition(this, name);
-        
+
+                
         //printf(name);
         //printf(""+skillpos);
         //printf(""+index);
@@ -206,7 +192,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
                 case 0:
                 {
                     SetToFreeSlot(this, skillpos, "silence`bool`true_critchance`f32`500");
-                    if (this.getHealth() < 2.0)
+                    if (this.getHealth() < 1.0)
                     {
                         this.set_u16("silenceskilltimer", 5*30);
                         this.Sync("silenceskilltimer", true);
@@ -388,7 +374,6 @@ void SetToFreeSlot(CBlob@ this, u8 skillpos, string buffs)
         this.set_string("eff1", getEffectIndex(this.get_string("skilltype"+skillpos), indexs)+"_"+name);
         this.set_string("buffs1", buffs);
         this.set_u16("timer1", getSkillTime(this.get_string("skilltype"+skillpos), indexs));
-        this.set_u16("skillcd"+skillpos, getSkillCooldown(this.get_string("skilltype"+skillpos), indexs));
 
         SetBuffs(this, buffs);
     }
@@ -399,8 +384,7 @@ void SetToFreeSlot(CBlob@ this, u8 skillpos, string buffs)
         this.set_string("eff2", getEffectIndex(this.get_string("skilltype"+skillpos), indexs)+"_"+name);
         this.set_string("buffs2", buffs);
         this.set_u16("timer2", getSkillTime(this.get_string("skilltype"+skillpos), indexs));
-        this.set_u16("skillcd"+skillpos, getSkillCooldown(this.get_string("skilltype"+skillpos), indexs));
-
+ 
         SetBuffs(this, buffs);
     }
     else if (this.get_string("eff3") == "")
@@ -410,7 +394,6 @@ void SetToFreeSlot(CBlob@ this, u8 skillpos, string buffs)
         this.set_string("eff3", getEffectIndex(this.get_string("skilltype"+skillpos), indexs)+"_"+name);
         this.set_string("buffs3", buffs);
         this.set_u16("timer3", getSkillTime(this.get_string("skilltype"+skillpos), indexs));
-        this.set_u16("skillcd"+skillpos, getSkillCooldown(this.get_string("skilltype"+skillpos), indexs));
 
         SetBuffs(this, buffs);
     }
@@ -421,7 +404,6 @@ void SetToFreeSlot(CBlob@ this, u8 skillpos, string buffs)
         this.set_string("eff4", getEffectIndex(this.get_string("skilltype"+skillpos), indexs)+"_"+name);
         this.set_string("buffs4", buffs);
         this.set_u16("timer4", getSkillTime(this.get_string("skilltype"+skillpos), indexs));
-        this.set_u16("skillcd"+skillpos, getSkillCooldown(this.get_string("skilltype"+skillpos), indexs));
 
         SetBuffs(this, buffs);
     }
@@ -432,7 +414,6 @@ void SetToFreeSlot(CBlob@ this, u8 skillpos, string buffs)
         this.set_string("eff5", getEffectIndex(this.get_string("skilltype"+skillpos), indexs)+"_"+name);
         this.set_string("buffs5", buffs);
         this.set_u16("timer5", getSkillTime(this.get_string("skilltype"+skillpos), indexs));
-        this.set_u16("skillcd"+skillpos, getSkillCooldown(this.get_string("skilltype"+skillpos), indexs));
 
         SetBuffs(this, buffs);
     }
@@ -443,7 +424,6 @@ void SetToFreeSlot(CBlob@ this, u8 skillpos, string buffs)
         this.set_string("eff6", getEffectIndex(this.get_string("skilltype"+skillpos), indexs)+"_"+name);
         this.set_string("buffs6", buffs);
         this.set_u16("timer6", getSkillTime(this.get_string("skilltype"+skillpos), indexs));
-        this.set_u16("skillcd"+skillpos, getSkillCooldown(this.get_string("skilltype"+skillpos), indexs));
 
         SetBuffs(this, buffs);
     }
@@ -454,7 +434,6 @@ void SetToFreeSlot(CBlob@ this, u8 skillpos, string buffs)
         this.set_string("eff7", getEffectIndex(this.get_string("skilltype"+skillpos), indexs)+"_"+name);
         this.set_string("buffs7", buffs);
         this.set_u16("timer7", getSkillTime(this.get_string("skilltype"+skillpos), indexs));
-        this.set_u16("skillcd"+skillpos, getSkillCooldown(this.get_string("skilltype"+skillpos), indexs));
 
         SetBuffs(this, buffs);
     }
@@ -465,7 +444,6 @@ void SetToFreeSlot(CBlob@ this, u8 skillpos, string buffs)
         this.set_string("eff8", getEffectIndex(this.get_string("skilltype"+skillpos), indexs)+"_"+name);
         this.set_string("buffs8", buffs);
         this.set_u16("timer8", getSkillTime(this.get_string("skilltype"+skillpos), indexs));
-        this.set_u16("skillcd"+skillpos, getSkillCooldown(this.get_string("skilltype"+skillpos), indexs));
 
         SetBuffs(this, buffs);
     }
@@ -476,7 +454,6 @@ void SetToFreeSlot(CBlob@ this, u8 skillpos, string buffs)
         this.set_string("eff9", getEffectIndex(this.get_string("skilltype"+skillpos), indexs)+"_"+name);
         this.set_string("buffs9", buffs);
         this.set_u16("timer9", getSkillTime(this.get_string("skilltype"+skillpos), indexs));
-        this.set_u16("skillcd"+skillpos, getSkillCooldown(this.get_string("skilltype"+skillpos), indexs));
 
         SetBuffs(this, buffs);
     }
@@ -487,7 +464,6 @@ void SetToFreeSlot(CBlob@ this, u8 skillpos, string buffs)
         this.set_string("eff10", getEffectIndex(this.get_string("skilltype"+skillpos), indexs)+"_"+name);
         this.set_string("buffs10", buffs);
         this.set_u16("timer10", getSkillTime(this.get_string("skilltype"+skillpos), indexs));
-        this.set_u16("skillcd"+skillpos, getSkillCooldown(this.get_string("skilltype"+skillpos), indexs));
 
         SetBuffs(this, buffs);
     }

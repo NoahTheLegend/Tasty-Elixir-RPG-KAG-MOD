@@ -10,6 +10,7 @@
 #include "BombCommon.as";
 #include "Requirements.as";
 #include "CustomBlocks.as";
+#include "SkillsCommon.as";
 
 const int FLETCH_COOLDOWN = 45;
 const int PICKUP_COOLDOWN = 15;
@@ -638,6 +639,18 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 
 void onTick(CBlob@ this)
 {
+	//if (getGameTime()%90==0)
+	//{
+	//	if (isServer()) printf("_____________________");
+	//	if (isServer()) printf(""+this.get_f32("damagebuff"));
+	//	if (isServer()) printf(""+this.get_f32("critchance"));
+	//	if (isServer()) printf(""+this.get_f32("attackspeed"));
+	//	if (isServer()) printf(this.get_string("eff1"));
+	//	printf(" ");
+	//	printf("timer: "+this.get_u16("timer1"));
+	//	printf("skillcd: "+this.get_u16("skillcd1"));
+	//	printf(this.get_string("skill1"));
+	//}
 	CControls@ controls = this.getControls();
 	if (controls !is null)
 	{
@@ -650,6 +663,8 @@ void onTick(CBlob@ this)
 			params.write_u16(this.get_u16("skillidx1"));
 			this.SendCommand(this.getCommandID("activate_skill"), params);
 			//printf("sent");
+			this.set_u16("skillcd1", getSkillCooldown(this.get_string("skilltype1"), this.get_u16("skillidx1")));
+
 			this.set_bool("animplaying", true);
 			this.set_string("animname", this.get_string("skill1"));
 			this.set_u32("begintime", getGameTime());
@@ -663,13 +678,17 @@ void onTick(CBlob@ this)
 			params.write_u16(this.get_u16("skillidx2"));
 			this.SendCommand(this.getCommandID("activate_skill"), params);
 
+			this.set_u16("skillcd2", getSkillCooldown(this.get_string("skilltype2"), this.get_u16("skillidx2")));
+
 			this.set_bool("animplaying", true);
 			this.set_string("animname", this.get_string("skill2"));
 			this.set_u32("begintime", getGameTime());
 		}
 	}
+	CPlayer@ player = this.getPlayer();
 	//soundtracks
-	if (getGameTime() % 150 == 0) // every 5 seconds check
+	/* REMOVED UNTIL I REWRITE OTHER SETEMITSOUND CODE
+	if (getGameTime() % 150 == 0 && player !is null && !player.hasTag("disablesoundtracks")) // every 5 seconds check
 	{
 		CMap@ map = getMap();
 		Tile tile = map.getTile(this.getPosition());
@@ -682,8 +701,7 @@ void onTick(CBlob@ this)
 		//inferno
 		int posy = this.getPosition().y;
 		//printf("pos: "+posy+" of map height*8/3: "+this.getMap().tilemapheight*8/3);
-		if (this.get_string("track") == ""
-		&& posy > this.getMap().tilemapheight*8/3
+		if (posy > this.getMap().tilemapheight*8/3
 		&& (tile.type == CMap::tile_inferno_ash_back
 		|| tile.type == CMap::tile_inferno_ash_back_d0
 		|| tile.type == CMap::tile_inferno_ash_back_d1
@@ -705,10 +723,13 @@ void onTick(CBlob@ this)
 		|| tile.type == CMap::tile_inferno_castle_back_d7
 		|| tile.type == CMap::tile_inferno_castle_back_d8))
 		{
-			if (isClient() && this.isMyPlayer() && XORRandom(40) < 1 // 2.5% chance every 5 sec
-			&& this.get_u32("tracktimer") == 0 && this.get_u16("tracktimercd") == 0)
+			if (isClient() && this.isMyPlayer() && XORRandom(20) < 1
+			&& this.get_string("track") != "Inferno_1.ogg"
+			&& this.get_string("track") != "Inferno_2.ogg"
+			&& this.get_string("track") != "Inferno_3.ogg") // 5% chance every 5 sec
 			{
-				if (XORRandom(10) < 5)
+				u8 random = XORRandom(10);
+				if (random < 3)
 				{
 					sprite.SetEmitSound("Inferno_1.ogg");
 					sprite.SetEmitSoundVolume(0.25f);
@@ -716,7 +737,7 @@ void onTick(CBlob@ this)
 					this.set_string("track", "Inferno_1.ogg");
 					this.set_u32("tracktimer", 285*30 + 300); // 4.85 min + cd check
 				}
-				else if (this.get_u32("tracktimer") == 0)
+				else if (random >= 3 && XORRandom(10) < 6)
 				{
 					sprite.SetEmitSound("Inferno_2.ogg");
 					sprite.SetEmitSoundVolume(0.5f);
@@ -724,7 +745,7 @@ void onTick(CBlob@ this)
 					this.set_string("track", "Inferno_2.ogg");
 					this.set_u32("tracktimer", 225*30 + 300); // 3.85 min + cd check
 				}
-				else if (this.get_u32("tracktimer") == 0)
+				else if (random >= 6)
 				{
 					sprite.SetEmitSound("Inferno_3.ogg");
 					sprite.SetEmitSoundVolume(0.5f);
@@ -736,14 +757,14 @@ void onTick(CBlob@ this)
 		}
 		
 		//abyss
-		else if (this.get_string("track") == ""
-		&& tile.type == CMap::tile_abyss_dirt_back
+		else if (tile.type == CMap::tile_abyss_dirt_back
 		|| tile.type == CMap::tile_abyss_dirt_back_d0
 		|| tile.type == CMap::tile_abyss_dirt_back_d1
 		|| tile.type == CMap::tile_abyss_dirt_back_d2)
 		{
-			if (isClient() && this.isMyPlayer() && XORRandom(40) < 1 // 10% chance every 5 sec
-			&& this.get_u32("tracktimer") == 0 && this.get_u16("tracktimercd") == 0)
+			if (isClient() && this.isMyPlayer() && XORRandom(20) < 1
+			&& this.get_string("track") != "Abyss_1.ogg"
+			&& this.get_string("track") != "Abyss_2(HK-OST).ogg") // 5% chance every 5 sec
 			{
 				if (XORRandom(10) < 5)
 				{
@@ -753,7 +774,7 @@ void onTick(CBlob@ this)
 					this.set_string("track", "Abyss_1.ogg");
 					this.set_u32("tracktimer", 150*30 + 300); // 2.5 min + cd check
 				}
-				else if (this.get_u32("tracktimer") == 0)
+				else
 				{
 					sprite.SetEmitSound("Abyss_2(HK-OST).ogg");
 					sprite.SetEmitSoundVolume(1.5f);
@@ -763,7 +784,7 @@ void onTick(CBlob@ this)
 				}
 			}
 		}
-		else if (XORRandom(20) == 0 // remove soundtrack if out, 5% chance
+		else if (XORRandom(20) < 0 // remove soundtrack if out, 5% chance
 		&& (this.get_string("track") == "Abyss_1.ogg"
 		|| this.get_string("track") == "Abyss_2(HK-OST).ogg"
 		|| this.get_string("track") == "Inferno_1.ogg"
@@ -775,6 +796,7 @@ void onTick(CBlob@ this)
 			this.set_u32("tracktimer", 0);
 			this.set_u16("tracktimercd", 60*30); // 1 min cd
 		}
+		//printf(this.get_string("track"));
 
 		//track timer
 		if (this.get_u32("tracktimer") > 0) this.set_u32("tracktimer", this.get_u32("tracktimer") - 150);
@@ -790,6 +812,7 @@ void onTick(CBlob@ this)
 		//if (this.get_u32("tracktimer") > 0) printf(""+this.get_u32("tracktimer"));
 		//if (this.get_u16("tracktimercd") > 0) printf(""+this.get_u16("tracktimercd"));
 	}
+	*/
 	//check if smth broke
 	if (getGameTime() % 5 == 0)
 	{
@@ -1191,7 +1214,18 @@ void ShootArrow(CBlob @this, Vec2f arrowPos, Vec2f aimpos, f32 arrowspeed, const
 		//print("arrowspeed " + arrowspeed);
 		CBitStream params;
 		params.write_Vec2f(arrowPos);
-		params.write_Vec2f(arrowVel);
+		
+		if (this.get_bool("concentration"))
+		{
+			params.write_Vec2f(arrowVel*1.3);
+
+			this.set_bool("concentration", false);
+			this.Sync("concentration", true);
+			this.set_u16("timer"+(getSkillPosition(this, this.getName(), 0)+1), 1);
+			this.Sync("timer"+(getSkillPosition(this, this.getName(), 0)+1), true);
+		}
+		else params.write_Vec2f(arrowVel);
+
 		params.write_u8(arrow_type);
 		params.write_bool(legolas);
 
@@ -1348,20 +1382,8 @@ void SetToFreeSlot(CBlob@ this, string name, string buff, u16 time)
 	}
 }
 
-void UpdateStats(CBlob@ this, CBlob@ blob)
+void SyncStats(CBlob@ this)
 {
-											this.set_f32("velocity", this.get_f32("velocity") + blob.get_f32("velocity"));
-    if (blob.get_f32("dodgechance")>0) 		this.set_f32("dodgechance", this.get_f32("dodgechance") - blob.get_f32("dodgechance"));
-	if (blob.get_f32("blockchance")>0) 		this.set_f32("blockchance", this.get_f32("blockchance") - blob.get_f32("blockchance"));
-    if (blob.get_f32("damagereduction")>0)	this.set_f32("damagereduction", this.get_f32("damagereduction") - blob.get_f32("damagereduction"));
-	if (blob.get_f32("hpregtime")>0) 		this.set_f32("hpregtime", this.get_f32("hpregtime") - (blob.get_f32("hpregtime"))*-1);
-	if (blob.get_f32("manaregtime")>0)		this.set_f32("manaregtime", this.get_f32("manaregtime") - (blob.get_f32("manaregtime"))*-1);
-	if (blob.get_u16("manareg")>0) 			this.set_u16("manareg", this.get_u16("manareg") - blob.get_u16("manareg"));
-	if (blob.get_u16("mana")>0) 			this.set_u16("mana", this.get_u16("mana") - blob.get_u16("mana"));
-	if (blob.get_u16("maxmana")>0) 			this.set_u16("maxmana", this.get_u16("maxmana") - blob.get_u16("maxmana"));
-	if (blob.get_f32("critchance")>0) 		this.set_f32("critchance", this.get_f32("critchance") - blob.get_f32("critchance"));
-	if (blob.get_f32("damagebuff")>0) 		this.set_f32("damagebuff", this.get_f32("damagebuff") - blob.get_f32("damagebuff"));
-	if (blob.get_f32("dealtdamage")>0) 		this.set_f32("dealtdamage", this.get_f32("dealtdamage") - blob.get_f32("dealtdamage"));
 
 	this.Sync("velocity", true);
 	this.Sync("dodgechance", true);
@@ -1377,9 +1399,35 @@ void UpdateStats(CBlob@ this, CBlob@ blob)
 	this.Sync("dealtdamage", true);
 }
 
+void UpdateStats(CBlob@ this, string name)
+{
+	if (isServer()) 
+	{
+		CBlob@ blob = server_CreateBlob(name, this.getTeamNum(), this.getPosition());
+		blob.setPosition(this.getPosition());
+
+		if (this is null || blob is null) return;
+
+												this.set_f32("velocity", this.get_f32("velocity") + blob.get_f32("velocity"));
+    	if (blob.get_f32("dodgechance")>0) 		this.set_f32("dodgechance", this.get_f32("dodgechance") - blob.get_f32("dodgechance"));
+		if (blob.get_f32("blockchance")>0) 		this.set_f32("blockchance", this.get_f32("blockchance") - blob.get_f32("blockchance"));
+    	if (blob.get_f32("damagereduction")>0)	this.set_f32("damagereduction", this.get_f32("damagereduction") - blob.get_f32("damagereduction"));
+		if (blob.get_f32("hpregtime")>0) 		this.set_f32("hpregtime", this.get_f32("hpregtime") - (blob.get_f32("hpregtime"))*-1);
+		if (blob.get_f32("manaregtime")>0)		this.set_f32("manaregtime", this.get_f32("manaregtime") - (blob.get_f32("manaregtime"))*-1);
+		if (blob.get_u16("manareg")>0) 			this.set_u16("manareg", this.get_u16("manareg") - blob.get_u16("manareg"));
+		if (blob.get_u16("mana")>0) 			this.set_u16("mana", this.get_u16("mana") - blob.get_u16("mana"));
+		if (blob.get_u16("maxmana")>0) 			this.set_u16("maxmana", this.get_u16("maxmana") - blob.get_u16("maxmana"));
+		if (blob.get_f32("critchance")>0) 		this.set_f32("critchance", this.get_f32("critchance") - blob.get_f32("critchance"));
+		if (blob.get_f32("damagebuff")>0) 		this.set_f32("damagebuff", this.get_f32("damagebuff") - blob.get_f32("damagebuff"));
+		if (blob.get_f32("dealtdamage")>0) 		this.set_f32("dealtdamage", this.get_f32("dealtdamage") - blob.get_f32("dealtdamage"));
+
+		SyncStats(this);
+	}
+}
+
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
-	if (cmd == this.getCommandID("timercheck"))
+	if (cmd == this.getCommandID("timercheck") && isServer())
 	{
 		string buffs = params.read_string(); //buffnameval+buffname2val2...
 		u8 timerindex = params.read_u8();
@@ -1505,91 +1553,96 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	else if (cmd == this.getCommandID("receive_effect"))
 	{
 		u16 eff = params.read_u16();
+		u32 time = params.read_u32();
+
+		CPlayer@ player = this.getPlayer();
+		if (player is null || !player.isMyPlayer()) return;
+
 		if (eff == 2)
 		{
 			this.set_bool("poisoned", true);
 			this.Sync("poisoned", true);
-			SetToFreeSlot(this, "2_poison", "poisoned`bool`true", XORRandom(600)+900);
+			SetToFreeSlot(this, "2_poison", "poisoned`bool`true", time);
 		}
 		else if (eff == 3)
 		{
 			this.set_bool("bleeding", true);
 			this.Sync("bleeding", true);
-			SetToFreeSlot(this, "3_bleed", "bleeding`bool`true", XORRandom(300)+300);
+			SetToFreeSlot(this, "3_bleed", "bleeding`bool`true", time);
 		}
 		else if (eff == 4)
 		{
 			this.set_bool("regen", true);
 			this.Sync("regen", true);
-			SetToFreeSlot(this, "4_regen", "regen`bool`true", XORRandom(1200)+900);
+			SetToFreeSlot(this, "4_regen", "regen`bool`true", time);
 		}
 	}
 	else if (cmd == this.getCommandID("unequiphelmet"))
 	{
-		if (this !is null)
-		{
-			if (this.get_bool("hashelmet"))
-            {
-                if (isServer())
-                {
-                	CBlob@ blob = server_CreateBlob(this.get_string("helmetname"), this.getTeamNum(), this.getPosition());
-					this.set_bool("hashelmet", false);
-	       			this.set_string("helmetname", "");
-					
-					UpdateStats(this, blob);
-				}
-            }
+		if (this.get_bool("hashelmet"))
+        {
+			CPlayer@ player = this.getPlayer();
+
+			if (player !is null && player.isMyPlayer())
+			{
+				this.set_bool("hashelmet", false);
+				this.Sync("hashelmet", true);
+	       		this.set_string("helmetname", "");
+				this.Sync("helmetname", true);
+			}
+
+			UpdateStats(this, this.get_string("helmetname"));
 		}
 	}
 	else if (cmd == this.getCommandID("unequiparmor"))
 	{
-		if (this !is null)
-		{
-			if (this.get_bool("hasarmor"))
-            {
-                if (isServer())
-                {
-                	CBlob@ blob = server_CreateBlob(this.get_string("armorname"), this.getTeamNum(), this.getPosition());
-					this.set_bool("hasarmor", false);
-	       			this.set_string("armorname", "");
+		if (this.get_bool("hasarmor"))
+        {
+			CPlayer@ player = this.getPlayer();
 
-					UpdateStats(this, blob);
-				}
-            }
+			if (player !is null && player.isMyPlayer())
+			{
+				this.set_bool("hasarmor", false);
+				this.Sync("hasarmor", true);
+	       		this.set_string("armorname", "");
+				this.Sync("armorname", true);
+			}
+
+			UpdateStats(this, this.get_string("armorname"));
 		}
 	}
 	else if (cmd == this.getCommandID("unequipgloves"))
 	{
-		if (this !is null)
-		{
-			if (this.get_bool("hasgloves"))
-            {
-                if (isServer())
-                {
-                	CBlob@ blob = server_CreateBlob(this.get_string("glovesname"), this.getTeamNum(), this.getPosition());
-					this.set_bool("hasgloves", false);
-	       			this.set_string("glovesname", "");
+		if (this.get_bool("hasgloves"))
+        {
+			CPlayer@ player = this.getPlayer();
 
-					UpdateStats(this, blob);
-				}
-            }
+			if (player !is null && player.isMyPlayer())
+			{
+				this.set_bool("hasgloves", false);
+				this.Sync("hasgloves", true);
+	       		this.set_string("glovesname", "");
+				this.Sync("glovesname", true);
+			}
+
+			UpdateStats(this, this.get_string("glovesname"));
 		}
 	}
 	else if (cmd == this.getCommandID("unequipboots"))
 	{
-		if (this !is null)
-		{
-			if (this.get_bool("hasboots"))
-            {
-                if (isServer())
-                {
-                	CBlob@ blob = server_CreateBlob(this.get_string("bootsname"), this.getTeamNum(), this.getPosition());
-					this.set_bool("hasboots", false);
-	       			this.set_string("bootsname", "");
+		if (this.get_bool("hasboots"))
+        {
+			CPlayer@ player = this.getPlayer();
 
-					UpdateStats(this, blob);
-				}
+			if (player !is null && player.isMyPlayer())
+			{
+				this.set_bool("hasboots", false);
+				this.Sync("hasboots", true);
+	       		this.set_string("bootsname", "");
+				this.Sync("bootsname", true);
 			}
+
+			UpdateStats(this, this.get_string("bootsname"));
 		}
 	}
 	else if (cmd == getRules().getCommandID("showdamage"))
@@ -1597,6 +1650,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		f32 dmg = params.read_f32();
 
 		this.set_f32("dealtdamage", dmg);
+		this.Sync("dealtdamage", true);
 	}
 	else if (cmd == this.getCommandID("shoot arrow"))
 	{

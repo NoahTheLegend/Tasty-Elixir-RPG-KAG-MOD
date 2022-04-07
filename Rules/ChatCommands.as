@@ -405,6 +405,51 @@ bool onClientProcessChat(CRules@ this, const string& in text_in, string& out tex
 			if (isClient()) printf("cockclient");
 		}
 	}
+	else if (text_in == "!commands")
+	{
+		if (isClient() && player.isMyPlayer()) client_AddToChat("!help for basic info\n!soundtracks to disable and enable soundtracks", SColor(255, 50, 50, 50));
+		if (isClient() && player.isMyPlayer()) client_AddToChat("!showstats to disable and enable stats list\n!showstate to disable and enable state list", SColor(255, 50, 50, 50));
+	}
+	else if (text_in == "!showstats")
+	{
+		string state;
+
+		if (!player.hasTag("disablestats")) 
+		{
+			player.Tag("disablestats");
+			state = "disabled";
+		}
+		else if (player.hasTag("disablestats"))
+		{
+			player.Untag("disablestats");
+			state = "enabled";
+		}
+
+		if (isClient() && player.isMyPlayer()) 
+		{
+			client_AddToChat("Stats: "+state, SColor(255, 255, 0, 0));
+		}
+	}
+	else if (text_in == "!showstate")
+	{
+		string state;
+
+		if (!player.hasTag("disablestate")) 
+		{
+			player.Tag("disablestate");
+			state = "disabled";
+		}
+		else if (player.hasTag("disablestate"))
+		{
+			player.Untag("disablestate");
+			state = "enabled";
+		}
+
+		if (isClient() && player.isMyPlayer()) 
+		{
+			client_AddToChat("State: "+state, SColor(255, 255, 0, 0));
+		}
+	}
 	else if (text_in == "!help")
 	{
 		if (isClient() && player.isMyPlayer()) client_AddToChat("This is non-necessary role-play gamemode.\nYou may follow RP speech on your own\n", SColor(255, 50, 50, 50));
@@ -413,6 +458,26 @@ bool onClientProcessChat(CRules@ this, const string& in text_in, string& out tex
 		if (isClient() && player.isMyPlayer()) client_AddToChat("Controls: WASD to move, left mouse button to attack, right mouse button to use secondary ability, E to interact with stuff\nYou might also have skills to use, check a button that activates it!\n", SColor(255, 50, 50, 50));
 		if (isClient() && player.isMyPlayer()) client_AddToChat("To equip an armor or weapons hold it and press E button. To unequip, hold left control and press E button.\nYou can also scroll chat with SHIFT+ARROW_UP or SHIFT+ARROW_DOWN", SColor(255, 50, 50, 50));
 		return true;
+	}
+	else if (text_in == "!soundtracks")
+	{
+		string state;
+
+		if (!player.hasTag("disablesoundtracks")) 
+		{
+			player.Tag("disablesoundtracks");
+			state = "disabled";
+		}
+		else if (player.hasTag("disablesoundtracks"))
+		{
+			player.Untag("disablesoundtracks");
+			state = "enabled";
+		}
+
+		if (isClient() && player.isMyPlayer()) 
+		{
+			client_AddToChat("Soundtracks: "+state, SColor(255, 255, 0, 0));
+		}
 	}
 	else if (text_in == "!debug" && !getNet().isServer())
 	{

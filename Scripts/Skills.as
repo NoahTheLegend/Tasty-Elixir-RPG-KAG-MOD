@@ -131,13 +131,10 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
         u8 index = params.read_u8(); // skill pos
         u16 skill = params.read_u16(); // skill tag\index\number
 
-        CPlayer@ player = this.getPlayer();
-        if (player is null || !player.isMyPlayer()) return;
-
         this.set_string("skilltype", type);
         this.Sync("skilltype", true);
 
-        if (this.get_u16("mana") > getSkillMana(this.get_string("skilltype"), skill))
+        if (this.get_u16("mana") > getSkillMana(this.get_string("skilltype"), skill) && isServer())
         {
             this.set_u16("mana", this.get_u16("mana") - getSkillMana(this.get_string("skilltype"), skill));
             this.Sync("mana", true);
@@ -148,7 +145,6 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
         u16 cooldown = getSkillCooldown(this.get_string("skilltype"), skill);
         u16 time = getSkillTime(this.get_string("skilltype"), skill);
         u8 skillpos = getSkillPosition(this, name);
-
                 
         //printf(name);
         //printf(""+skillpos);
@@ -161,7 +157,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
             {
                 case 0:
                 {
-                    SetToFreeSlot(this, skillpos, "shieldblock`bool`true_blockchance`f32`50");
+                    SetToFreeSlot(this, skillpos, "shieldblock`bool`true_blockchance`f32`25");
                     break;
                 }
                 case 1: break;
@@ -366,14 +362,20 @@ void SetToFreeSlot(CBlob@ this, u8 skillpos, string buffs)
 {
     CPlayer@ player = this.getPlayer();
     if (player is null) return;
-    if (!player.isMyPlayer()) return;
+
     if (this.get_string("eff1") == "")
     {
         u16 indexs = this.get_u16("skillidx"+skillpos);
         string name = getSkillName(this.get_string("skilltype"+skillpos), indexs);
-        this.set_string("eff1", getEffectIndex(this.get_string("skilltype"+skillpos), indexs)+"_"+name);
-        this.set_string("buffs1", buffs);
-        this.set_u16("timer1", getSkillTime(this.get_string("skilltype"+skillpos), indexs));
+        if (isServer())
+        {
+            this.set_string("eff1", getEffectIndex(this.get_string("skilltype"+skillpos), indexs)+"_"+name);
+            this.set_string("buffs1", buffs);
+            this.set_u16("timer1", getSkillTime(this.get_string("skilltype"+skillpos), indexs));
+        }
+        this.Sync("eff1", true);
+        this.Sync("buffs1", true);
+        this.Sync("timer1", true);
 
         SetBuffs(this, buffs);
     }
@@ -381,9 +383,15 @@ void SetToFreeSlot(CBlob@ this, u8 skillpos, string buffs)
     {
         u16 indexs = this.get_u16("skillidx"+skillpos);
         string name = getSkillName(this.get_string("skilltype"+skillpos), indexs);
-        this.set_string("eff2", getEffectIndex(this.get_string("skilltype"+skillpos), indexs)+"_"+name);
-        this.set_string("buffs2", buffs);
-        this.set_u16("timer2", getSkillTime(this.get_string("skilltype"+skillpos), indexs));
+        if (isServer())
+        {
+            this.set_string("eff2", getEffectIndex(this.get_string("skilltype"+skillpos), indexs)+"_"+name);
+            this.set_string("buffs2", buffs);
+            this.set_u16("timer2", getSkillTime(this.get_string("skilltype"+skillpos), indexs));
+        }
+        this.Sync("eff2", true);
+        this.Sync("buffs2", true);
+        this.Sync("timer2", true);
  
         SetBuffs(this, buffs);
     }
@@ -391,9 +399,15 @@ void SetToFreeSlot(CBlob@ this, u8 skillpos, string buffs)
     {
         u16 indexs = this.get_u16("skillidx"+skillpos);
         string name = getSkillName(this.get_string("skilltype"+skillpos), indexs);
-        this.set_string("eff3", getEffectIndex(this.get_string("skilltype"+skillpos), indexs)+"_"+name);
-        this.set_string("buffs3", buffs);
-        this.set_u16("timer3", getSkillTime(this.get_string("skilltype"+skillpos), indexs));
+        if (isServer())
+        {
+            this.set_string("eff3", getEffectIndex(this.get_string("skilltype"+skillpos), indexs)+"_"+name);
+            this.set_string("buffs3", buffs);
+            this.set_u16("timer3", getSkillTime(this.get_string("skilltype"+skillpos), indexs));
+        }
+        this.Sync("eff3", true);
+        this.Sync("buffs3", true);
+        this.Sync("timer3", true);
 
         SetBuffs(this, buffs);
     }
@@ -401,9 +415,15 @@ void SetToFreeSlot(CBlob@ this, u8 skillpos, string buffs)
     {
         u16 indexs = this.get_u16("skillidx"+skillpos);
         string name = getSkillName(this.get_string("skilltype"+skillpos), indexs);
-        this.set_string("eff4", getEffectIndex(this.get_string("skilltype"+skillpos), indexs)+"_"+name);
-        this.set_string("buffs4", buffs);
-        this.set_u16("timer4", getSkillTime(this.get_string("skilltype"+skillpos), indexs));
+        if (isServer())
+        {
+            this.set_string("eff4", getEffectIndex(this.get_string("skilltype"+skillpos), indexs)+"_"+name);
+            this.set_string("buffs4", buffs);
+            this.set_u16("timer4", getSkillTime(this.get_string("skilltype"+skillpos), indexs));
+        }
+        this.Sync("eff4", true);
+        this.Sync("buffs4", true);
+        this.Sync("timer4", true);
 
         SetBuffs(this, buffs);
     }
@@ -414,6 +434,9 @@ void SetToFreeSlot(CBlob@ this, u8 skillpos, string buffs)
         this.set_string("eff5", getEffectIndex(this.get_string("skilltype"+skillpos), indexs)+"_"+name);
         this.set_string("buffs5", buffs);
         this.set_u16("timer5", getSkillTime(this.get_string("skilltype"+skillpos), indexs));
+        this.Sync("eff5", true);
+        this.Sync("buffs5", true);
+        this.Sync("timer5", true);
 
         SetBuffs(this, buffs);
     }
@@ -424,6 +447,9 @@ void SetToFreeSlot(CBlob@ this, u8 skillpos, string buffs)
         this.set_string("eff6", getEffectIndex(this.get_string("skilltype"+skillpos), indexs)+"_"+name);
         this.set_string("buffs6", buffs);
         this.set_u16("timer6", getSkillTime(this.get_string("skilltype"+skillpos), indexs));
+        this.Sync("eff6", true);
+        this.Sync("buffs6", true);
+        this.Sync("timer6", true);
 
         SetBuffs(this, buffs);
     }
@@ -434,6 +460,9 @@ void SetToFreeSlot(CBlob@ this, u8 skillpos, string buffs)
         this.set_string("eff7", getEffectIndex(this.get_string("skilltype"+skillpos), indexs)+"_"+name);
         this.set_string("buffs7", buffs);
         this.set_u16("timer7", getSkillTime(this.get_string("skilltype"+skillpos), indexs));
+        this.Sync("eff7", true);
+        this.Sync("buffs7", true);
+        this.Sync("timer7", true);
 
         SetBuffs(this, buffs);
     }
@@ -441,9 +470,12 @@ void SetToFreeSlot(CBlob@ this, u8 skillpos, string buffs)
     {
         u16 indexs = this.get_u16("skillidx"+skillpos);
         string name = getSkillName(this.get_string("skilltype"+skillpos), indexs);
-        this.set_string("eff8", getEffectIndex(this.get_string("skilltype"+skillpos), indexs)+"_"+name);
+        if (player.isMyPlayer()) this.set_string("eff8", getEffectIndex(this.get_string("skilltype"+skillpos), indexs)+"_"+name);
         this.set_string("buffs8", buffs);
         this.set_u16("timer8", getSkillTime(this.get_string("skilltype"+skillpos), indexs));
+        this.Sync("eff8", true);
+        this.Sync("buffs8", true);
+        this.Sync("timer8", true);
 
         SetBuffs(this, buffs);
     }
@@ -454,6 +486,9 @@ void SetToFreeSlot(CBlob@ this, u8 skillpos, string buffs)
         this.set_string("eff9", getEffectIndex(this.get_string("skilltype"+skillpos), indexs)+"_"+name);
         this.set_string("buffs9", buffs);
         this.set_u16("timer9", getSkillTime(this.get_string("skilltype"+skillpos), indexs));
+        this.Sync("eff9", true);
+        this.Sync("buffs9", true);
+        this.Sync("timer9", true);
 
         SetBuffs(this, buffs);
     }
@@ -464,6 +499,9 @@ void SetToFreeSlot(CBlob@ this, u8 skillpos, string buffs)
         this.set_string("eff10", getEffectIndex(this.get_string("skilltype"+skillpos), indexs)+"_"+name);
         this.set_string("buffs10", buffs);
         this.set_u16("timer10", getSkillTime(this.get_string("skilltype"+skillpos), indexs));
+        this.Sync("eff10", true);
+        this.Sync("buffs10", true);
+        this.Sync("timer10", true);
 
         SetBuffs(this, buffs);
     }
@@ -495,6 +533,7 @@ void SetBuffs(CBlob@ this, string buffs)
         {
             this.set_f32(splitb1[0], this.get_f32(splitb1[0]) + parseFloat(splitb1[2]));
         }
+        this.Sync(splitb1[0], true);
     }
     if (splitb2.length > 0)
     {
@@ -510,6 +549,7 @@ void SetBuffs(CBlob@ this, string buffs)
         {
             this.set_f32(splitb2[0], this.get_f32(splitb2[0]) + parseFloat(splitb2[2]));
         }
+        this.Sync(splitb2[0], true);
     }
     if (splitb3.length > 0)
     {
@@ -525,6 +565,7 @@ void SetBuffs(CBlob@ this, string buffs)
         {
             this.set_f32(splitb3[0], this.get_f32(splitb3[0]) + parseFloat(splitb3[2]));
         }
+        this.Sync(splitb3[0], true);
     }
 }
 

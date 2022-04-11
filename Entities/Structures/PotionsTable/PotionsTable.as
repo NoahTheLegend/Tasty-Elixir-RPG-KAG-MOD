@@ -103,6 +103,14 @@ void onInit(CBlob@ this)
 	this.set_string("add2", "");
 	this.set_string("add3", "");
 	this.set_string("add4", "");
+
+	this.set_string("key1", getRules().get_string("key1"));
+	this.set_string("key2", getRules().get_string("key2"));
+	this.set_string("key3", getRules().get_string("key3"));
+	this.set_string("key4", getRules().get_string("key4"));
+	this.set_string("key5", getRules().get_string("key5"));
+	this.set_string("key6", getRules().get_string("key6"));
+
 /*
 	string[] combinations = names;
 
@@ -125,6 +133,11 @@ void onInit(CBlob@ this)
 		printf(combinations[i]);
 	}
 */
+}
+
+void DoPlaySound(CBlob@ this, string name)
+{
+	if (isClient()) Sound::Play(name, this.getPosition(), 1.0f);
 }
 
 void onTick(CSprite@ this)
@@ -217,7 +230,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			{
 				if (this.get_string("add1") == "" && this.get_string("add2") == "" && this.get_string("add3") == "" && this.get_string("add4") == "" )
 				{
-					this.getSprite().PlaySound("NoAmmo.ogg");
+					DoPlaySound(this, "NoAmmo.ogg");
 					return;
 				}
 				// potion goes here
@@ -227,12 +240,12 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	        	potion.set_string("add2", this.get_string("add2"));
 	        	potion.set_string("add3", this.get_string("add3"));
 	        	potion.set_string("add4", this.get_string("add3"));
-            	potion.set_string("key1", getRules().get_string("key1"));
-	        	potion.set_string("key2", getRules().get_string("key2"));
-	        	potion.set_string("key3", getRules().get_string("key3"));
-	        	potion.set_string("key4", getRules().get_string("key4"));
-	        	potion.set_string("key5", getRules().get_string("key5"));
-	        	potion.set_string("key6", getRules().get_string("key6")); 
+            	potion.set_string("key1", this.get_string("key1"));
+	        	potion.set_string("key2", this.get_string("key2"));
+	        	potion.set_string("key3", this.get_string("key3"));
+	        	potion.set_string("key4", this.get_string("key4"));
+	        	potion.set_string("key5", this.get_string("key5"));
+	        	potion.set_string("key6", this.get_string("key6")); 
 
 				potion.setPosition(this.getPosition());
 				potion.server_setTeamNum(0);
@@ -243,42 +256,33 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 				this.set_string("add2", "");
 				this.set_string("add3", "");
 				this.set_string("add4", "");
-
-				this.getSprite().PlaySound("PotionMade.ogg");
 			}
 			else
 			{
 				if (this.get_string("add1") == "") // apply effect1
 				{
 					this.set_string("add1", name);
-					this.getSprite().PlaySound("PotionMade.ogg");
 					//printf(name);
 				}
 				else if (this.get_string("add2") == "") // apply effect2
 				{
 					this.set_string("add2", name);
-					this.getSprite().PlaySound("PotionMade.ogg");
-					//printf(name);
 				}
 				else if (this.get_string("add3") == "") // apply effect3
 				{
 					this.set_string("add3", name);
-					this.getSprite().PlaySound("PotionMade.ogg");
-					//printf(name);
 				}
 				else if (this.get_string("add4") == "") // apply effect4
 				{
 					this.set_string("add4", name);
-					this.getSprite().PlaySound("PotionMade.ogg");
-					//printf(name);
 				}
 				else
 				{
-					this.getSprite().PlaySound("NoAmmo.ogg");
 					server_CreateBlob(name, 0, this.getPosition());
 					return;
 				}
 			}
 		}
+		DoPlaySound(this, "PotionMade.ogg");
 	}
 }

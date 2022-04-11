@@ -515,16 +515,4 @@ void onHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@
 		params.write_u32(bleedtime);
 		hitBlob.SendCommand(hitBlob.getCommandID("receive_effect"), params);
 	}
-	if (hitBlob !is null && hitBlob.getName() == "knight")
-	{
-		for (int i = 0; i < 11; i++)
-		{
-			if (hitBlob.get_u16("skillidx"+i) == 0 && hitBlob.get_string("eff"+i) != "8_Reassurance"
-			&& hitBlob.get_string("eff"+i) != "3_bleed" && hitBlob.get_u16("timer"+i) != 0)
-			{
-				hitBlob.set_u16("timer"+i, 1); // set to last tick for cancelling buff
-				break;
-			}
-		}
-	}
 }

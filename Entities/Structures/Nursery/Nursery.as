@@ -26,7 +26,7 @@ void onInit(CBlob@ this)
 
 	{
 		ShopItem@ s = addShopItem(this, "Buy burdock", "$burdock$", "burdock", "Burdock root, leaf, and seeds are used as basic medicine.", true); //hp
-		AddRequirement(s.requirements, "coin", "", "Coins", 35);
+		AddRequirement(s.requirements, "coin", "", "Coins", 135);
 
 		s.spawnNothing = true;
 
@@ -36,7 +36,7 @@ void onInit(CBlob@ this)
 	}
 	{
 		ShopItem@ s = addShopItem(this, "Buy burnet", "$burnet$", "burnet", "The small flowers lack true petals\nand are crowded into a dense head or spike.", true); //?
-		AddRequirement(s.requirements, "coin", "", "Coins", 30);
+		AddRequirement(s.requirements, "coin", "", "Coins", 150);
 
 		s.spawnNothing = true;
 
@@ -46,7 +46,7 @@ void onInit(CBlob@ this)
 	}
 	{
 		ShopItem@ s = addShopItem(this, "Buy equisetum", "$equisetum$", "equisetum", "It's leaf used to be a\nmust-have in a long travel without a bandage.\nAlso known as horsetail.", true); //bleed
-		AddRequirement(s.requirements, "coin", "", "Coins", 25);
+		AddRequirement(s.requirements, "coin", "", "Coins", 115);
 
 		s.spawnNothing = true;
 
@@ -56,7 +56,7 @@ void onInit(CBlob@ this)
 	}
 	{
 		ShopItem@ s = addShopItem(this, "Buy mindwort", "$mindwort$", "mindwort", "Mindwort is used as a potent sedative,\nhelpful in recovery from major shocks", true); //resists
-		AddRequirement(s.requirements, "coin", "", "Coins", 30);
+		AddRequirement(s.requirements, "coin", "", "Coins", 160);
 
 		s.spawnNothing = true;
 
@@ -66,7 +66,7 @@ void onInit(CBlob@ this)
 	}
 	{
 		ShopItem@ s = addShopItem(this, "Buy poppy", "$poppy$", "poppy", "In combination with other\nherbs, Poppy is used for\nmental and physical tiredness", true); //mana
-		AddRequirement(s.requirements, "coin", "", "Coins", 25);
+		AddRequirement(s.requirements, "coin", "", "Coins", 100);
 
 		s.spawnNothing = true;
 
@@ -76,7 +76,7 @@ void onInit(CBlob@ this)
 	}
 	{
 		ShopItem@ s = addShopItem(this, "Buy thyme", "$thyme$", "thyme", "Thyme contains chemicals that\nmight help bacterial and fungal infections.", true); //poison
-		AddRequirement(s.requirements, "coin", "", "Coins", 30);
+		AddRequirement(s.requirements, "coin", "", "Coins", 140);
 
 		s.spawnNothing = true;
 

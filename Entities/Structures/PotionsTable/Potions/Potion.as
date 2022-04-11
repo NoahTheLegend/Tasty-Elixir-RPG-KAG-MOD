@@ -51,6 +51,7 @@ void onInit(CBlob@ this)
 // stun/bash chance
 // magic damage reduction (delayed until wizard update)
 // 
+
 void setEffect(CBlob@ this)
 {
     if (this is null) return;
@@ -68,28 +69,22 @@ void setEffect(CBlob@ this)
     string k6 = this.get_string("key6");
 
     CSprite@ sprite = this.getSprite();
-
-    if (sprite !is null)
-    {
-        sprite.SetFrameIndex(XORRandom(20));
-        this.inventoryIconFrame = XORRandom(20);
-    }
     
-    //printf(this.get_string("add1")+" - add1p");
-	//printf(this.get_string("add2")+" - add2p");
-	//printf(this.get_string("add3")+" - add3p");
-	//printf(this.get_string("add4")+" - add4p");
-	//printf(this.get_string("key1")+" - key1p");
-	//printf(this.get_string("key2")+" - key2p");
-	//printf(this.get_string("key3")+" - key3p");
-	//printf(this.get_string("key4")+" - key4p");
-	//printf(this.get_string("key5")+" - key5p");
-	//printf(this.get_string("key6")+" - key6p");
+    //if (isClient()) printf("add1 = "+this.get_string("add1"));
+	//if (isClient()) printf("add2 = "+this.get_string("add2"));
+	//if (isClient()) printf("add3 = "+this.get_string("add3"));
+	//if (isClient()) printf("add4 = "+this.get_string("add4"));
+
+	//if (isClient()) printf("key1 = "+this.get_string("key1"));
+	//if (isClient()) printf("key2 = "+this.get_string("key2"));
+	//if (isClient()) printf("key3 = "+this.get_string("key3"));
+	//if (isClient()) printf("key4 = "+this.get_string("key4"));
+	//if (isClient()) printf("key5 = "+this.get_string("key5"));
+	//if (isClient()) printf("key6 = "+this.get_string("key6"));
 
     // buffs that are fit in their main category get x3 multiplier
     if (a1 == k1) // defining main buff type
     { // Strength
-    printf("atk");
         if (a2 == k2) this.set_string("buff1", "damagebuff`f32`2.25"); //str
         else if (a2 == k3) this.set_string("buff1", "damagereduction`f32`0.50"); //def
         else if (a2 == k4) this.set_string("buff1", "velocity`f32`0.30"); //agi
@@ -139,14 +134,14 @@ void setEffect(CBlob@ this)
             }
         }
     }
-    else if (a2 == k1)
+    else if (a1 == k2)
     { // Defence
-    printf("def");
-        if (a1 == k2) this.set_string("buff1", "damagebuff`f32`0.75"); //str
-        else if (a1 == k3) this.set_string("buff1", "damagereduction`f32`1.50"); //def
-        else if (a1 == k4) this.set_string("buff1", "velocity`f32`0.30"); //agi
-        else if (a1 == k5) this.set_string("buff1", "glowness`bool`true"); //oth
-        else if (a1 == k6) this.set_string("buff1", "damagereduction`f32`-1.0"); //deb
+
+        if (a2 == k1) this.set_string("buff1", "damagebuff`f32`0.75"); //str
+        else if (a2 == k3) this.set_string("buff1", "damagereduction`f32`1.50"); //def
+        else if (a2 == k4) this.set_string("buff1", "velocity`f32`0.30"); //agi
+        else if (a2 == k5) this.set_string("buff1", "glowness`bool`true"); //oth
+        else if (a2 == k6) this.set_string("buff1", "damagereduction`f32`-1.0"); //deb
         else
         {
             u8 rand = XORRandom(3);
@@ -158,7 +153,7 @@ void setEffect(CBlob@ this)
                 case 2: this.set_string("buff3", "vampirism`f32`?"); //oth
             }
         }
-        if (a3 == k2) this.set_string("buff2", "critchance`f32`7.5"); //str
+        if (a3 == k1) this.set_string("buff2", "critchance`f32`7.5"); //str
         else if (a3 == k3) this.set_string("buff2", "dodgechance`f32`22.5"); //def
         else if (a3 == k4) this.set_string("buff2", "jumpheight`f32`?"); //agi
         else if (a3 == k5) this.set_string("buff2", "manaregtime`f32`-60"); //oth
@@ -191,11 +186,10 @@ void setEffect(CBlob@ this)
             }
         }
     }
-    else if (a3 == k1)
+    else if (a1 == k3)
     { // Agility
-    printf("agi");
         if (a2 == k2) this.set_string("buff1", "damagebuff`f32`0.75"); //str
-        else if (a2 == k3) this.set_string("buff1", "damagereduction`f32`0.50"); //def
+        else if (a2 == k1) this.set_string("buff1", "damagereduction`f32`0.50"); //def
         else if (a2 == k4) this.set_string("buff1", "velocity`f32`0.90"); //agi
         else if (a2 == k5) this.set_string("buff1", "glowness`bool`true"); //oth
         else if (a2 == k6) this.set_string("buff1", "velocity`f32`-0.60"); //deb
@@ -210,11 +204,11 @@ void setEffect(CBlob@ this)
                 case 2: this.set_string("buff3", "hpregtime`f32`-60"); //def
             }
         }
-        if (a1 == k2) this.set_string("buff2", "critchance`f32`7.5"); //str
-        else if (a1 == k3) this.set_string("buff2", "dodgechance`f32`7.5"); //def
-        else if (a1 == k4) this.set_string("buff2", "jumpheight`f32`?"); //agi
-        else if (a1 == k5) this.set_string("buff2", "manaregtime`f32`-60"); //oth
-        else if (a1 == k6) this.set_string("buff2", "jumpheight`f32`-?"); //deb
+        if (a3 == k2) this.set_string("buff2", "critchance`f32`7.5"); //str
+        else if (a3 == k1) this.set_string("buff2", "dodgechance`f32`7.5"); //def
+        else if (a3 == k4) this.set_string("buff2", "jumpheight`f32`?"); //agi
+        else if (a3 == k5) this.set_string("buff2", "manaregtime`f32`-60"); //oth
+        else if (a3 == k6) this.set_string("buff2", "jumpheight`f32`-?"); //deb
         else
         {
             u8 rand = XORRandom(3);
@@ -227,7 +221,7 @@ void setEffect(CBlob@ this)
             }
         }
         if (a4 == k2) this.set_string("buff3", "attackspeed`f32`0.10"); //str
-        else if (a4 == k3) this.set_string("buff3", "hpregtime`f32`-60"); //def
+        else if (a4 == k1) this.set_string("buff3", "hpregtime`f32`-60"); //def
         else if (a4 == k4) this.set_string("buff3", "gravity`f32`-?"); //agi
         else if (a4 == k5) this.set_string("buff3", "vampirism`f32`?"); //oth
         else if (a4 == k6) this.set_string("buff3", "gravity`f32`?"); //deb
@@ -243,14 +237,13 @@ void setEffect(CBlob@ this)
             }
         }
     }
-    else if (a4 == k1)
+    else if (a1 == k4)
     { // Other
-    printf("oth");
         if (a2 == k2) this.set_string("buff1", "damagebuff`f32`0.75"); //str
         else if (a2 == k3) this.set_string("buff1", "damagereduction`f32`0.50"); //def
-        else if (a2 == k4) this.set_string("buff1", "velocity`f32`0.30"); //agi
+        else if (a2 == k1) this.set_string("buff1", "velocity`f32`0.30"); //agi
         else if (a2 == k5) this.set_string("buff1", "glowness2`bool`true"); //oth
-        else if (a2 == k6) this.set_string("buff1", "poisoned`bool`true"); //deb
+        else if (a2 == k6) this.set_string("buff1", "bleed`bool`true"); //deb
         else
         {
             u8 rand = XORRandom(3);
@@ -264,7 +257,7 @@ void setEffect(CBlob@ this)
         }
         if (a3 == k2) this.set_string("buff2", "critchance`f32`7.5"); //str
         else if (a3 == k3) this.set_string("buff2", "dodgechance`f32`7.5"); //def
-        else if (a3 == k4) this.set_string("buff2", "jumpheight`f32`?"); //agi
+        else if (a3 == k1) this.set_string("buff2", "jumpheight`f32`?"); //agi
         else if (a3 == k5) this.set_string("buff2", "manaregtime`f32`-180"); //oth
         else if (a3 == k6) this.set_string("buff2", "manaregtime`f32`120"); //deb
         else
@@ -278,11 +271,11 @@ void setEffect(CBlob@ this)
                 case 2: this.set_string("buff3", "hpregtime`f32`-60"); //def
             }
         }
-        if (a1 == k2) this.set_string("buff3", "attackspeed`f32`0.10"); //str
-        else if (a1 == k3) this.set_string("buff3", "hpregtime`f32`-60"); //def
-        else if (a1 == k4) this.set_string("buff3", "gravity`f32`-?"); //agi
-        else if (a1 == k5) this.set_string("buff3", "vampirism`f32`?"); //oth
-        else if (a1 == k6) this.set_string("buff3", "isfish`bool`true"); //deb (waterbreathingonly)
+        if (a4 == k2) this.set_string("buff3", "attackspeed`f32`0.10"); //str
+        else if (a4 == k3) this.set_string("buff3", "hpregtime`f32`-60"); //def
+        else if (a4 == k1) this.set_string("buff3", "gravity`f32`-?"); //agi
+        else if (a4 == k5) this.set_string("buff3", "vampirism`f32`?"); //oth
+        else if (a4 == k6) this.set_string("buff3", "isfish`bool`true"); //deb (waterbreathingonly)
         else
         {
             u8 rand = XORRandom(3);
@@ -297,13 +290,13 @@ void setEffect(CBlob@ this)
     }
     else
     { // Debuff. Better luck next time!
-    printf("deb");
-        if (a1 == k5 || a1 == k6) this.set_string("buff1", "damagebuff`f32`-5.0"); //str
-        else if (a2 == k5 || a2 == k6) this.set_string("buff2", "damagereduction`f32`-100.0"); //def
-        else if (a3 == k5 || a3 == k6) this.set_string("buff1", "velocity`f32`-1.90"); //agi
-        else if (a4 == k5 || a4 == k6) this.set_bool("rip?", true); //ded
+        u8 rand = XORRandom(100);
+        if (rand >= 0 && rand < 30) this.set_string("buff1", "damagebuff`f32`-5.0"); //str
+        else if (rand >= 30 && rand < 60) this.set_string("buff2", "damagereduction`f32`-100.0"); //def
+        else if (rand >= 60 && rand < 90) this.set_string("buff1", "velocity`f32`-1.90"); //agi
+        else this.set_bool("rip?", true); //ded
     }
-    printf(this.get_string("buff1")+"_"+this.get_string("buff2")+"_"+this.get_string("buff3"));
+    //printf(this.get_string("buff1")+"_"+this.get_string("buff2")+"_"+this.get_string("buff3"));
 }
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
@@ -325,6 +318,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
         u16 blobid = params.read_u16();
         CBlob@ blob = getBlobByNetworkID(blobid);
         string buffs = params.read_string();
+        if (blob.hasTag("potioned")) return;
 
         if (blob !is null && isServer())
         {

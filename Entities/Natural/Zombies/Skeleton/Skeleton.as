@@ -241,23 +241,28 @@ void onTick(CBlob@ this)
 											{
 												//printf("ok");
 												this.set_u16("lastbite",0);
-												return;
 											}
 											else if (other.get_f32("damagereduction") >= 0) power = this.get_f32("bite damage") - other.get_f32("damagereduction");
 											else power = this.get_f32("bite damage");
-											/*if (chance > 0 && XORRandom(100) < chance) //sounds are not working in mp
+											if (chance > 0 && XORRandom(100) < chance)
 											{
-												CBitStream@ params;
+												CBitStream params;
 												if (other !is null && other.get_f32("dodgechance") == 0) params.write_string("isblock");
 												else if (other !is null && other.get_f32("blockchance") == 0 ) params.write_string("isdodge");
 												else
 												{
-													if (XORRandom(10) <= 5) params.write_string("isblock");
-													else params.write_string("isdodge");
+													if (XORRandom(10) <= 5) 
+													{
+														params.write_string("isblock");
+													}
+													else 
+													{
+														params.write_string("isdodge");
+													}
 												}
 												other.SendCommand(other.getCommandID("hitsound"), params);
-											}*/
-											//power = this.get_f32("bite damage") - other.get_f32("damagereduction");
+												power = 0.05;
+											}
 										}
 										else if (other.get_f32("damagereduction") >= 0) power = this.get_f32("bite damage") - other.get_f32("damagereduction");
 										else power = this.get_f32("bite damage");
@@ -461,15 +466,4 @@ void onHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@
 		force.y -= 7.0f;
 		hitBlob.AddForce( force);
 	}*/
-	if (hitBlob !is null && hitBlob.getName() == "knight")
-	{
-		for (int i = 0; i < 11; i++)
-		{
-			if (hitBlob.get_u16("skillidx"+i) == 0 && hitBlob.get_string("eff"+i) != "8_Reassurance" && hitBlob.get_u16("timer"+i) != 0)
-			{
-				hitBlob.set_u16("timer"+i, 1); // set to last tick for cancelling buff
-				break;
-			}
-		}
-	}
 }

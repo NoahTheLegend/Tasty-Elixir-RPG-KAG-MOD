@@ -92,12 +92,13 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 	{
 		if (text_in == "!givespice")
 		{
-			server_CreateBlob("burdockspice", 0, blob.getPosition());
-			server_CreateBlob("burnetspice", 0, blob.getPosition());
-			server_CreateBlob("equisetumspice", 0, blob.getPosition());
-			server_CreateBlob("mindwortspice", 0, blob.getPosition());
-			server_CreateBlob("poppyspice", 0, blob.getPosition());
-			server_CreateBlob("thymespice", 0, blob.getPosition());
+			CBlob@ blob1 = server_CreateBlob("burdockspice", 0, blob.getPosition());
+			CBlob@ blob2 = server_CreateBlob("burnetspice", 0, blob.getPosition());
+			CBlob@ blob3 = server_CreateBlob("equisetumspice", 0, blob.getPosition());
+			CBlob@ blob4 = server_CreateBlob("mindwortspice", 0, blob.getPosition());
+			CBlob@ blob5 = server_CreateBlob("poppyspice", 0, blob.getPosition());
+			CBlob@ blob6 = server_CreateBlob("thymespice", 0, blob.getPosition());
+
 			return true;
 		}
 		else if (text_in == "!poisonme")

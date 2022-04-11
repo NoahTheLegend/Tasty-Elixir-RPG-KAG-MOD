@@ -421,27 +421,44 @@ void onInit(CRules@ this)
 	Reset(this);
 }
 
+void onRestart(CRules@ this)
+{
+	Reset(this);
+}
 
-const string[] names = {
+void Reset(CRules@ this)
+{
+	string[] names = {
 	"burdockspice",
 	"burnetspice",
 	"equisetumspice",
 	"mindwortspice",
 	"poppyspice",
 	"thymespice"
-};
+	};
 
-void onRestart(CRules@ this)
-{
-	Reset(this);
+	string[] combinations;
 
-	string[] combinations = names;
-
-	for (int i = 0; i < 50; i++) // shuffling
+	while (combinations.length < 6) // shuffling
 	{
-		u8 rand = XORRandom(6);
-		combinations.push_back(combinations[rand]);
-		combinations.erase(rand);
+		u8 rand = XORRandom(names.length);
+
+		combinations.push_back(names[rand]);
+		names.erase(rand);
+	}
+
+	CBlob@[] tables;
+	getBlobsByName("potionstable", tables);
+
+	for (int i = 0; i < tables.length; i++)
+	{
+		if (tables[i] is null) continue;
+		tables[i].set_string("key1", combinations[0]);
+		tables[i].set_string("key2", combinations[1]);
+		tables[i].set_string("key3", combinations[2]);
+		tables[i].set_string("key4", combinations[3]);
+		tables[i].set_string("key5", combinations[4]);
+		tables[i].set_string("key6", combinations[5]);
 	}
 
 	this.set_string("key1", combinations[0]);
@@ -450,10 +467,7 @@ void onRestart(CRules@ this)
 	this.set_string("key4", combinations[3]);
 	this.set_string("key5", combinations[4]);
 	this.set_string("key6", combinations[5]);
-}
 
-void Reset(CRules@ this)
-{
 	printf("Restarting rules script: " + getCurrentScriptName());
 	SandboxSpawns spawns();
 	SandboxCore core(this, spawns);

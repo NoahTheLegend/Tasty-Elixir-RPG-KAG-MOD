@@ -59,6 +59,10 @@ void onInit(CBlob@ this)
 	this.addCommandID("unequiparmor");
 	this.addCommandID("unequipgloves");
 	this.addCommandID("unequipboots");
+	this.addCommandID("update_stats");
+	this.addCommandID("sync_stats");
+
+	this.addCommandID("hitsound");
 
 	this.set_bool("hasarmor", false);
 	this.set_string("armorname", "");
@@ -490,7 +494,7 @@ void ManageBow(CBlob@ this, ArcherInfo@ archer, RunnerMoveVars@ moveVars)
 							{
 								this.set_bool("concentration", false);
 								this.Sync("concentration", true);
-								this.set_u16("timer"+(getSkillPosition(this, this.getName(), 0)+1), 1);
+								this.set_u16("timer"+getSkillPosition(this, this.getName(), 0), 1);
 							}
 						}
 					}
@@ -639,22 +643,23 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 
 void onTick(CBlob@ this)
 {
-	//if (getGameTime()%90==0)
-	//{
-	//	if (isServer()) printf("_____________________");
-	//	if (isServer()) printf(""+this.get_f32("damagebuff"));
-	//	if (isServer()) printf(""+this.get_f32("critchance"));
-	//	if (isServer()) printf(""+this.get_f32("attackspeed"));
-	//	if (isServer()) printf(this.get_string("eff1"));
-	//	printf(" ");
-	//	printf("timer: "+this.get_u16("timer1"));
-	//	printf("skillcd: "+this.get_u16("skillcd1"));
-	//	printf(this.get_string("skill1"));
-	//}
-	CControls@ controls = this.getControls();
-	if (controls !is null)
+	if (getGameTime()%150==0) 
 	{
-		if (controls.isKeyJustReleased(KEY_KEY_G) && this.get_string("skill1") != ""
+		//printf(""+this.get_f32("blockchance"));
+		//printf(""+this.get_u16("timer1"));
+		//printf(""+this.get_string("eff1"));
+		//printf(""+this.get_string("buffs1"));
+		//printf(""+this.get_u16("timer2"));
+		//printf(this.get_string("skill1"));
+		//printf(this.get_string("skill2"));
+		//printf(this.get_string("skill3"));
+	}
+	CControls@ controls = this.getControls();
+	if (controls !is null && this.getTickSinceCreated() >= 5)
+	{
+		if (controls.isKeyJustReleased(KEY_KEY_G)
+		&& this.get_u16("mana") >= getSkillMana(this.get_string("skilltype1"), this.get_u16("skillidx1"))
+		&& this.get_string("skill1") != ""
 		&& this.get_u16("skillcd1") == 0 && !this.get_bool("animplaying")) // skill 1
 		{
 			CBitStream params;
@@ -966,9 +971,12 @@ void onTick(CBlob@ this)
 	{
 		if (this.get_u16("hpregtimer") > 0) this.set_u16("hpregtimer", this.get_u16("hpregtimer") - 30);
 		if (this.get_u16("manaregtimer") > 0) this.set_u16("manaregtimer", this.get_u16("manaregtimer") - 30);
-		if (this.get_u16("hpregtimer") < 0) this.set_u16("hpregtimer", 0);
-		if (this.get_u16("manaregtimer") < 0) this.set_u16("manaregtimer", 0);
-
+		if (this.get_u16("hpregtimer") < 0 || this.get_u16("hpregtimer") > 30000) this.set_u16("hpregtimer", 0);
+		if (this.get_u16("manaregtimer") < 0 || this.get_u16("manaregtimer") > 30000) this.set_u16("manaregtimer", 0);
+		
+		//CPlayer@ player = this.getPlayer();
+		//if (player is null || player.isMyPlayer()) return;
+		
 		//stat timers
 		if (this.get_u16("timer1") > 0)
 		{
@@ -1075,25 +1083,146 @@ void onTick(CBlob@ this)
 void TimerCheck(CBlob@ this, u8 index)
 {
 	this.set_u16("timer"+index, this.get_u16("timer"+index) - 30);
-	if (this.get_u16("timer"+index) <= 3 || this.get_u16("timer"+index) > 25000) 
+
+	if (this.get_u16("timer"+index) <= 1 || this.get_u16("timer"+index) > 25000) 
 	{
 		this.set_u16("timer"+index, 0);
-		CBitStream params;
-		params.write_string(this.get_string("buffs"+index));
-		params.write_u8(index);
-		this.SendCommand(this.getCommandID("timercheck"), params);
+		if (isServer())
+		{
+			CBitStream params;
+			params.write_string(this.get_string("buffs"+index));
+			params.write_u8(index);
+			this.SendCommand(this.getCommandID("timercheck"), params);
+		}
 	}
 	if (index > 1)
 	{
 		if (this.get_u16("timer"+(index-1)) <= 0)
 		{
 			this.set_u16("timer"+(index-1), this.get_u16("timer"+index));
+			this.Sync("timer"+(index-1), true);
 			this.set_string("buffs"+(index-1), this.get_string("buffs"+index));
+			this.Sync("buffs"+(index-1), true);
 			this.set_string("eff"+(index-1), this.get_string("eff"+index));
+			this.Sync("eff"+(index-1), true);
 			this.set_u16("timer"+index, 0);
+			this.Sync("timer"+index, true);
 			this.set_string("buffs"+index, "");
+			this.Sync("buffs"+index, true);
 			this.set_string("eff"+index, "");
+			this.Sync("eff"+index, true);
 		}
+	}
+	else if (index == 1 && this.get_u16("timer1") <= 1 ) // clear
+	{
+		this.set_u16("timer1", 0);
+		this.Sync("timer1", true);
+		this.set_string("buffs1", "");
+		this.Sync("buffs1", true);
+		this.set_string("eff1", "");
+		this.Sync("eff1", true);
+		this.set_u16("timer1", 0);
+		this.Sync("timer1", true);
+	}
+}
+
+void SetToFreeSlot(CBlob@ this, string name, string buff, u16 time)
+{
+	if (this.get_string("eff1") == "")
+	{
+		this.set_u16("timer1", time);
+		this.set_string("eff1", name);
+		this.Sync("eff1", true); // for onRender
+		this.set_string("buffs1", buff);
+		this.Sync("buffs1", true);
+	} 
+	else if (this.get_string("eff2") == "") 
+	{
+		this.set_u16("timer2", time);
+		this.set_string("eff2", name);
+		this.Sync("eff2", true);
+		this.set_string("buffs2", buff);
+		this.Sync("buffs2", true);
+	}
+	else if (this.get_string("eff3") == "")
+	{
+		this.set_u16("timer3", time);
+		this.set_string("eff3", name);
+		this.Sync("eff3", true);
+		this.set_string("buffs3", buff);
+		this.Sync("buffs3", true);
+	}
+	else if (this.get_string("eff4") == "")
+	{
+		this.set_u16("timer4", time);
+		this.set_string("eff4", name);
+		this.Sync("eff4", true);
+		this.set_string("buffs4", buff);
+		this.Sync("buffs4", true);
+	}
+	else if (this.get_string("eff5") == "")
+	{
+		this.set_u16("timer5", time);
+		this.set_string("eff5", name);
+		this.Sync("eff5", true);
+		this.set_string("buffs5", buff);
+		this.Sync("buffs5", true);
+	}
+	else if (this.get_string("eff6") == "")
+	{
+		this.set_u16("timer6", time);
+		this.set_string("eff6", name);
+		this.Sync("eff6", true);
+		this.set_string("buffs6", buff);
+		this.Sync("buffs6", true);
+	} 
+	else if (this.get_string("eff7") == "") 
+	{
+		this.set_u16("timer7", time);
+		this.set_string("eff7", name);
+		this.Sync("eff7", true);
+		this.set_string("buffs7", buff);
+		this.Sync("buffs7", true);
+	}
+	else if (this.get_string("eff8") == "")
+	{
+		this.set_u16("timer8", time);
+		this.set_string("eff8", name);
+		this.Sync("eff8", true);
+		this.set_string("buffs8", buff);
+		this.Sync("buffs8", true);
+	}
+	else if (this.get_string("eff9") == "")
+	{
+		this.set_u16("timer9", time);
+		this.set_string("eff9", name);
+		this.Sync("eff9", true);
+		this.set_string("buffs9", buff);
+		this.Sync("buffs9", true);
+	}
+	else if (this.get_string("eff10") == "")
+	{
+		this.set_u16("timer10", time);
+		this.set_string("eff10", name);
+		this.Sync("eff10", true);
+		this.set_string("buffs10", buff);
+		this.Sync("buff10", true);
+	}
+}
+
+void UpdateStats(CBlob@ this, string name)
+{
+	CPlayer@ player = this.getPlayer();
+	if (player is null) return;
+
+	if (isServer()) 
+	{
+		CBlob@ blob = server_CreateBlob(name, this.getTeamNum(), this.getPosition());
+		blob.setPosition(this.getPosition());
+
+		CBitStream params;
+		params.write_u16(blob.getNetworkID());
+		this.SendCommand(this.getCommandID("update_stats"), params);
 	}
 }
 
@@ -1221,8 +1350,8 @@ void ShootArrow(CBlob @this, Vec2f arrowPos, Vec2f aimpos, f32 arrowspeed, const
 
 			this.set_bool("concentration", false);
 			this.Sync("concentration", true);
-			this.set_u16("timer"+(getSkillPosition(this, this.getName(), 0)+1), 1);
-			this.Sync("timer"+(getSkillPosition(this, this.getName(), 0)+1), true);
+			this.set_u16("timer"+getSkillPosition(this, this.getName(), 0), 1);
+			this.Sync("timer"+getSkillPosition(this, this.getName(), 0), true);
 		}
 		else params.write_Vec2f(arrowVel);
 
@@ -1298,257 +1427,81 @@ CBlob@ CreateArrow(CBlob@ this, Vec2f arrowPos, Vec2f arrowVel, u8 arrowType)
 	return arrow;
 }
 
-void SetToFreeSlot(CBlob@ this, string name, string buff, u16 time)
-{
-	if (this.get_string("eff1") == "")
-	{
-		this.set_u16("timer1", time);
-		this.set_string("eff1", name);
-		this.Sync("eff1", true); // for onRender
-		this.set_string("buffs1", buff);
-		this.Sync("buffs1", true);
-	} 
-	else if (this.get_string("eff2") == "") 
-	{
-		this.set_u16("timer2", time);
-		this.set_string("eff2", name);
-		this.Sync("eff2", true);
-		this.set_string("buffs2", buff);
-		this.Sync("buffs2", true);
-	}
-	else if (this.get_string("eff3") == "")
-	{
-		this.set_u16("timer3", time);
-		this.set_string("eff3", name);
-		this.Sync("eff3", true);
-		this.set_string("buffs3", buff);
-		this.Sync("buffs3", true);
-	}
-	else if (this.get_string("eff4") == "")
-	{
-		this.set_u16("timer4", time);
-		this.set_string("eff4", name);
-		this.Sync("eff4", true);
-		this.set_string("buffs4", buff);
-		this.Sync("buffs4", true);
-	}
-	else if (this.get_string("eff5") == "")
-	{
-		this.set_u16("timer5", time);
-		this.set_string("eff5", name);
-		this.Sync("eff5", true);
-		this.set_string("buffs5", buff);
-		this.Sync("buffs5", true);
-	}
-	else if (this.get_string("eff6") == "")
-	{
-		this.set_u16("timer6", time);
-		this.set_string("eff6", name);
-		this.Sync("eff6", true); // for onRender
-		this.set_string("buffs6", buff);
-		this.Sync("buffs6", true);
-	} 
-	else if (this.get_string("eff7") == "") 
-	{
-		this.set_u16("timer7", time);
-		this.set_string("eff7", name);
-		this.Sync("eff7", true);
-		this.set_string("buffs7", buff);
-		this.Sync("buffs7", true);
-	}
-	else if (this.get_string("eff8") == "")
-	{
-		this.set_u16("timer8", time);
-		this.set_string("eff8", name);
-		this.Sync("eff8", true);
-		this.set_string("buffs8", buff);
-		this.Sync("buffs8", true);
-	}
-	else if (this.get_string("eff9") == "")
-	{
-		this.set_u16("timer9", time);
-		this.set_string("eff9", name);
-		this.Sync("eff9", true);
-		this.set_string("buffs9", buff);
-		this.Sync("buffs9", true);
-	}
-	else if (this.get_string("eff10") == "")
-	{
-		this.set_u16("timer10", time);
-		this.set_string("eff10", name);
-		this.Sync("eff10", true);
-		this.set_string("buffs10", buff);
-		this.Sync("buff10", true);
-	}
-}
-
-void SyncStats(CBlob@ this)
-{
-
-	this.Sync("velocity", true);
-	this.Sync("dodgechance", true);
-	this.Sync("blockchance", true);
-	this.Sync("damagereduction", true);
-	this.Sync("hpregtime", true);
-	this.Sync("manaregtime", true);
-	this.Sync("manareg", true);
-	this.Sync("mana", true);
-	this.Sync("maxmana", true);
-	this.Sync("critchance", true);
-	this.Sync("damagebuff", true);
-	this.Sync("dealtdamage", true);
-}
-
-void UpdateStats(CBlob@ this, string name)
-{
-	if (isServer()) 
-	{
-		CBlob@ blob = server_CreateBlob(name, this.getTeamNum(), this.getPosition());
-		blob.setPosition(this.getPosition());
-
-		if (this is null || blob is null) return;
-
-												this.set_f32("velocity", this.get_f32("velocity") + blob.get_f32("velocity"));
-    	if (blob.get_f32("dodgechance")>0) 		this.set_f32("dodgechance", this.get_f32("dodgechance") - blob.get_f32("dodgechance"));
-		if (blob.get_f32("blockchance")>0) 		this.set_f32("blockchance", this.get_f32("blockchance") - blob.get_f32("blockchance"));
-    	if (blob.get_f32("damagereduction")>0)	this.set_f32("damagereduction", this.get_f32("damagereduction") - blob.get_f32("damagereduction"));
-		if (blob.get_f32("hpregtime")>0) 		this.set_f32("hpregtime", this.get_f32("hpregtime") - (blob.get_f32("hpregtime"))*-1);
-		if (blob.get_f32("manaregtime")>0)		this.set_f32("manaregtime", this.get_f32("manaregtime") - (blob.get_f32("manaregtime"))*-1);
-		if (blob.get_u16("manareg")>0) 			this.set_u16("manareg", this.get_u16("manareg") - blob.get_u16("manareg"));
-		if (blob.get_u16("mana")>0) 			this.set_u16("mana", this.get_u16("mana") - blob.get_u16("mana"));
-		if (blob.get_u16("maxmana")>0) 			this.set_u16("maxmana", this.get_u16("maxmana") - blob.get_u16("maxmana"));
-		if (blob.get_f32("critchance")>0) 		this.set_f32("critchance", this.get_f32("critchance") - blob.get_f32("critchance"));
-		if (blob.get_f32("damagebuff")>0) 		this.set_f32("damagebuff", this.get_f32("damagebuff") - blob.get_f32("damagebuff"));
-		if (blob.get_f32("dealtdamage")>0) 		this.set_f32("dealtdamage", this.get_f32("dealtdamage") - blob.get_f32("dealtdamage"));
-
-		SyncStats(this);
-	}
-}
-
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
-	if (cmd == this.getCommandID("timercheck") && isServer())
+	if (cmd == this.getCommandID("timercheck"))
 	{
-		string buffs = params.read_string(); //buffnameval+buffname2val2...
-		u8 timerindex = params.read_u8();
-
-		string[] spl = buffs.split("_");
-
-		string[] splb1; //buffname+val
-		string[] splb2;
-		string[] splb3;
-
-		if (spl.length > 0) splb1 = spl[0].split("`");
-		if (spl.length > 1) splb2 = spl[1].split("`");
-		if (spl.length > 2) splb3 = spl[2].split("`");
-
-		//reminder: name`type`val_
-		if (splb1.length >= 3)
+		if (isServer())
 		{
-			if (splb1[1] == "bool")
-			{
-				this.set_bool(splb1[0], false);
-			}
-			else if (splb1[1] == "u16")
-			{
-				this.set_u16(splb1[0], this.get_u16(splb1[0]) - parseFloat(splb1[2]));
-			}
-			else
-			{
-				if (splb1[0] == "attackspeed") DoAttackSpeedChange(this.get_f32("attackspeed"), false);
-				this.set_f32(splb1[0], this.get_f32(splb1[0]) - parseFloat(splb1[2]));
-			}
-			this.Sync(splb1[0], true);
-		}
-		if (splb2.length >= 3)
-		{
-			if (splb2[1] == "bool")
-			{
-				this.set_bool(splb2[0], false);
-			}
-			else if (splb2[1] == "u16")
-			{
-				this.set_u16(splb2[0], this.get_u16(splb2[0]) - parseFloat(splb2[2]));
-			}
-			else
-			{
-				if (splb2[0] == "attackspeed") DoAttackSpeedChange(this.get_f32("attackspeed"), false);
-				this.set_f32(splb2[0], this.get_f32(splb2[0]) - parseFloat(splb2[2]));
-			}
-			this.Sync(splb2[0], true);
-		}
-		if (splb3.length >= 3)
-		{
-			if (splb3[1] == "bool")
-			{
-				this.set_bool(splb3[0], false);
-			}
-			else if (splb3[1] == "u16")
-			{
-				this.set_u16(splb3[0], this.get_u16(splb3[0]) - parseFloat(splb3[2]));
-			}
-			else
-			{
-				if (splb3[0] == "attackspeed") DoAttackSpeedChange(this.get_f32("attackspeed"), false);
-				this.set_f32(splb3[0], this.get_f32(splb3[0]) - parseFloat(splb3[2]));
-			}
-			this.Sync(splb3[0], true);
-		}
+			CPlayer@ player = this.getPlayer();
+			if (player is null || !player.isMyPlayer()) return;
 
-		switch(timerindex)
-		{
-			case 1:
+			string buffs = params.read_string(); //buffnameval+buffname2val2...
+			u8 timerindex = params.read_u8();
+
+			string[] spl = buffs.split("_");
+
+			string[] splb1; //buffname+val
+			string[] splb2;
+			string[] splb3;
+
+			if (spl.length > 0) splb1 = spl[0].split("`");
+			if (spl.length > 1) splb2 = spl[1].split("`");
+			if (spl.length > 2) splb3 = spl[2].split("`");
+
+			//reminder: name`type`val_
+			if (splb1.length >= 3)
 			{
-				this.set_string("buffs1", "");
-				this.Sync("buffs1", true);
+				if (splb1[1] == "bool")
+				{
+					this.set_bool(splb1[0], false);
+				}
+				else if (splb1[1] == "u16")
+				{
+					this.set_u16(splb1[0], this.get_u16(splb1[0]) - parseFloat(splb1[2]));
+				}
+				else
+				{
+					if (splb1[0] == "attackspeed") DoAttackSpeedChange(this.get_f32("attackspeed"), false);
+					this.set_f32(splb1[0], this.get_f32(splb1[0]) - parseFloat(splb1[2]));
+				}
+				this.Sync(splb1[0], true);
 			}
-			case 2:
+			if (splb2.length >= 3)
 			{
-				this.set_string("buffs2", "");
-				this.Sync("buffs2", true);
+				if (splb2[1] == "bool")
+				{
+					this.set_bool(splb2[0], false);
+				}
+				else if (splb2[1] == "u16")
+				{
+					this.set_u16(splb2[0], this.get_u16(splb2[0]) - parseFloat(splb2[2]));
+				}
+				else
+				{
+					if (splb2[0] == "attackspeed") DoAttackSpeedChange(this.get_f32("attackspeed"), false);
+					this.set_f32(splb2[0], this.get_f32(splb2[0]) - parseFloat(splb2[2]));
+				}
+				this.Sync(splb2[0], true);
 			}
-			case 3:
+			if (splb3.length >= 3)
 			{
-				this.set_string("buffs3", "");
-				this.Sync("buffs3", true);
-			}
-			case 4:
-			{
-				this.set_string("buffs4", "");
-				this.Sync("buffs4", true);
-			}
-			case 5:
-			{
-				this.set_string("buffs5", "");
-				this.Sync("buffs5", true);
-			}
-			case 6:
-			{
-				this.set_string("buffs6", "");
-				this.Sync("buffs6", true);
-			}
-			case 7:
-			{
-				this.set_string("buffs7", "");
-				this.Sync("buffs7", true);
-			}
-			case 8:
-			{
-				this.set_string("buffs8", "");
-				this.Sync("buffs8", true);
-			}
-			case 9:
-			{
-				this.set_string("buffs9", "");
-				this.Sync("buffs9", true);
-			}
-			case 10:
-			{
-				this.set_string("buffs10", "");
-				this.Sync("buffs10", true);
+				if (splb3[1] == "bool")
+				{
+					this.set_bool(splb3[0], false);
+				}
+				else if (splb3[1] == "u16")
+				{
+					this.set_u16(splb3[0], this.get_u16(splb3[0]) - parseFloat(splb3[2]));
+				}
+				else
+				{
+					if (splb3[0] == "attackspeed") DoAttackSpeedChange(this.get_f32("attackspeed"), false);
+					this.set_f32(splb3[0], this.get_f32(splb3[0]) - parseFloat(splb3[2]));
+				}
+				this.Sync(splb3[0], true);
 			}
 		}
-		this.Untag("potioned");
 	}
 	else if (cmd == this.getCommandID("receive_effect"))
 	{
@@ -1645,6 +1598,76 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			UpdateStats(this, this.get_string("bootsname"));
 		}
 	}
+	else if (cmd == this.getCommandID("update_stats"))
+	{
+		CPlayer@ player = this.getPlayer();
+		if (player is null || !player.isMyPlayer()) return;
+
+		u16 blobid = params.read_u16();
+		CBlob@ blob = getBlobByNetworkID(blobid);
+		if (blob is null) return;
+
+		this.set_f32("velocity", this.get_f32("velocity") + blob.get_f32("velocity"));
+    	this.set_f32("dodgechance", this.get_f32("dodgechance") - blob.get_f32("dodgechance"));
+		this.set_f32("blockchance", this.get_f32("blockchance") - blob.get_f32("blockchance"));
+    	this.set_f32("damagereduction", this.get_f32("damagereduction") - blob.get_f32("damagereduction"));
+		this.set_f32("hpregtime", this.get_f32("hpregtime") - (blob.get_f32("hpregtime"))*-1);
+		this.set_f32("manaregtime", this.get_f32("manaregtime") - (blob.get_f32("manaregtime"))*-1);
+		this.set_u16("manareg", this.get_u16("manareg") - blob.get_u16("manareg"));
+		this.set_u16("mana", this.get_u16("mana") - blob.get_u16("mana"));
+		this.set_u16("maxmana", this.get_u16("maxmana") - blob.get_u16("maxmana"));
+		this.set_f32("critchance", this.get_f32("critchance") - blob.get_f32("critchance"));
+		this.set_f32("damagebuff", this.get_f32("damagebuff") - blob.get_f32("damagebuff"));
+		this.set_f32("dealtdamage", this.get_f32("dealtdamage") - blob.get_f32("dealtdamage"));
+
+		//CBitStream params;
+		//this.SendCommand(this.getCommandID("sync_stats"), params);
+	}
+	else if (cmd == this.getCommandID("sync_stats"))
+	{
+		//printf("velocity = "+"velocity".getHash());
+		////printf("dodgechance = "+"dodgechance".getHash());
+		//printf("blockchance = "+"blockchance".getHash());
+		//printf("damagereduction = "+"damagereduction".getHash());
+		//printf("hpregtime = "+"hpregtime".getHash());
+		//printf("manaregtime = "+"manaregtime".getHash());
+		//printf("manareg = "+"manareg".getHash());
+		//printf("mana = "+"mana".getHash());
+		//printf("maxmana = "+"maxmana".getHash());
+		//printf("critchance = "+"critchance".getHash());
+		//printf("damagebuff = "+"damagebuff".getHash());
+		//printf("dealtdamage = "+"dealtdamage".getHash());
+
+		this.Sync("velocity", true);
+		this.Sync("dodgechance", true); // sync prop not found
+		this.Sync("blockchance", true);
+		this.Sync("damagereduction", true);
+		this.Sync("hpregtime", true);
+		this.Sync("manaregtime", true);
+		this.Sync("manareg", true);
+		this.Sync("mana", true);
+		this.Sync("maxmana", true);
+		this.Sync("critchance", true);
+		this.Sync("damagebuff", true);
+		this.Sync("dealtdamage", true);
+		printf("synced");
+	}
+	else if (cmd == this.getCommandID("hitsound"))
+	{
+		CPlayer@ player = this.getPlayer();
+		if (player is null) return;
+
+		string type = params.read_string();
+		if (type == "isblock")
+		{
+			if (isClient() && player.isMyPlayer()) Sound::Play("metal_stone.ogg", this.getPosition(), 0.5f);
+		}
+		else if (type == "isdodge")
+		{
+			if (isClient() && player.isMyPlayer()) Sound::Play("Silence.ogg", this.getPosition(), 0.5f, 1.25f);
+		}
+		else printf("No `type` exctracted from params!");
+	}
 	else if (cmd == getRules().getCommandID("showdamage"))
 	{
 		f32 dmg = params.read_f32();
@@ -1670,7 +1693,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			arrowVel *= 1.3;
 			this.set_bool("concentration", false);
 			this.Sync("concentration", true);
-			this.set_u16("timer"+(getSkillPosition(this, this.getName(), 0)+1), 1);
+			this.set_u16("timer"+getSkillPosition(this, this.getName(), 0), 1);
 			//printf(""+(getSkillPosition(this, this.getName(), 0)+1));
 		}
 
@@ -1856,15 +1879,21 @@ void CycleToArrowType(CBlob@ this, ArcherInfo@ archer, u8 arrowType)
 	}
 }
 
-u8 getSkillPosition(CBlob@ this, string pclass, u16 ski)
+u8 getSkillPosition(CBlob@ this, string pclass, u16 ski) // move to skills.as later
 {
-    for (int i = 0; i < 11; i++)
-    {
-        if (this.get_u16("skillidx"+i) == ski)
-			return this.get_u8("skillpos"+i);
-    }
+	for (int i = 0; i < 11; i++)
+	{
+		if (this.get_u16("skillidx"+i) == 0
+		&& this.get_string("eff"+i) != "6_Concentration"
+		&& this.get_u16("timer"+i) != 0)
+		{
+			return i;
+			break;
+		}
+	}
 	return 255;
 }
+
 
 // arrow pick menu
 void onCreateInventoryMenu(CBlob@ this, CBlob@ forBlob, CGridMenu @gridmenu)

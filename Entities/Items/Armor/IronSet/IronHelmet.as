@@ -37,6 +37,8 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
         u16 callerid = params.read_u16();
         CBlob@ caller = getBlobByNetworkID(callerid);
 
+        CPlayer@ player = caller.getPlayer();
+
         if (caller !is null)
         {
             if (caller.getCarriedBlob() !is null) caller.getCarriedBlob().server_Die();
@@ -45,7 +47,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 	        caller.set_string("helmetname", "iron_helmet");
 
 	        caller.set_f32("damagereduction", caller.get_f32("damagereduction") + 0.1);
-            caller.set_f32("manaregtime", caller.get_f32("manaregtime") - 1*30);
+            if (player !is null && player.isMyPlayer()) caller.set_f32("manaregtime", caller.get_f32("manaregtime") - 1*30);
             caller.set_u16("maxmana", caller.get_u16("maxmana") + 10);
             caller.set_u16("manareg", caller.get_u16("manareg") + 5);
         }

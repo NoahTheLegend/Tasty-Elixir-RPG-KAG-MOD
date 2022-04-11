@@ -105,7 +105,7 @@ string getSkillDescription(string pclass, u16 ski)
     {
         switch(ski)
         {
-            case SkillsKnight::SHIELDBLOCK: return "You gain additional +50%\nblockchance for 15 seconds.\n\nIf you get a succesful hit by anyone,\nthis effect disappears.";
+            case SkillsKnight::SHIELDBLOCK: return "\n\n\nYou gain additional +25%\nblockchance for 15 seconds.";
         }
     }
     else if (pclass == "archer")
@@ -139,7 +139,7 @@ u16 getSkillCooldown(string pclass, u16 ski)
     {
         switch(ski)
         {
-            case SkillsKnight::SHIELDBLOCK: return 45*30;
+            case SkillsKnight::SHIELDBLOCK: return 30*30;
         }
     }
     else if (pclass == "archer")

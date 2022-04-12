@@ -134,10 +134,10 @@ void onInit(CBlob@ this)
     this.set_f32("blockchance", 0); // %
 	this.set_f32("critchance", 0); // %
     this.set_f32("damagereduction", 0.05);
-	this.set_f32("hpregtime", 15*30);
-	this.set_u16("hpregtimer", 15*30);
-	this.set_f32("manaregtime", 15*30);
-	this.set_u16("manaregtimer", 15*30);
+	this.set_f32("hpregtime", 20*30);
+	this.set_u16("hpregtimer", 20*30);
+	this.set_f32("manaregtime", 20*30);
+	this.set_u16("manaregtimer", 20*30);
 	this.set_u16("manareg", 20);
 	this.set_u16("mana", 115);
 	this.set_u16("maxmana", 115);

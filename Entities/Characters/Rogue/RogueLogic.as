@@ -120,8 +120,8 @@ void onInit(CBlob@ this)
     this.set_f32("damagereduction", 0.05);
 	this.set_f32("hpregtime", 20*30);
 	this.set_u16("hpregtimer", 20*30);
-	this.set_f32("manaregtime", 15*30);
-	this.set_u16("manaregtimer", 10*30);
+	this.set_f32("manaregtime", 20*30);
+	this.set_u16("manaregtimer", 20*30);
 	this.set_u16("manareg", 15);
 	this.set_u16("mana", 65);
 	this.set_u16("maxmana", 65);

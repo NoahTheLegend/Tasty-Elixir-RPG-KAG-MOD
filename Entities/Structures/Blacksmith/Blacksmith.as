@@ -16,7 +16,7 @@ void onInit(CBlob@ this)
 
 	if (sprite !is null)
 	{
-		CSpriteLayer@ trader = sprite.addSpriteLayer("trader", "BlacksmithTrader.png", 16, 24, 0, 0);
+		CSpriteLayer@ trader = sprite.addSpriteLayer("trader", "BlacksmithTrader.png", 16, 30, 0, 0);
 		trader.SetRelativeZ(20);
 		Animation@ stop = trader.addAnimation("stop", 1, false);
 		stop.AddFrame(0);
@@ -197,7 +197,7 @@ void onRender(CSprite@ this)
 		Vec2f pos = blob.getInterpolatedScreenPos();
 
 		GUI::SetFont("menu");
-		GUI::DrawTextCentered("Furnace need wood to smelt ore!", Vec2f(pos.x, pos.y + 85 + Maths::Sin(getGameTime() / 5.0f) * 5.0f), SColor(255, 255, 55, 55));
+		GUI::DrawTextCentered("Furnace needs wood to smelt ore!", Vec2f(pos.x, pos.y + 85 + Maths::Sin(getGameTime() / 5.0f) * 5.0f), SColor(255, 255, 55, 55));
 	}
 }
 

@@ -11,6 +11,11 @@ void onInit(CBlob@ this)
     this.set_u16("manareg", 8);
 }
 
+void onInit(CSprite@ this)
+{
+    this.ScaleBy(0.75f, 0.75f);
+}
+
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
     if (this is null || caller is null) return;

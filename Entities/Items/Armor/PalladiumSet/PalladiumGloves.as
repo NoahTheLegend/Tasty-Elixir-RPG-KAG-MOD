@@ -5,9 +5,14 @@ void onInit(CBlob@ this)
     
     this.Tag("armor");
 
-    this.set_f32("damagereduction", 0.1);
-    this.set_f32("critchance", 5);
-    this.set_f32("damagebuff", 0.15);
+    this.set_f32("damagereduction", 0.35);
+    this.set_f32("critchance", 15.0);
+    this.set_f32("damagebuff", 1.5);
+}
+
+void onInit(CSprite@ this)
+{
+    this.ScaleBy(0.70f, 0.70f);
 }
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
@@ -20,12 +25,12 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
     {
         CBitStream params;
 	    params.write_u16(caller.getNetworkID());
-	    caller.CreateGenericButton("$iron_gloves$", Vec2f(0, 0), this, this.getCommandID("equip"), getTranslatedString("Equip"), params);
+	    caller.CreateGenericButton("$palladium_gloves$", Vec2f(0, 0), this, this.getCommandID("equip"), getTranslatedString("Equip"), params);
     }
     else
     {
         CBitStream params;
-	    caller.CreateGenericButton("$iron_gloves$", Vec2f(0, 0), this, this.getCommandID("unequip"), getTranslatedString("Unequip gloves first!"), params);
+	    caller.CreateGenericButton("$palladium_gloves$", Vec2f(0, 0), this, this.getCommandID("unequip"), getTranslatedString("Unequip gloves first!"), params);
     }
 }
 
@@ -43,11 +48,11 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
             if (caller.getCarriedBlob() !is null) caller.getCarriedBlob().server_Die();
 
             caller.set_bool("hasgloves", true);
-	        caller.set_string("glovesname", "iron_gloves");
+	        caller.set_string("glovesname", "palladium_gloves");
 
-            caller.set_f32("damagereduction", caller.get_f32("damagereduction") + 0.1);
-            caller.set_f32("critchance", caller.get_f32("critchance") + 5);
-            if (player !is null && player.isMyPlayer()) caller.set_f32("damagebuff", caller.get_f32("damagebuff") + 0.15);
+            caller.set_f32("damagereduction", caller.get_f32("damagereduction") + 0.35);
+            caller.set_f32("critchance", caller.get_f32("critchance") + 15.0);
+            if (player !is null && player.isMyPlayer()) caller.set_f32("damagebuff", caller.get_f32("damagebuff") + 1.5);
         }
     }
     else if (cmd==this.getCommandID("unequip")) {}

@@ -127,16 +127,14 @@ void onInit(CBlob@ this)
 	this.set_u16("maxmana", 65);
 	this.set_f32("critchance", 5.0);
 	this.set_f32("damagebuff", 0);
-	this.set_f32("dealtdamage", 0);
-
+	this.set_f32("vampirism", 0); // % set from 0 to 1 for easier managing and multiplying
 	this.set_f32("attackspeed", 0);
-	this.set_f32("armorpenetration", 0); // %
-	this.set_f32("vampirism", 0);
 	this.set_bool("glowness", false);
 	this.set_bool("glowness2", false);
-	this.set_f32("dealtdamage", 0);
-	this.set_f32("gravityresist", 0);
+	this.set_f32("gravityresist", 0); // 15 max
 	this.set_f32("bashchance", 0); // %
+	this.set_f32("dealtdamage", 0);
+
 	//gathered set vars
 	this.set_bool("hasrlset", false);
 	//hunger&thirst
@@ -472,6 +470,12 @@ void onTick(CBlob@ this)
 	if (!this.get("moveVars", @moveVars))
 	{
 		return;
+	}
+
+	//gravity stuff
+	if (this.get_f32("gravityresist") > 0)
+	{
+		this.AddForce(Vec2f(0, -(this.get_f32("gravityresist"))));
 	}
 
 	//lava stuff
@@ -1400,7 +1404,6 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		this.set_u16("maxmana", this.get_u16("maxmana") - blob.get_u16("maxmana"));
 		this.set_f32("critchance", this.get_f32("critchance") - blob.get_f32("critchance"));
 		this.set_f32("damagebuff", this.get_f32("damagebuff") - blob.get_f32("damagebuff"));
-		this.set_f32("dealtdamage", this.get_f32("dealtdamage") - blob.get_f32("dealtdamage"));
 
 		//CBitStream params;
 		//this.SendCommand(this.getCommandID("sync_stats"), params);
@@ -1618,12 +1621,12 @@ void DoAttack(CBlob@ this, f32 damage, f32 aimangle, f32 arcdegrees, u8 type, in
 					{
 						this.server_Hit(b, hi.hitpos, velocity, (damage + this.get_f32("damagebuff"))*2, type, true);
 						Sound::Play("AnimeSword.ogg", this.getPosition(), 1.3f);
-						this.set_f32("dealtdamage", (damage + this.get_f32("damagebuff"))*2);
+						this.set_f32("dealtdamage", (damage + this.get_f32("damagebuff"))*2 - b.get_f32("damagereduction"));
 					}
 					else
 					{
 						this.server_Hit(b, hi.hitpos, velocity, damage + this.get_f32("damagebuff"), type, true);  // server_Hit() is server-side only
-						this.set_f32("dealtdamage", damage + this.get_f32("damagebuff"));
+						this.set_f32("dealtdamage", damage + this.get_f32("damagebuff") - b.get_f32("damagereduction"));
 					}
 
 					// end hitting if we hit something solid, don't if its flesh
@@ -1798,6 +1801,15 @@ void onHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@
 		return;
 	}
 
+	damage -= hitBlob.get_f32("damagereduction");
+	if (damage <= 0 || damage > 500) damage = 0.05;
+
+	if (XORRandom(100) < this.get_f32("bashchance"))
+	{
+		if (isClient()) Sound::Play("Bash.ogg", hitBlob.getPosition(), 1.0f);
+		hitBlob.Tag("wait");
+	}
+
 	if (customData == Hitters::sword &&
 	        ( //is a jab - note we dont have the dmg in here at the moment :/
 	            knight.state == KnightStates::sword_cut_mid ||
@@ -1817,6 +1829,14 @@ void onHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@
 		this.getSprite().PlaySound("/Stun", 1.0f, this.getSexNum() == 0 ? 1.0f : 2.0f);
 	}
 
+	if (hitBlob.hasTag("flesh"))
+	{
+		if(isServer())
+		{
+			this.server_Heal(damage*this.get_f32("vampirism"));
+		}
+	}
+
 	if (this.get_bool("silence"))
 	{
 		this.set_bool("silence", false);
@@ -1828,9 +1848,7 @@ u8 getSkillPosition(CBlob@ this, string pclass, u16 ski) // move to skills.as la
 {
 	for (int i = 0; i < 11; i++)
 	{
-		if (this.get_u16("skillidx"+i) == 0
-		&& this.get_string("eff"+i) != "7_Silence"
-		&& this.get_u16("timer"+i) != 0)
+		if (this.get_string("eff"+i) == "7_Silence")
 		{
 			return i;
 			break;

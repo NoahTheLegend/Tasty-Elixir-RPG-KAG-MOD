@@ -81,23 +81,21 @@ void onInit(CBlob@ this)
     this.set_f32("damagereduction", 0.05);
 	this.set_f32("hpregtime", 20*30);
 	this.set_u16("hpregtimer", 20*30);
-	this.set_f32("manaregtime", 15*30);
-	this.set_u16("manaregtimer", 15*30);
+	this.set_f32("manaregtime", 20*30);
+	this.set_u16("manaregtimer", 20*30);
 	this.set_u16("manareg", 15);
 	this.set_u16("mana", 80);
 	this.set_u16("maxmana", 80);
 	this.set_f32("critchance", 7.5);
 	this.set_f32("damagebuff", 0);
-	this.set_f32("dealtdamage", 0);
-
+	this.set_f32("vampirism", 0); // % set from 0 to 1 for easier managing and multiplying
 	this.set_f32("attackspeed", 0);
-	this.set_f32("armorpenetration", 0); // %
-	this.set_f32("vampirism", 0);
 	this.set_bool("glowness", false);
 	this.set_bool("glowness2", false);
-	this.set_f32("dealtdamage", 0);
-	this.set_f32("gravityresist", 0);
+	this.set_f32("gravityresist", 0); // 15 max
 	this.set_f32("bashchance", 0); // %
+	this.set_f32("dealtdamage", 0);
+
 	//stab stuff
 	this.set_f32("stabdmg", 1.0f);
 	//gathered set vars
@@ -482,19 +480,32 @@ void ManageBow(CBlob@ this, ArcherInfo@ archer, RunnerMoveVars@ moveVars)
 							{
 								this.server_Hit(stabTarget, stabTarget.getPosition(), Vec2f_zero, (this.get_f32("stabdmg") + this.get_f32("damagebuff"))*2,  Hitters::stab);
 								Sound::Play("AnimeSword.ogg", this.getPosition(), 1.3f);
-								this.set_f32("dealtdamage", (this.get_f32("stabdmg") + this.get_f32("damagebuff"))*2);
+								this.set_f32("dealtdamage", (this.get_f32("stabdmg") + this.get_f32("damagebuff"))*2 - stabTarget.get_f32("damagereduction"));
+								if(isServer())
+								{
+									this.server_Heal((this.get_f32("stabdmg") + this.get_f32("damagebuff"))*this.get_f32("vampirism")*2);
+								}
 							}
 							else
 							{
 								this.server_Hit(stabTarget, stabTarget.getPosition(), Vec2f_zero, this.get_f32("stabdmg") + this.get_f32("damagebuff"),  Hitters::stab);
 								Sound::Play("SwordSheath.ogg", this.getPosition(), 1.3f);
-								this.set_f32("dealtdamage", this.get_f32("stabdmg") + this.get_f32("damagebuff"));
+								this.set_f32("dealtdamage", this.get_f32("stabdmg") + this.get_f32("damagebuff") - stabTarget.get_f32("damagereduction"));
+								if(isServer())
+								{
+									this.server_Heal((this.get_f32("stabdmg") + this.get_f32("damagebuff"))*this.get_f32("vampirism"));
+								}
 							}
 							if (this.get_bool("concentration"))
 							{
 								this.set_bool("concentration", false);
 								this.Sync("concentration", true);
 								this.set_u16("timer"+getSkillPosition(this, this.getName(), 0), 1);
+							}
+							if (XORRandom(100) < this.get_f32("bashchance"))
+							{
+								if (isClient()) Sound::Play("Bash.ogg", stabTarget.getPosition(), 1.0f);
+								stabTarget.Tag("wait");
 							}
 						}
 					}
@@ -914,6 +925,12 @@ void onTick(CBlob@ this)
 	if (!this.get("moveVars", @moveVars))
 	{
 		return;
+	}
+
+	//gravity stuff
+	if (this.get_f32("gravityresist") > 0)
+	{
+		this.AddForce(Vec2f(0, -(this.get_f32("gravityresist"))));
 	}
 
 	//lava stuff
@@ -1423,6 +1440,10 @@ CBlob@ CreateArrow(CBlob@ this, Vec2f arrowPos, Vec2f arrowVel, u8 arrowType)
 		{
 			arrow.Tag("critarrow");
 		}
+		if (XORRandom(100) < this.get_f32("bashchance"))
+		{
+			arrow.Tag("basharrow");
+		}
 	}
 	return arrow;
 }
@@ -1618,7 +1639,6 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		this.set_u16("maxmana", this.get_u16("maxmana") - blob.get_u16("maxmana"));
 		this.set_f32("critchance", this.get_f32("critchance") - blob.get_f32("critchance"));
 		this.set_f32("damagebuff", this.get_f32("damagebuff") - blob.get_f32("damagebuff"));
-		this.set_f32("dealtdamage", this.get_f32("dealtdamage") - blob.get_f32("dealtdamage"));
 
 		//CBitStream params;
 		//this.SendCommand(this.getCommandID("sync_stats"), params);
@@ -1883,9 +1903,7 @@ u8 getSkillPosition(CBlob@ this, string pclass, u16 ski) // move to skills.as la
 {
 	for (int i = 0; i < 11; i++)
 	{
-		if (this.get_u16("skillidx"+i) == 0
-		&& this.get_string("eff"+i) != "6_Concentration"
-		&& this.get_u16("timer"+i) != 0)
+		if (this.get_string("eff"+i) == "6_Concentration")
 		{
 			return i;
 			break;

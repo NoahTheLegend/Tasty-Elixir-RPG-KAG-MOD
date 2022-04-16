@@ -541,7 +541,7 @@ void dropArm( CBlob@ this )
     {
         if ((XORRandom(1024) / 1024.0f) < 0.5)
         {
-			CBlob @zombieArm = server_CreateBlob( "ZombieArm", -1, this.getPosition());
+			CBlob @zombieArm = server_CreateBlob( "zombiearm", -1, this.getPosition());
             if (zombieArm !is null)
             {
                 Vec2f vel( XORRandom(2) == 0 ? -2.0 : 2.0f, -5.0f );

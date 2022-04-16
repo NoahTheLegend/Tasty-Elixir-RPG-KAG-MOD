@@ -5,9 +5,14 @@ void onInit(CBlob@ this)
 
     this.Tag("armor");
 
-	this.set_f32("velocity", 0.1);
-    this.set_f32("blockchance", 2.0);
-    this.set_f32("damagereduction", 0.1);
+	this.set_f32("velocity", (XORRandom(3)+1)/10);
+    this.set_f32("blockchance", XORRandom(20)+15);
+    this.set_f32("damagereduction", (XORRandom(25)+1)/10);
+}
+
+void onInit(CSprite@ this)
+{
+    this.ScaleBy(0.35f, 0.35f);
 }
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
@@ -20,12 +25,12 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
     {
         CBitStream params;
 	    params.write_u16(caller.getNetworkID());
-	    caller.CreateGenericButton("$iron_boots$", Vec2f(0, 0), this, this.getCommandID("equip"), getTranslatedString("Equip"), params);
+	    caller.CreateGenericButton("$mythicalalloy_boots$", Vec2f(0, 0), this, this.getCommandID("equip"), getTranslatedString("Equip"), params);
     }
     else
     {
         CBitStream params;
-	    caller.CreateGenericButton("$iron_boots$", Vec2f(0, 0), this, this.getCommandID("unequip"), getTranslatedString("Unequip boots first!"), params);
+	    caller.CreateGenericButton("$mythicalalloy_boots$", Vec2f(0, 0), this, this.getCommandID("unequip"), getTranslatedString("Unequip boots first!"), params);
     }
 }
 
@@ -41,11 +46,16 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
             if (caller.getCarriedBlob() !is null) caller.getCarriedBlob().server_Die();
 
             caller.set_bool("hasboots", true);
-	        caller.set_string("bootsname", "iron_boots");
+	        caller.set_string("bootsname", "mythicalalloy_boots");
 
-	        caller.set_f32("velocity", caller.get_f32("velocity") - 0.1);
-            caller.set_f32("blockchance", caller.get_f32("blockchance") + 2.0);
-            caller.set_f32("damagereduction", caller.get_f32("damagereduction") + 0.1);
+	        caller.set_f32("velocity", caller.get_f32("velocity") - this.get_f32("velocity"));
+            caller.set_f32("blockchance", caller.get_f32("blockchance") + this.get_f32("blockchance"));
+            caller.set_f32("damagereduction", caller.get_f32("damagereduction") + this.get_f32("damagereduction"));
+        
+            //set variables to save XORRandom()ly defined stats
+            caller.set_f32("mythbootsvelocity", this.get_f32("velocity"));
+            caller.set_f32("mythbootsblockchance", this.get_f32("blockchance"));
+            caller.set_f32("mythbootsdamagereduction", this.get_f32("damagereduction"));
         }
     }
     else if (cmd==this.getCommandID("unequip")) {}

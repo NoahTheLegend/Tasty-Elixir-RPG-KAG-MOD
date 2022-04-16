@@ -246,11 +246,15 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 			}
 			if (this.hasTag("critarrow"))
 				Sound::Play("AnimeSword.ogg", this.getPosition(), 1.3f);
-
+			if (this.hasTag("basharrow"))
+			{
+				if (isClient()) Sound::Play("Bash.ogg", blob.getPosition(), 1.0f);
+				blob.Tag("wait");
+			}
 			CBlob@ shooter = getBlobByNetworkID(this.get_u16("shooternetid"));
 			if (shooter !is null) 
 			{
-				shooter.set_f32("dealtdamage", dmg);
+				shooter.set_f32("dealtdamage", dmg - blob.get_f32("damagereduction"));
 			}
 			/*CBitStream@ params;
 			if (params is null) return;

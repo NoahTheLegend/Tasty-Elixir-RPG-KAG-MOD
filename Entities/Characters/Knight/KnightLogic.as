@@ -111,6 +111,8 @@ void onInit(CBlob@ this)
 	this.addCommandID("unequiparmor");
 	this.addCommandID("unequipgloves");
 	this.addCommandID("unequipboots");
+	this.addCommandID("unequipweapon");
+	this.addCommandID("unequipsecondaryweapon");
 	this.addCommandID("update_stats");
 	this.addCommandID("sync_stats");
 
@@ -142,16 +144,14 @@ void onInit(CBlob@ this)
 	this.set_u16("mana", 115);
 	this.set_u16("maxmana", 115);
 	this.set_f32("damagebuff", 0);
-
+	this.set_f32("vampirism", 0); // % set from 0 to 1 for easier managing and multiplying
 	this.set_f32("attackspeed", 0);
-	this.set_f32("armorpenetration", 0); // %
-	this.set_f32("vampirism", 0);
 	this.set_bool("glowness", false);
 	this.set_bool("glowness2", false);
-	this.set_f32("dealtdamage", 0);
-	this.set_f32("gravityresist", 0);
+	this.set_f32("gravityresist", 0); // 15 max
 	this.set_f32("bashchance", 0); // %
-	
+	this.set_f32("dealtdamage", 0);
+
 	//gathered set vars
 	this.set_bool("hasironset", false);
 	this.set_bool("hassteelset", false);
@@ -322,6 +322,16 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
     	    CBitStream params;
 		    caller.CreateGenericButton("$"+this.get_string("bootsname")+"$", Vec2f(0, 5), this, this.getCommandID("unequipboots"), getTranslatedString("Unequip boots"), params);
     	}
+		if (caller.get_bool("hasweapon") && ctrl)
+		{
+			CBitStream params;
+		    caller.CreateGenericButton("$"+this.get_string("weaponname")+"$", Vec2f(-5, -5), this, this.getCommandID("unequipweapon"), getTranslatedString("Unequip weapon"), params);
+		}
+		if (caller.get_bool("hassecondaryweapon") && ctrl)
+		{
+			CBitStream params;
+		    caller.CreateGenericButton("$"+this.get_string("secondaryweaponname")+"$", Vec2f(5, -5), this, this.getCommandID("unequipsecondaryweapon"), getTranslatedString("Unequip secondary weapon"), params);
+		}
 	}
 }
 
@@ -576,7 +586,14 @@ void onTick(CBlob@ this)
 		this.set_bool("hassteelset", false);
 	}
 
-
+	bool ctrl;
+	bool e;
+	if (controls !is null)
+	{
+		ctrl = controls.isKeyPressed(KEY_LCONTROL);
+		e = controls.isKeyPressed(KEY_KEY_E);
+	}
+	if (ctrl && e && this.isFacingLeft()) this.SetFacingLeft(false);
 
 	if (this.get_u16("mana") > this.get_u16("maxmana")) this.set_u16("mana", this.get_u16("maxmana"));
 
@@ -709,6 +726,17 @@ void onTick(CBlob@ this)
 	if (!this.get("moveVars", @moveVars))
 	{
 		return;
+	}
+
+	//gravity stuff
+	if (this.get_f32("gravityresist") > 0)
+	{
+		this.AddForce(Vec2f(0, -(this.get_f32("gravityresist"))));
+		if (this.isKeyPressed(key_action2))
+		{
+			if (this.getVelocity().y < 2) this.AddForce(Vec2f(0, this.get_f32("gravityresist")/10));
+			if (moveVars.fallCount < KnightVars::glide_down_time) this.AddForce(Vec2f(0, this.get_f32("gravityresist")/2));
+		}
 	}
 
 	//hunger & thirst
@@ -1772,6 +1800,38 @@ void UpdateStats(CBlob@ this, string name)
 		CBlob@ blob = server_CreateBlob(name, this.getTeamNum(), this.getPosition());
 		blob.setPosition(this.getPosition());
 
+		if (blob.hasTag("customstats"))
+		{
+			blob.set_f32("velocity", this.get_f32("customvelocity"));
+    		blob.set_f32("dodgechance", this.get_f32("customdodgechance"));
+			blob.set_f32("blockchance", this.get_f32("customblockchance"));
+    		blob.set_f32("damagereduction", this.get_f32("customdamagereduction"));
+			blob.set_f32("hpregtime", this.get_f32("customhpregtime"));
+			blob.set_f32("manaregtime", this.get_f32("custommanaregtime"));
+			blob.set_u16("manareg", this.get_u16("custommanareg"));
+			blob.set_u16("mana", this.get_u16("custommana"));
+			blob.set_u16("maxmana", this.get_u16("custommaxmana"));
+			blob.set_f32("critchance", this.get_f32("customcritchance"));
+			blob.set_f32("damagebuff", this.get_f32("customdamagebuff"));
+			blob.set_f32("vampirism", this.get_f32("customvampirism"));
+			blob.set_f32("bashchance", this.get_f32("custombashchance"));
+
+			blob.Sync("velocity", true);
+			blob.Sync("dodgechance", true);
+			blob.Sync("blockchance", true);
+			blob.Sync("damagereduction", true);
+			blob.Sync("hpregtime", true);
+			blob.Sync("manaregtime", true);
+			blob.Sync("manareg", true);
+			blob.Sync("mana", true);
+			blob.Sync("maxmana", true);
+			blob.Sync("critchance", true);
+			blob.Sync("damagebuff", true);
+			blob.Sync("dealtdamage", true);
+			blob.Sync("vampirism", true);
+			blob.Sync("bashchance", true);
+		}
+
 		CBitStream params;
 		params.write_u16(blob.getNetworkID());
 		this.SendCommand(this.getCommandID("update_stats"), params);
@@ -1946,6 +2006,40 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			}
 		}
 	}
+	else if (cmd == this.getCommandID("unequipweapon"))
+	{
+		if (this.get_bool("hasweapon"))
+        {
+			CPlayer@ player = this.getPlayer();
+
+			UpdateStats(this, this.get_string("weaponname"));
+
+			if (player !is null && player.isMyPlayer())
+			{
+				this.set_bool("hasweapon", false);
+				this.Sync("hasweapon", true);
+	       		this.set_string("weaponname", "");
+				this.Sync("weaponname", true);
+			}
+		}
+	}
+	else if (cmd == this.getCommandID("unequipsecondaryweapon"))
+	{
+		if (this.get_bool("hassecondaryweapon"))
+        {
+			CPlayer@ player = this.getPlayer();
+
+			UpdateStats(this, this.get_string("secondaryweaponname"));
+
+			if (player !is null && player.isMyPlayer())
+			{
+				this.set_bool("hassecondaryweapon", false);
+				this.Sync("hassecondaryweapon", true);
+	       		this.set_string("secondaryweaponname", "");
+				this.Sync("secondaryweaponname", true);
+			}
+		}
+	}
 	else if (cmd == this.getCommandID("update_stats"))
 	{
 		CPlayer@ player = this.getPlayer();
@@ -1954,7 +2048,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		u16 blobid = params.read_u16();
 		CBlob@ blob = getBlobByNetworkID(blobid);
 		if (blob is null) return;
-
+		
 		this.set_f32("velocity", this.get_f32("velocity") + blob.get_f32("velocity"));
     	this.set_f32("dodgechance", this.get_f32("dodgechance") - blob.get_f32("dodgechance"));
 		this.set_f32("blockchance", this.get_f32("blockchance") - blob.get_f32("blockchance"));
@@ -1966,7 +2060,8 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		this.set_u16("maxmana", this.get_u16("maxmana") - blob.get_u16("maxmana"));
 		this.set_f32("critchance", this.get_f32("critchance") - blob.get_f32("critchance"));
 		this.set_f32("damagebuff", this.get_f32("damagebuff") - blob.get_f32("damagebuff"));
-		this.set_f32("dealtdamage", this.get_f32("dealtdamage") - blob.get_f32("dealtdamage"));
+		this.set_f32("vampirism", this.get_f32("vampirism") - blob.get_f32("vampirism"));
+		this.set_f32("bashchance", this.get_f32("bashchance") - blob.get_f32("bashchance"));
 
 		//CBitStream params;
 		//this.SendCommand(this.getCommandID("sync_stats"), params);
@@ -2225,12 +2320,12 @@ void DoAttack(CBlob@ this, f32 damage, f32 aimangle, f32 arcdegrees, u8 type, in
 					{
 						this.server_Hit(b, hi.hitpos, velocity, (temp_damage + this.get_f32("damagebuff"))*2, type, true);
 						Sound::Play("AnimeSword.ogg", this.getPosition(), 1.3f);
-						this.set_f32("dealtdamage", (temp_damage + this.get_f32("damagebuff"))*2);
+						this.set_f32("dealtdamage", (temp_damage + this.get_f32("damagebuff"))*2 - b.get_f32("damagereduction"));
 					}
 					else
 					{
 						this.server_Hit(b, hi.hitpos, velocity, temp_damage + this.get_f32("damagebuff"), type, true);  // server_Hit() is server-side only
-						this.set_f32("dealtdamage", temp_damage + this.get_f32("damagebuff"));
+						this.set_f32("dealtdamage", temp_damage + this.get_f32("damagebuff") - b.get_f32("damagereduction"));
 					}
 					// end hitting if we hit something solid, don't if its flesh
 					if (large)
@@ -2423,6 +2518,15 @@ void onHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@
 		return;
 	}
 
+	damage -= hitBlob.get_f32("damagereduction");
+	if (damage <= 0 || damage > 500) damage = 0.05;
+
+	if (XORRandom(100) < this.get_f32("bashchance"))
+	{
+		if (isClient()) Sound::Play("Bash.ogg", hitBlob.getPosition(), 1.0f);
+		hitBlob.Tag("wait");
+	}
+
 	if (customData == Hitters::sword &&
 	        ( //is a jab - note we dont have the dmg in here at the moment :/
 	            knight.state == KnightStates::sword_cut_mid ||
@@ -2434,6 +2538,14 @@ void onHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@
 	{
 		this.getSprite().PlaySound("/Stun", 1.0f, this.getSexNum() == 0 ? 1.0f : 1.5f);
 		setKnocked(this, 30, true);
+	}
+
+	if (hitBlob.hasTag("flesh"))
+	{
+		if(isServer())
+		{
+			this.server_Heal(damage*this.get_f32("vampirism"));
+		}
 	}
 
 	if (customData == Hitters::shield)

@@ -57,18 +57,22 @@ void DrawStats(CSprite@ this)
 			//	GUI::DrawText("test", myPos + cam_offset + Vec2f(-10, 50), myPos + cam_offset + Vec2f(-10, 50), color_white, false, false, false);
 			GUI::DrawText("Mana / stamina: " + blob.get_u16("mana")+"/"+ blob.get_u16("maxmana"), Vec2f(20, height + -35), SColor(255, 130, 130, 255)); // stats show layout
 			GUI::DrawText("Current health: " + blob.getHealth() * 2, Vec2f(20, height + -50), SColor(255, 255, 100, 125));
-			GUI::DrawText("Additional damage: " + blob.get_f32("damagebuff"), Vec2f(20, height + -75), SColor(255, 50, 225, 100));
 			if (blob.get_f32("velocity") > 0)
-				GUI::DrawText("Agility: " + blob.get_f32("velocity"), Vec2f(20, height + -90), SColor(255, 50, 225, 100));
+				GUI::DrawText("Agility: " + blob.get_f32("velocity"), Vec2f(20, height + -75), SColor(255, 50, 225, 100));
 			else
-				GUI::DrawText("Agility: " + 2.5, Vec2f(20, height + -90), SColor(255, 50, 225, 100));
-			GUI::DrawText("Damage reduction: " + blob.get_f32("damagereduction") + " hearts", Vec2f(20, height + -105), SColor(255, 50, 225, 100));
-			GUI::DrawText("Attack speed: " + blob.get_f32("attackspeed"), Vec2f(20, height + -125), SColor(255, 150, 210, 210));
-			GUI::DrawText("Block chance: " + blob.get_f32("blockchance") + "%", Vec2f(20, height + -140), SColor(255, 150, 210, 210));
-			GUI::DrawText("Crit chance: " + blob.get_f32("critchance") + "%", Vec2f(20, height + -155), SColor(255, 150, 210, 210));
-			GUI::DrawText("Mana regen: " + blob.get_u16("manaregtimer")/30 + " sec. Amount: "  + blob.get_u16("manareg"), Vec2f(20, height + -180), SColor(255, 90, 90, 255));
-			GUI::DrawText("HP regen: " + blob.get_u16("hpregtimer")/30 + " sec. Amount: 0.25 HP", Vec2f(20, height + -195), SColor(255, 255, 75, 85));
-			if (blob.get_bool("regen")) GUI::DrawText(" + 0.25 HP", Vec2f(254, height + -195), SColor(255, 255, 75, 85));
+				GUI::DrawText("Agility: " + 2.5, Vec2f(20, height + -75), SColor(255, 50, 225, 100));
+						GUI::DrawText("Lightness: " + blob.get_f32("gravityresist"), Vec2f(20, height + -90), SColor(255, 50, 225, 100));
+			GUI::DrawText("Block chance: " + blob.get_f32("blockchance") + "%", Vec2f(20, height + -105), SColor(255, 50, 225, 100));
+			GUI::DrawText("Damage reduction: " + blob.get_f32("damagereduction") + " hearts", Vec2f(20, height + -120), SColor(255, 50, 225, 100));
+			GUI::DrawText("Attack speed: " + blob.get_f32("attackspeed"), Vec2f(20, height + -145), SColor(255,  255, 195, 0));
+			GUI::DrawText("Additional damage: " + blob.get_f32("damagebuff"), Vec2f(20, height + -160), SColor(255, 255, 195, 0));
+			GUI::DrawText("Crit chance: " + blob.get_f32("critchance") + "%", Vec2f(20, height + -175), SColor(255, 255, 195, 0));
+			GUI::DrawText("Vampirism: " + blob.get_f32("vampirism")*100 + "%", Vec2f(20, height + -200), SColor(255, 255, 50, 255));
+			GUI::DrawText("Penetration: " + blob.get_f32("penetration")*100 + "%", Vec2f(20, height + -215), SColor(255, 255, 50, 255));
+			GUI::DrawText("Bash: " + blob.get_f32("bashchance") + "%", Vec2f(20, height + -230), SColor(255, 255, 50, 255));
+			GUI::DrawText("Mana regen: " + blob.get_u16("manaregtimer")/30 + " sec. Amount: "  + blob.get_u16("manareg"), Vec2f(20, height + -255), SColor(255, 90, 90, 255));
+			GUI::DrawText("HP regen: " + blob.get_u16("hpregtimer")/30 + " sec. Amount: 0.25 HP", Vec2f(20, height + -270), SColor(255, 255, 75, 85));
+			if (blob.get_bool("regen")) GUI::DrawText(" + 0.25 HP", Vec2f(254, height + -270), SColor(255, 255, 75, 85));
 		}
 		if (!player.hasTag("disablestate"))
 		{

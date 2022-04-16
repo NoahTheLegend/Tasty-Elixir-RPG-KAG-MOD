@@ -5,8 +5,9 @@ void onInit(CBlob@ this)
 
     this.Tag("armor");
 
-    this.set_f32("velocity", -0.2);
-    this.set_f32("blockchance", 15.0);
+    this.set_f32("velocity", 0.4);
+    this.set_f32("critchance", 10.0);
+    this.set_f32("blockchance", 17.5);
     this.set_f32("damagereduction", 1.0);
     this.set_f32("hpregtime", 3*30);
 }
@@ -15,6 +16,7 @@ void onInit(CSprite@ this)
 {
     this.ScaleBy(0.85f, 0.85f);
 }
+
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
@@ -26,12 +28,12 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
     {
         CBitStream params;
 	    params.write_u16(caller.getNetworkID());
-	    caller.CreateGenericButton("$platinum_chestplate$", Vec2f(0, 0), this, this.getCommandID("equip"), getTranslatedString("Equip"), params);
+	    caller.CreateGenericButton("$palladium_chestplate$", Vec2f(0, 0), this, this.getCommandID("equip"), getTranslatedString("Equip"), params);
     }
     else
     {
         CBitStream params;
-	    caller.CreateGenericButton("$platinum_chestplate$", Vec2f(0, 0), this, this.getCommandID("unequip"), getTranslatedString("Unequip chestplate first!"), params);
+	    caller.CreateGenericButton("$palladium_chestplate$", Vec2f(0, 0), this, this.getCommandID("unequip"), getTranslatedString("Unequip chestplate first!"), params);
     }
 }
 
@@ -49,10 +51,11 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
             if (caller.getCarriedBlob() !is null) caller.getCarriedBlob().server_Die();
 
             caller.set_bool("hasarmor", true);
-	        caller.set_string("armorname", "platinum_chestplate");
+	        caller.set_string("armorname", "palladium_chestplate");
 
-	        caller.set_f32("velocity", caller.get_f32("velocity") + 0.2);
-            caller.set_f32("blockchance", caller.get_f32("blockchance") + 15.0);
+	        caller.set_f32("velocity", caller.get_f32("velocity") - 0.4);
+            caller.set_f32("critchance", caller.get_f32("critchance") - 10.0);
+            caller.set_f32("blockchance", caller.get_f32("blockchance") + 17.5);
             caller.set_f32("damagereduction", caller.get_f32("damagereduction") + 1.0);
             if (player !is null && player.isMyPlayer()) caller.set_f32("hpregtime", caller.get_f32("hpregtime") - 3*30);
         }

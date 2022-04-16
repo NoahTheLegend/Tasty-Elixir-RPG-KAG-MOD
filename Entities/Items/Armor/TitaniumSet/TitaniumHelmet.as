@@ -5,10 +5,15 @@ void onInit(CBlob@ this)
 
     this.Tag("armor");
 
-    this.set_f32("damagereduction", 0.1);
-    this.set_f32("manaregtime", 1*30);
-    this.set_u16("maxmana", 10);
-    this.set_u16("manareg", 5);
+    this.set_f32("damagereduction", 1.0);
+    this.set_f32("manaregtime", 4*30);
+    this.set_u16("maxmana", 60);
+    this.set_u16("manareg", 30);
+}
+
+void onInit(CSprite@ this)
+{
+    this.ScaleBy(0.75f, 0.75f);
 }
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
@@ -21,12 +26,12 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
     {
         CBitStream params;
 	    params.write_u16(caller.getNetworkID());
-	    caller.CreateGenericButton("$iron_helmet$", Vec2f(0, 0), this, this.getCommandID("equip"), getTranslatedString("Equip"), params);
+	    caller.CreateGenericButton("$titanium_helmet$", Vec2f(0, 0), this, this.getCommandID("equip"), getTranslatedString("Equip"), params);
     }
     else
     {
         CBitStream params;
-	    caller.CreateGenericButton("$iron_helmet$", Vec2f(0, 0), this, this.getCommandID("unequip"), getTranslatedString("Unequip helmet first!"), params);
+	    caller.CreateGenericButton("$titanium_helmet$", Vec2f(0, 0), this, this.getCommandID("unequip"), getTranslatedString("Unequip helmet first!"), params);
     }
 }
 
@@ -44,12 +49,12 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
             if (caller.getCarriedBlob() !is null) caller.getCarriedBlob().server_Die();
 
             caller.set_bool("hashelmet", true);
-	        caller.set_string("helmetname", "iron_helmet");
+	        caller.set_string("helmetname", "titanium_helmet");
 
-	        caller.set_f32("damagereduction", caller.get_f32("damagereduction") + 0.1);
-            if (player !is null && player.isMyPlayer()) caller.set_f32("manaregtime", caller.get_f32("manaregtime") - 1*30);
-            caller.set_u16("maxmana", caller.get_u16("maxmana") + 10);
-            caller.set_u16("manareg", caller.get_u16("manareg") + 5);
+	        caller.set_f32("damagereduction", caller.get_f32("damagereduction") + 1.0);
+            if (player !is null && player.isMyPlayer()) caller.set_f32("manaregtime", caller.get_f32("manaregtime") - 4*30);
+            caller.set_u16("maxmana", caller.get_u16("maxmana") + 60);
+            caller.set_u16("manareg", caller.get_u16("manareg") + 30);
         }
     }
     else if (cmd==this.getCommandID("unequip")) {}

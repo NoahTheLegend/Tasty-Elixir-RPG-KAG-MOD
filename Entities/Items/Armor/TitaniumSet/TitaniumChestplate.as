@@ -5,10 +5,15 @@ void onInit(CBlob@ this)
 
     this.Tag("armor");
 
-    this.set_f32("velocity", 0.2);
-    this.set_f32("blockchance", 10.0);
-    this.set_f32("damagereduction", 0.25);
-    this.set_f32("hpregtime", 1*30);
+	this.set_f32("velocity", 0.75);
+    this.set_f32("blockchance", 22.5);
+    this.set_f32("damagereduction", 2.5);
+    this.set_f32("hpregtime", 5*30);
+}
+
+void onInit(CSprite@ this)
+{
+    this.ScaleBy(0.85f, 0.85f);
 }
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
@@ -21,12 +26,12 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
     {
         CBitStream params;
 	    params.write_u16(caller.getNetworkID());
-	    caller.CreateGenericButton("$iron_chestplate$", Vec2f(0, 0), this, this.getCommandID("equip"), getTranslatedString("Equip"), params);
+	    caller.CreateGenericButton("$titanium_chestplate$", Vec2f(0, 0), this, this.getCommandID("equip"), getTranslatedString("Equip"), params);
     }
     else
     {
         CBitStream params;
-	    caller.CreateGenericButton("$iron_chestplate$", Vec2f(0, 0), this, this.getCommandID("unequip"), getTranslatedString("Unequip chestplate first!"), params);
+	    caller.CreateGenericButton("$titanium_chestplate$", Vec2f(0, 0), this, this.getCommandID("unequip"), getTranslatedString("Unequip chestplate first!"), params);
     }
 }
 
@@ -44,12 +49,12 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
             if (caller.getCarriedBlob() !is null) caller.getCarriedBlob().server_Die();
 
             caller.set_bool("hasarmor", true);
-	        caller.set_string("armorname", "iron_chestplate");
+	        caller.set_string("armorname", "titanium_chestplate");
 
-	        caller.set_f32("velocity", caller.get_f32("velocity") - 0.2);
-            caller.set_f32("blockchance", caller.get_f32("blockchance") + 10.0);
-            caller.set_f32("damagereduction", caller.get_f32("damagereduction") + 0.25);
-            if (player !is null && player.isMyPlayer()) caller.set_f32("hpregtime", caller.get_f32("hpregtime") - 1*30);
+	        caller.set_f32("velocity", caller.get_f32("velocity") - 0.75);
+            caller.set_f32("blockchance", caller.get_f32("blockchance") + 22.5);
+            caller.set_f32("damagereduction", caller.get_f32("damagereduction") + 2.5);
+            if (player !is null && player.isMyPlayer()) caller.set_f32("hpregtime", caller.get_f32("hpregtime") - 5*30);
         }
     }
     else if (cmd==this.getCommandID("unequip")) {}

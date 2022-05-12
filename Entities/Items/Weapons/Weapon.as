@@ -13,17 +13,151 @@ void onInit(CBlob@ this)
 
     u16 index;
     Vec2f size;
+    string name = this.getName();
 
-    if (this.getName() == "wooden_sword") 
+    if (name == "wooden_shield") 
+    {
+        index = 0;
+        size = Vec2f(16, 16);
+    }
+    else if (name == "iron_shield") 
+    {
+        index = 1;
+        size = Vec2f(16, 16);
+    }
+    else if (name == "steel_shield") 
+    {
+        index = 2;
+        size = Vec2f(16, 16);
+    }
+    else if (name == "golden_shield") // unique money shield
+    {
+        index = 27;
+        size = Vec2f(16, 16);
+    }
+    else if (name == "chromium_shield") 
+    {
+        index = 3;
+        size = Vec2f(16, 16);
+    }
+    else if (name == "palladium_shield") 
+    {
+        index = 4;
+        size = Vec2f(16, 16);
+    }
+    else if (name == "platinum_shield") 
+    {
+        index = 5;
+        size = Vec2f(16, 16);
+    }
+    else if (name == "titanium_shield") 
+    {
+        index = 6;
+        size = Vec2f(16, 16);
+    }
+    else if (name == "vamp_shield") 
+    {
+        index = 7;
+        size = Vec2f(16, 16);
+    }
+    else if (name == "shadow_shield") 
+    {
+        index = 8;
+        size = Vec2f(16, 16);
+    }
+    else if (name == "wooden_sword") 
     {
         index = 9;
         size = Vec2f(16, 16);
     }
+    else if (name == "iron_sword")
+    {
+        index = 10;
+        size = Vec2f(16, 16);
+    }
+    else if (name == "steel_sword")
+    {
+        index = 11;
+        size = Vec2f(16, 16);
+    }
+    else if (name == "golden_sword")
+    {
+        index = 12;
+        size = Vec2f(16, 16);
+    }
+    else if (name == "chromium_sword")
+    {
+        index = 13;
+        size = Vec2f(16, 16);
+    }
+    else if (name == "palladium_sword")
+    {
+        index = 14;
+        size = Vec2f(16, 16);
+    }
+    else if (name == "platinum_sword")
+    {
+        index = 15;
+        size = Vec2f(16, 16);
+    }
+    else if (name == "titanium_sword")
+    {
+        index = 16;
+        size = Vec2f(16,16);
+    }
+    else if (name == "wooden_dagger")
+    {
+        index = 18;
+        size = Vec2f(16, 16);
+    }
+    else if (name == "iron_dagger")
+    {
+        index = 19;
+        size = Vec2f(16, 16);
+    }
+    else if (name == "steel_dagger")
+    {
+        index = 20;
+        size = Vec2f(16, 16);
+    }
+    else if (name == "golden_dagger")
+    {
+        index = 21;
+        size = Vec2f(16, 16);
+    }
+    else if (name == "chromium_dagger")
+    {
+        index = 22;
+        size = Vec2f(16, 16);
+    }
+    else if (name == "palladium_dagger")
+    {
+        index = 23;
+        size = Vec2f(16, 16);
+    }
+    else if (name == "platinum_dagger")
+    {
+        index = 24;
+        size = Vec2f(16, 16);
+    }
+    else if (name == "titanium_dagger")
+    {
+        index = 25;
+        size = Vec2f(16, 16);
+    }
 
     sprite.SetFrameIndex(index);
-	this.SetInventoryIcon(sprite.getConsts().filename, index, size);
+    this.inventoryIconFrame = index;
+    this.set_u8("iconindex", index);
+	//this.SetInventoryIcon(this.getSprite().getConsts().filename, index, size);
+    //printf(this.getSprite().getConsts().filename);
+    //printf(""+index);
 }
 
+void onTick(CBlob@ this)
+{
+    this.inventoryIconFrame = this.get_u8("iconindex");
+}
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {

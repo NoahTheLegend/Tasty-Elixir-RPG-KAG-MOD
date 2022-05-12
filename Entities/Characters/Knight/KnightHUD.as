@@ -63,7 +63,7 @@ void DrawStats(CSprite@ this)
 				GUI::DrawText("Agility: " + 2.5, Vec2f(20, height + -75), SColor(255, 50, 225, 100));
 						GUI::DrawText("Lightness: " + blob.get_f32("gravityresist"), Vec2f(20, height + -90), SColor(255, 50, 225, 100));
 			GUI::DrawText("Block chance: " + blob.get_f32("blockchance") + "%", Vec2f(20, height + -105), SColor(255, 50, 225, 100));
-			GUI::DrawText("Damage reduction: " + blob.get_f32("damagereduction") + " hearts", Vec2f(20, height + -120), SColor(255, 50, 225, 100));
+			GUI::DrawText("Dmg. reduction: " + blob.get_f32("damagereduction") + " HP", Vec2f(20, height + -120), SColor(255, 50, 225, 100));
 			GUI::DrawText("Attack speed: " + blob.get_f32("attackspeed"), Vec2f(20, height + -145), SColor(255,  255, 195, 0));
 			GUI::DrawText("Additional damage: " + blob.get_f32("damagebuff"), Vec2f(20, height + -160), SColor(255, 255, 195, 0));
 			GUI::DrawText("Crit chance: " + blob.get_f32("critchance") + "%", Vec2f(20, height + -175), SColor(255, 255, 195, 0));

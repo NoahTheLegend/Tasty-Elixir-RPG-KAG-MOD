@@ -9,7 +9,6 @@
 #include "RunnerTextures.as"
 #include "Accolades.as"
 
-
 const f32 config_offset = -6.0f;
 const string shiny_layer = "shiny bit";
 

@@ -75,7 +75,7 @@ void onInit(CBlob@ this)
 		s.spawnNothing = true;
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Gold bar (1)", "$goldbar$", "mat_goldbar-1", "Smelt gold ore into a precious gold bar", true);
+		ShopItem@ s = addShopItem(this, "Gold bar (1)", "$goldbar$", "mat_goldenbar-1", "Smelt gold ore into a precious gold bar", true);
 		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 150);
 
 		s.spawnNothing = true;
@@ -94,7 +94,7 @@ void onInit(CBlob@ this)
 	}
 	{
 		ShopItem@ s = addShopItem(this, "Platinum bar (1)", "$platinumbar$", "mat_platinumbar-1", "Smelt platinum ore into a valuable platinum bar", true);
-		AddRequirement(s.requirements, "blob", "mat_platinum", "Platinum", 50);
+		AddRequirement(s.requirements, "blob", "mat_platinum", "Platinum", 65);
 
 		s.spawnNothing = true;
 	}

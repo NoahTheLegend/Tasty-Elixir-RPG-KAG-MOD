@@ -311,6 +311,11 @@ class PNGLoader
 			case map_colors::smallsign:       autotile(offset); spawnBlob(map, "smallsign",   offset); break;
 			case map_colors::witchshack:      autotile(offset); spawnBlob(map, "witchshack",  offset, 0); break;
 			case map_colors::quarry:          autotile(offset); spawnBlob(map, "quarry",      offset); break;
+			case map_colors::spikybush:       autotile(offset); spawnBlob(map, "spikybush",   offset); break;
+			case map_colors::smelter:         autotile(offset); spawnBlob(map, "smelter",     offset); break;
+			case map_colors::carpentertable:  autotile(offset); spawnBlob(map, "carpentertable",offset); break;
+			case map_colors::richmerchant:    autotile(offset); spawnBlob(map, "richmerchant",offset); break;
+			case map_colors::sellnaturals:    autotile(offset); spawnBlob(map, "sellnaturals",offset); break;
 
 			case map_colors::workbench:       autotile(offset); spawnBlob(map, "workbench",   offset, 255, true); break;
 			case map_colors::campfire:        autotile(offset); spawnBlob(map, "fireplace",   offset, 255); break;

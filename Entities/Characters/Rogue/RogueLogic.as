@@ -658,7 +658,7 @@ void onTick(CBlob@ this)
 		this.set_f32("damagebuff", this.get_f32("damagebuff") + 1.0);
 
 		this.set_u8("dashcd", 150);
-		this.set_u16("mana", this.get_u16("mana") - 5);
+		this.set_u16("mana", this.get_u16("mana") - 15);
 		Vec2f vel = this.getVelocity();
 		this.AddForce(Vec2f(vel.x * 3.0, 0.0f));   //horizontal slowing force (prevents SANICS)
 			

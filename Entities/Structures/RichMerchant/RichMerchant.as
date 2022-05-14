@@ -5,6 +5,23 @@
 
 Random traderRandom(Time());
 
+const string[] armortypes = {
+	"helmet",
+	"chestplate",
+	"gloves",
+	"boots"
+};
+
+const string[] armoralloys = {
+	"iron",
+	"steel",
+	"golden",
+	"chromium",
+	"palladium",
+	"platinum",
+	"titanium"
+};
+
 void onInit(CBlob@ this)
 {
 	this.getSprite().SetZ(-50); //background
@@ -42,6 +59,13 @@ void onInit(CBlob@ this)
 	
 	this.getCurrentScript().tickFrequency = 40;
 
+	DoSetItems(this);
+
+	this.set_Vec2f("shop menu size", Vec2f(9,9));
+}
+
+void DoSetItems(CBlob@ this)
+{
 	string[] items = {
 		"food",
 		"bread",
@@ -52,7 +76,18 @@ void onInit(CBlob@ this)
 		"bread",
 		"cake",
 		"cooked_fish",
-		"mat_ironbar-1"
+		"mat_ironbar-5",
+		"mat_steelbar-3",
+		"mat_goldenbar-3",
+		"mat_chromiumbar-4",
+		"mat_platinumbar-1",
+		"burdockspice",
+		"burnetspice",
+		"equisetumspice",
+		"mindwortspice",
+		"poppyspice",
+		"thymespice",
+		"mat_wood-100"
 	};
 
 	s32[] costs = {
@@ -60,15 +95,41 @@ void onInit(CBlob@ this)
 		XORRandom(50)+51, // bread
 		XORRandom(85)+51, // cake
 		XORRandom(50)+51, // cooked fish
-		XORRandom(100)+151, // iron bar
+		XORRandom(50)+151, // iron bar (1)
 		XORRandom(75)+51, // burger
 		XORRandom(50)+51, // bread
 		XORRandom(85)+51, // cake
 		XORRandom(50)+51, // cooked fish
-		XORRandom(100)+151 // iron bar
+		XORRandom(450)+251, // iron bar
+		XORRandom(575)+221, // steel bar
+		XORRandom(500)+201, // gold bar
+		XORRandom(800)+541, // chromium bar
+		XORRandom(1200)+801, // platinum bar
+		XORRandom(100)+101, // burdock spice
+		XORRandom(90)+151, // burnet spice
+		XORRandom(120)+51, // equisetum spice
+		XORRandom(95)+81, // mindwort spice
+		XORRandom(45)+201, // poppy spice
+		XORRandom(75)+96, // thyme spice
+		XORRandom(50)+51 // thyme spice
 	};
 
 	// add names array also
+
+	// random armor push_back P.S. add leather armor too!
+	for (int i = 0; i < XORRandom(10)+1; i++)
+	{
+		u8 armortype = XORRandom(4);
+		u8 armoralloy = XORRandom(7);
+		u32 rand = XORRandom(armoralloy+2);
+		u32 modifier = rand*350;
+
+		items.push_back(armoralloys[armoralloy]+"_"+armortypes[armortype]);
+		costs.push_back((armoralloy+1)*1000+modifier);
+
+		//printf("items.pushed_back: "+(armoralloys[armoralloy]+"_"+armortypes[armortype]));
+		//printf("costs.pushed_back: "+((armoralloy+1)*1000+modifier));
+	}
 
 	u16[] currlength;
 
@@ -77,10 +138,13 @@ void onInit(CBlob@ this)
 		currlength.push_back(i);
 	}
 
-	for (int i = 0; i < 50; i++)
+	for (int i = 0; i < 35; i++) // shuffle
 	{
 		u16 ritem1 = XORRandom(currlength.length);
+		if (ritem1 >= currlength.length || ritem1 < 0) continue;
 		u16 ritem2 = XORRandom(currlength.length);
+		if (ritem2 >= currlength.length || ritem2 < 0) continue;
+		if (ritem1 == ritem2) continue;
 		u16 e = 999;
 		e = currlength[ritem1];
 		currlength[ritem1] = currlength[ritem2];
@@ -89,21 +153,49 @@ void onInit(CBlob@ this)
 
 	for (int i = 0; i < currlength.length; i++)
 	{
-		if (XORRandom(3) == 0) continue;
-		else AddAShopItem(this, items[currlength[i]], items[currlength[i]], costs[currlength[i]]);
+		if (XORRandom(5) == 0) continue;
+		AddAShopItem(this, items[currlength[i]], items[currlength[i]], costs[currlength[i]], 1, 1);
 	}
 
-	this.set_Vec2f("shop menu size", Vec2f(4,4));
+	if (currlength.length == 0) DoSetItems(this); // due to some bug needs a recursive call
+	//printf(""+currlength.length);
 }
 
-void AddAShopItem(CBlob@ this, string item, string itemname, s32 cost)
+void AddAShopItem(CBlob@ this, string item, string itemname, s32 cost, u8 btnx, u8 btny)
 {
 	string[] matunsplit = item.split("-");
 	string matitem = matunsplit[0];
 
+	string[] theitem = item.split("_");
+
+	if (theitem.length > 1)
+	{
+		if (theitem[1] == "helmet"
+		|| theitem[1] == "chestplate"
+		|| theitem[1] == "gloves"
+		|| theitem[1] == "boots")
+		{
+			btnx = 2;
+			btny = 2;
+		}
+		else if (theitem[1] == "bow"
+		|| theitem[1] == "staff")
+		{
+			btnx = 1;
+			btny = 2;
+		}
+	}
+
+	if (btnx == 0) btnx = 1;
+	if (btny == 0) btny = 1;
+
 	{
 		ShopItem@ s = addShopItem(this, "Purchase "+itemname, "$"+matitem+"$", item, itemname, true);
 		AddRequirement(s.requirements, "coin", "", "Coins", cost);
+
+		s.customButton = true;
+		s.buttonwidth = btnx;
+		s.buttonheight = btny;
 
 		s.spawnNothing = true;
 	}	
@@ -124,6 +216,19 @@ void onTick(CSprite@ this)
 	bool moving_left = blob.get_bool("moving left");
 	u32 move_timer = blob.get_u32("move timer");
 	u32 next_offset = blob.get_u32("next offset");
+
+	CMap@ map = getMap();
+	if (isClient())
+		if (map.getDayTime() == 0.800000)
+		{
+			this.PlaySound("Cooked.ogg");
+			if (isServer())
+			{
+				CBlob@ blobbie = server_CreateBlob("richmerchant", blob.getTeamNum(), blob.getPosition());
+				blobbie.setPosition(blob.getPosition());
+				blob.server_Die();
+			}
+		}
 
 	if (!trader_moving)
 	{

@@ -2,6 +2,8 @@ void onInit(CBlob@ this)
 {
     this.addCommandID("equip");
 
+    this.set_bool("infernobow?", false);
+
     this.Tag("weapon");
     this.Tag("customstats"); // for unequip stat syncing
 
@@ -30,7 +32,7 @@ void onInit(CBlob@ this)
         index = 2;
         size = Vec2f(16, 16);
     }
-    else if (name == "golden_shield") // unique money shield
+    else if (name == "greed_shield") // unique money shield
     {
         index = 27;
         size = Vec2f(16, 16);
@@ -145,6 +147,62 @@ void onInit(CBlob@ this)
         index = 25;
         size = Vec2f(16, 16);
     }
+    else if (name == "wooden_bow")
+    {
+        index = 0;
+        size = Vec2f(32, 32);
+    }
+    else if (name == "iron_bow")
+    {
+        index = 1;
+        size = Vec2f(32, 32);
+    }
+    else if (name == "golden_bow")
+    {
+        index = 2;
+        size = Vec2f(32, 32);
+    }
+    else if (name == "palladium_bow")
+    {
+        index = 3;
+        size = Vec2f(32, 32);
+    }
+    else if (name == "platinum_bow")
+    {
+        index = 8;
+        size = Vec2f(32, 32);
+    }
+    else if (name == "titanium_bow")
+    {
+        index = 4;
+        size = Vec2f(32, 32);
+    }
+    else if (name == "vamp_bow")
+    {
+        index = 9;
+        size = Vec2f(32, 32);
+    }
+    else if (name == "shadow_bow")
+    {
+        index = 10;
+        size = Vec2f(32, 32);
+    }
+    else if (name == "greed_bow")
+    {
+        index = 11;
+        size = Vec2f(32, 32);
+    }
+    else if (name == "inferno_bow")
+    {
+        index = 5;
+        size = Vec2f(32, 32);
+        
+        Animation@ infbow = sprite.addAnimation("infernobow", 0, false);
+        int[] frames = {5,6,7};
+        infbow.AddFrames(frames);
+        sprite.SetAnimation("infernobow");
+        this.set_bool("infernobow?", true);
+    }
 
     sprite.SetFrameIndex(index);
     this.inventoryIconFrame = index;
@@ -152,11 +210,47 @@ void onInit(CBlob@ this)
 	//this.SetInventoryIcon(this.getSprite().getConsts().filename, index, size);
     //printf(this.getSprite().getConsts().filename);
     //printf(""+index);
+
+    this.set_u8("infbowcounter", 0); // anim frames delay
 }
 
 void onTick(CBlob@ this)
 {
     this.inventoryIconFrame = this.get_u8("iconindex");
+    CSprite@ sprite = this.getSprite();
+    if (sprite !is null && this.get_bool("infernobow?"))
+    {
+        this.set_u8("infbowcounter", this.get_u8("infbowcounter") + 1);
+
+        switch (this.get_u8("infbowcounter"))
+        {
+            case 4:
+            {
+                u8 index = 0;
+                sprite.SetFrameIndex(index);
+                this.inventoryIconFrame = 5;
+                this.set_u8("iconindex", 5);
+                break;
+            }
+            case 8:
+            {
+                u8 index = 1;
+                sprite.SetFrameIndex(index);
+                this.inventoryIconFrame = 6;
+                this.set_u8("iconindex", 6);
+                break;
+            }
+            case 12:
+            {
+                u8 index = 2;
+                sprite.SetFrameIndex(index);
+                this.inventoryIconFrame = 7;
+                this.set_u8("iconindex", 7);
+                break;
+            }
+        }
+        if (this.get_u8("infbowcounter") == 12) this.set_u8("infbowcounter", 0);
+    }
 }
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)

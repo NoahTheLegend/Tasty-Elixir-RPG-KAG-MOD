@@ -384,8 +384,10 @@ void onTick(CBlob@ this)
 			this.set_string("animname", this.get_string("skill1"));
 			this.set_u32("begintime", getGameTime());
 		}
-		else if (controls.isKeyJustReleased(KEY_KEY_H) && this.get_string("skill2") != ""
-		&& this.get_u16("skillcd2") == 0 && !this.get_bool("animplaying"))
+		else if (controls.isKeyJustReleased(KEY_KEY_H)
+		&& this.get_u16("mana") >= getSkillMana(this.get_string("skilltype2"), this.get_u16("skillidx2"))
+		&& this.get_string("skill2") != ""
+		&& this.get_u16("skillcd2") == 0 && !this.get_bool("animplaying")) // skill 2
 		{
 			CBitStream params;
 			params.write_string(this.get_string("skilltype2"));

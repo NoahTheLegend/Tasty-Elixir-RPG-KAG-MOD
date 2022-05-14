@@ -192,7 +192,13 @@ namespace map_colors
 		blacksmith             = 0xFF7A7700, // ARGB(255,,,);
 		smallsign              = 0xFFC790B9, // ARGB(255,,,);
 		witchshack             = 0xFF67087B, // ARGB(255,,,);
-		quarry                 = 0xFFCCFF09,  // ARGB(255,,,);
+		quarry                 = 0xFFCCFF09, // ARGB(255,,,);
+		spikybush              = 0xFF51EA8A, // ARGB(255,,,);
+		carpentertable         = 0xFFDE3B6F, // ARGB(255,,,);
+		smelter                = 0xFFFFAC7B, // ARGB(255,,,);
+		richmerchant           = 0xFFC2CD4D, // ARGB(255,,,);
+		sellnaturals           = 0xFF6BA933, // ARGB(255,,,);
+		
 
 
 		// MARKERS

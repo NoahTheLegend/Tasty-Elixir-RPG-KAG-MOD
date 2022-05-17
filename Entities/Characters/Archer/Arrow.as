@@ -210,6 +210,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 {
 	if (blob !is null && doesCollideWithBlob(this, blob) && !this.hasTag("collided"))
 	{
+		if (blob.getName() == "ladder" || blob.getName() == "platform") return;
 		if (!solid && !blob.hasTag("flesh") && !specialArrowHit(blob) &&
 		        (blob.getName() != "mounted_bow" || this.getTeamNum() != blob.getTeamNum()))
 		{
@@ -237,7 +238,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 			// this isnt synced cause we want instant collision for arrow even if it was wrong
 			dmg = ArrowHitBlob(this, point1, initVelocity, dmg, blob, Hitters::arrow, arrowType);
 
-			if (dmg > 0.0f)
+			if (dmg > 0.0f && blob.getName() != "wooden_platform")
 			{
 				if (arrowType == ArrowType::fire)
 					this.server_Hit(blob, point1, initVelocity, dmg, Hitters::fire);
@@ -529,29 +530,6 @@ void ArrowHitMap(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, u8 c
 	this.set_Vec2f("fire pos", (worldPoint + (norm * 0.5f)));
 }
 
-void FireUp(CBlob@ this)
-{
-	Vec2f burnpos;
-	Vec2f head = Vec2f(this.getRadius() * 1.2f, 0.0f);
-	f32 angle = this.getAngleDegrees();
-	head.RotateBy(-angle);
-	burnpos = this.getPosition() + head;
-
-
-	// this.getMap() NULL ON ONDIE!
-	CMap@ map = getMap();
-	if (map !is null)
-	{
-		// burninate
-		if (!isTeamStructureNear(this))
-		{
-			map.server_setFireWorldspace(burnpos, true);
-			map.server_setFireWorldspace(this.get_Vec2f("fire pos") + head * 0.4f, true);
-			map.server_setFireWorldspace(this.getPosition() , true); //burn where i am as well
-		}
-	}
-}
-
 //random object used for gib spawning
 Random _gib_r(0xa7c3a);
 void onDie(CBlob@ this)
@@ -567,18 +545,6 @@ void onDie(CBlob@ this)
 			                Vec2f(8, 8), 2.0f, 20, "/thud",
 			                this.getTeamNum());
 		}
-	}
-
-	const u8 arrowType = this.get_u8("arrow type");
-
-	if (arrowType == ArrowType::fire)
-	{
-		FireUp(this);
-	}
-
-	if (arrowType == ArrowType::water)
-	{
-		SplashArrow(this);
 	}
 }
 

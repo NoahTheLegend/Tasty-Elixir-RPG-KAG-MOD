@@ -134,6 +134,14 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 			AddBot("Henry");
 			return true;
 		}
+		else if (text_in == "!tp")
+		{
+			blob.Tag("tp");
+		}
+		else if (text_in == "!notp")
+		{
+			blob.Untag("tp");
+		}
 		else if (text_in == "!debug")
 		{
 			CBlob@[] all;

@@ -7,7 +7,12 @@ void onInit(CBlob@ this)
     //move these vars to code bodies. My bad.
     this.set_f32("damagereduction", 0.05);
     this.set_f32("damagebuff", 0.1);
-    this.set_f32("critchance", 12.5);
+    this.set_f32("critchance", 7.5);
+}
+
+void onInit(CSprite@ this)
+{
+    this.ScaleBy(0.75f, 0.75f);
 }
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
@@ -47,7 +52,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 
             caller.set_f32("damagereduction", caller.get_f32("damagereduction") + 0.05);
             if (player !is null && player.isMyPlayer()) caller.set_f32("damagebuff", caller.get_f32("damagebuff") + 0.1);
-            caller.set_f32("critchance", caller.get_f32("critchance") + 12.5);
+            caller.set_f32("critchance", caller.get_f32("critchance") + 7.5);
         }
     }
     else if (cmd==this.getCommandID("unequip")) {}

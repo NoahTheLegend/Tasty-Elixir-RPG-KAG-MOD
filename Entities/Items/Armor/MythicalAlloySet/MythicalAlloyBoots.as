@@ -8,6 +8,7 @@ void onInit(CBlob@ this)
 	this.set_f32("velocity", (XORRandom(3)+1)/10);
     this.set_f32("blockchance", XORRandom(20)+15);
     this.set_f32("damagereduction", (XORRandom(25)+1)/10);
+    this.set_f32("gravityresist", 6.0);
 }
 
 void onInit(CSprite@ this)
@@ -56,6 +57,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
             caller.set_f32("mythbootsvelocity", this.get_f32("velocity"));
             caller.set_f32("mythbootsblockchance", this.get_f32("blockchance"));
             caller.set_f32("mythbootsdamagereduction", this.get_f32("damagereduction"));
+            caller.set_f32("gravityresist", caller.get_f32("gravityresist") + 6.0);
         }
     }
     else if (cmd==this.getCommandID("unequip")) {}

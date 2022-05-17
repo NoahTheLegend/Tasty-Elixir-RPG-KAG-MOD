@@ -16,6 +16,8 @@ void onInit(CBlob@ this)
     else if (this.get_f32("damagereduction") >= 10
     && this.get_f32("damagereduction") < 20) this.set_string("mythset", "mythset2");
     else this.set_string("mythset", "mythset3");
+
+    this.set_f32("bashchance", 15.0);
 }
 
 void onInit(CSprite@ this)
@@ -69,6 +71,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
             caller.set_f32("mythchestplatevelocity", this.get_f32("velocity"));
             caller.set_f32("mythchestplateblockchance", this.get_f32("blockchance"));
             caller.set_f32("mythchestplatedamagereduction", this.get_f32("damagereduction"));
+            caller.set_f32("bashchance", caller.get_f32("bashchance") + 15.0);
         }
     }
     else if (cmd==this.getCommandID("unequip")) {}

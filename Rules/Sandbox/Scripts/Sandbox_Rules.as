@@ -8,8 +8,8 @@
 #include "RespawnSystem.as";
 #include "TDM_Ruins.as";
 
-const int maxMines = 20;
-const int maxKegs = 20;
+const int maxMines = 200;
+const int maxKegs = 200;
 int mineCount = 0;
 int kegCount = 0;
 

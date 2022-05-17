@@ -8,6 +8,8 @@ void onInit(CBlob@ this)
     this.set_f32("damagereduction", (XORRandom(20)+1)/10);
     this.set_f32("critchance", XORRandom(20)+1);
     this.set_f32("damagebuff", (XORRandom(10)+11)/10);
+
+    this.set_f32("bashchance", 10.0);
 }
 
 void onInit(CSprite@ this)
@@ -58,6 +60,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
             caller.set_f32("mythglovesdamagereduction", this.get_f32("damagereduction"));
             caller.set_f32("mythglovescrithance", this.get_f32("critchance"));
             caller.set_f32("mythglovesdamagebuff", this.get_f32("damagebuff"));
+            caller.set_f32("bashchance", caller.get_f32("bashchance") + 10.0);
         }
     }
     else if (cmd==this.getCommandID("unequip")) {}

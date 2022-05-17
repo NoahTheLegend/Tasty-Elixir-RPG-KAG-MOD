@@ -11,6 +11,11 @@ void onInit(CBlob@ this)
     this.set_f32("hpregtime", 1*30);
 }
 
+void onInit(CSprite@ this)
+{
+    this.ScaleBy(1.05f, 1.05f);
+}
+
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
     if (this is null || caller is null) return;

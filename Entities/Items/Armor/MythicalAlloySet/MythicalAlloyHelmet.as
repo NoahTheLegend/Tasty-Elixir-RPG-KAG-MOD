@@ -9,6 +9,7 @@ void onInit(CBlob@ this)
     this.set_f32("manaregtime", 3*30);
     this.set_u16("maxmana", 100);
     this.set_u16("manareg", 45);
+    this.set_f32("vampirism", 0.1); // 10%
 }
 
 void onInit(CSprite@ this)
@@ -55,6 +56,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
             if (player !is null && player.isMyPlayer()) caller.set_f32("manaregtime", caller.get_f32("manaregtime") - 3*30);
             caller.set_u16("maxmana", caller.get_u16("maxmana") + 100);
             caller.set_u16("manareg", caller.get_u16("manareg") + 45);
+            caller.set_f32("vampirism", caller.get_f32("vampirism") + 0.1);
 
             //set variables to save XORRandom()ly defined stats
             caller.set_f32("mythhelmetdamagereduction", this.get_f32("damagereduction"));

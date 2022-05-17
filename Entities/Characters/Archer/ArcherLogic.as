@@ -11,6 +11,7 @@
 #include "Requirements.as";
 #include "CustomBlocks.as";
 #include "SkillsCommon.as";
+#include "RPGCommon.as";
 
 const int FLETCH_COOLDOWN = 45;
 const int PICKUP_COOLDOWN = 15;
@@ -54,6 +55,7 @@ void onInit(CBlob@ this)
 
 	this.addCommandID("showdamage");
 	getRules().addCommandID("showdamage");
+
 	//armor/weapons check
 	this.addCommandID("unequiphelmet");
 	this.addCommandID("unequiparmor");
@@ -75,39 +77,44 @@ void onInit(CBlob@ this)
 
 	this.set_bool("hashelmet", false);
 	this.set_string("helmetname", "");
+
 	//stats
-	this.set_f32("velocity", 2.5);
-    this.set_f32("dodgechance", 1.5);
-    this.set_f32("damagereduction", 0.05);
-	this.set_f32("hpregtime", 20*30);
-	this.set_u16("hpregtimer", 20*30);
-	this.set_f32("manaregtime", 20*30);
-	this.set_u16("manaregtimer", 20*30);
-	this.set_u16("manareg", 15);
-	this.set_u16("mana", 80);
-	this.set_u16("maxmana", 80);
-	this.set_f32("critchance", 7.5);
-	this.set_f32("damagebuff", 0);
-	this.set_f32("vampirism", 0); // % set from 0 to 1 for easier managing and multiplying
-	this.set_f32("attackspeed", 0);
-	this.set_bool("glowness", false);
-	this.set_bool("glowness2", false);
-	this.set_f32("gravityresist", 0); // 15 max
-	this.set_f32("bashchance", 0); // %
+	InitArcherStats stats;
+	this.set_f32("velocity", stats.velocity);
+    this.set_f32("dodgechance", stats.dodgechance); // %
+	this.set_f32("critchance", stats.critchance); // %
+    this.set_f32("damagereduction", stats.damagereduction);
+	this.set_f32("hpregtime", stats.hpregtime);
+	this.set_u16("hpregtimer", stats.hpregtimer);
+	this.set_f32("manaregtime", stats.manaregtime);
+	this.set_u16("manaregtimer", stats.manaregtimer);
+	this.set_u16("manareg", stats.manareg);
+	this.set_u16("mana", stats.mana);
+	this.set_u16("maxmana", stats.maxmana);
+	this.set_f32("damagebuff", stats.damagebuff);
+	this.set_f32("vampirism", stats.vampirism); // % set from 0 to 1 for easier managing and multiplying
+	this.set_f32("attackspeed", stats.attackspeed);
+	this.set_bool("glowness", stats.glowness);
+	this.set_bool("glowness2", stats.glowness2);
+	this.set_f32("gravityresist", stats.gravityresist); // 15 max
+	this.set_f32("bashchance", stats.bashchance); // %
+	this.set_f32("stabdmg", stats.stabdmg);
+
 	this.set_f32("dealtdamage", 0);
 
-	//stab stuff
-	this.set_f32("stabdmg", 1.0f);
 	//gathered set vars
 	this.set_bool("hasrlset", false);
+
 	//hunger&thirst
 	this.set_u8("hunger", 0);
 	this.set_u8("thirst", 0);
+
 	//other
 	this.set_bool("poisoned", false);
 	this.set_bool("bleeding", false);
 	this.set_u8("bleedmodifier", 1);
 	this.set_bool("regen", false);
+	
 	//effecttimers & buffs at their slots
 	this.set_u16("timer1", 0);
 	this.set_u16("timer2", 0);
@@ -619,226 +626,11 @@ void ManageBow(CBlob@ this, ArcherInfo@ archer, RunnerMoveVars@ moveVars)
 
 }
 
-void GetButtonsFor(CBlob@ this, CBlob@ caller)
-{
-    if (this is null) return;
-	if (!this.isMyPlayer()) return;
-
-	CControls@ controls = this.getControls();
-	if (controls !is null)
-	{
-		bool ctrl = controls.isKeyPressed(KEY_LCONTROL);
-
-    	if (caller.get_bool("hashelmet") && ctrl)
-    	{
-    	    CBitStream params;
-		    caller.CreateGenericButton("$"+this.get_string("helmetname")+"$", Vec2f(0, -10), this, this.getCommandID("unequiphelmet"), getTranslatedString("Unequip helmet"), params);
-    	}
-		if (caller.get_bool("hasarmor") && ctrl)
-    	{
-    	    CBitStream params;
-		    caller.CreateGenericButton("$"+this.get_string("armorname")+"$", Vec2f(0, -5), this, this.getCommandID("unequiparmor"), getTranslatedString("Unequip armor"), params);
-    	}
-		if (caller.get_bool("hasgloves") && ctrl)
-    	{
-    	    CBitStream params;
-		    caller.CreateGenericButton("$"+this.get_string("glovesname")+"$", Vec2f(0, 0), this, this.getCommandID("unequipgloves"), getTranslatedString("Unequip gloves"), params);
-    	}
-		if (caller.get_bool("hasboots") && ctrl)
-    	{
-    	    CBitStream params;
-		    caller.CreateGenericButton("$"+this.get_string("bootsname")+"$", Vec2f(0, 5), this, this.getCommandID("unequipboots"), getTranslatedString("Unequip boots"), params);
-    	}
-	}
-}
-
 void onTick(CBlob@ this)
 {
-	if (getGameTime()%150==0) 
-	{
-		//printf(""+this.get_f32("blockchance"));
-		//printf(""+this.get_u16("timer1"));
-		//printf(""+this.get_string("eff1"));
-		//printf(""+this.get_string("buffs1"));
-		//printf(""+this.get_u16("timer2"));
-		//printf(this.get_string("skill1"));
-		//printf(this.get_string("skill2"));
-		//printf(this.get_string("skill3"));
-	}
+	RPGUpdate(this); // do update all things
+
 	CControls@ controls = this.getControls();
-	if (controls !is null && this.getTickSinceCreated() >= 5)
-	{
-		if (controls.isKeyJustReleased(KEY_KEY_G)
-		&& this.get_u16("mana") >= getSkillMana(this.get_string("skilltype1"), this.get_u16("skillidx1"))
-		&& this.get_string("skill1") != ""
-		&& this.get_u16("skillcd1") == 0 && !this.get_bool("animplaying")) // skill 1
-		{
-			CBitStream params;
-			params.write_string(this.get_string("skilltype1"));
-			params.write_u8(this.get_u8("skillpos1")); // pos of skill in hotbar
-			params.write_u16(this.get_u16("skillidx1"));
-			this.SendCommand(this.getCommandID("activate_skill"), params);
-			//printf("sent");
-			this.set_u16("skillcd1", getSkillCooldown(this.get_string("skilltype1"), this.get_u16("skillidx1")));
-
-			this.set_bool("animplaying", true);
-			this.set_string("animname", this.get_string("skill1"));
-			this.set_u32("begintime", getGameTime());
-		}
-		else if (controls.isKeyJustReleased(KEY_KEY_H) && this.get_string("skill2") != ""
-		&& this.get_u16("skillcd2") == 0 && !this.get_bool("animplaying"))
-		{
-			CBitStream params;
-			params.write_string(this.get_string("skilltype2"));
-			params.write_u8(this.get_u8("skillpos2"));
-			params.write_u16(this.get_u16("skillidx2"));
-			this.SendCommand(this.getCommandID("activate_skill"), params);
-
-			this.set_u16("skillcd2", getSkillCooldown(this.get_string("skilltype2"), this.get_u16("skillidx2")));
-
-			this.set_bool("animplaying", true);
-			this.set_string("animname", this.get_string("skill2"));
-			this.set_u32("begintime", getGameTime());
-		}
-	}
-	CPlayer@ player = this.getPlayer();
-	//soundtracks
-	/* REMOVED UNTIL I REWRITE OTHER SETEMITSOUND CODE
-	if (getGameTime() % 150 == 0 && player !is null && !player.hasTag("disablesoundtracks")) // every 5 seconds check
-	{
-		CMap@ map = getMap();
-		Tile tile = map.getTile(this.getPosition());
-		CSprite@ sprite = this.getSprite();
-		if (sprite is null) return;
-		//surface
-
-		//caves
-
-		//inferno
-		int posy = this.getPosition().y;
-		//printf("pos: "+posy+" of map height*8/3: "+this.getMap().tilemapheight*8/3);
-		if (posy > this.getMap().tilemapheight*8/3
-		&& (tile.type == CMap::tile_inferno_ash_back
-		|| tile.type == CMap::tile_inferno_ash_back_d0
-		|| tile.type == CMap::tile_inferno_ash_back_d1
-		|| tile.type == CMap::tile_inferno_ash_back_d2
-		|| tile.type == CMap::tile_inferno_ash_back_d3
-		|| tile.type == CMap::tile_inferno_ash_back_d4
-		|| tile.type == CMap::tile_inferno_ash_back_d5
-		|| tile.type == CMap::tile_inferno_ash_back_d6
-		|| tile.type == CMap::tile_inferno_ash_back_d7
-		|| tile.type == CMap::tile_inferno_ash_back_d8
-		|| tile.type == CMap::tile_inferno_castle_back
-		|| tile.type == CMap::tile_inferno_castle_back_d0
-		|| tile.type == CMap::tile_inferno_castle_back_d1
-		|| tile.type == CMap::tile_inferno_castle_back_d2
-		|| tile.type == CMap::tile_inferno_castle_back_d3
-		|| tile.type == CMap::tile_inferno_castle_back_d4
-		|| tile.type == CMap::tile_inferno_castle_back_d5
-		|| tile.type == CMap::tile_inferno_castle_back_d6
-		|| tile.type == CMap::tile_inferno_castle_back_d7
-		|| tile.type == CMap::tile_inferno_castle_back_d8))
-		{
-			if (isClient() && this.isMyPlayer() && XORRandom(20) < 1
-			&& this.get_string("track") != "Inferno_1.ogg"
-			&& this.get_string("track") != "Inferno_2.ogg"
-			&& this.get_string("track") != "Inferno_3.ogg") // 5% chance every 5 sec
-			{
-				u8 random = XORRandom(10);
-				if (random < 3)
-				{
-					sprite.SetEmitSound("Inferno_1.ogg");
-					sprite.SetEmitSoundVolume(0.25f);
-					sprite.SetEmitSoundPaused(false);
-					this.set_string("track", "Inferno_1.ogg");
-					this.set_u32("tracktimer", 285*30 + 300); // 4.85 min + cd check
-				}
-				else if (random >= 3 && XORRandom(10) < 6)
-				{
-					sprite.SetEmitSound("Inferno_2.ogg");
-					sprite.SetEmitSoundVolume(0.5f);
-					sprite.SetEmitSoundPaused(false);
-					this.set_string("track", "Inferno_2.ogg");
-					this.set_u32("tracktimer", 225*30 + 300); // 3.85 min + cd check
-				}
-				else if (random >= 6)
-				{
-					sprite.SetEmitSound("Inferno_3.ogg");
-					sprite.SetEmitSoundVolume(0.5f);
-					sprite.SetEmitSoundPaused(false);
-					this.set_string("track", "Inferno_3.ogg");
-					this.set_u32("tracktimer", 75*30 + 300); // 1.25 min + cd check
-				}
-			}
-		}
-		
-		//abyss
-		else if (tile.type == CMap::tile_abyss_dirt_back
-		|| tile.type == CMap::tile_abyss_dirt_back_d0
-		|| tile.type == CMap::tile_abyss_dirt_back_d1
-		|| tile.type == CMap::tile_abyss_dirt_back_d2)
-		{
-			if (isClient() && this.isMyPlayer() && XORRandom(20) < 1
-			&& this.get_string("track") != "Abyss_1.ogg"
-			&& this.get_string("track") != "Abyss_2(HK-OST).ogg") // 5% chance every 5 sec
-			{
-				if (XORRandom(10) < 5)
-				{
-					sprite.SetEmitSound("Abyss_1.ogg");
-					sprite.SetEmitSoundVolume(0.5f);
-					sprite.SetEmitSoundPaused(false);
-					this.set_string("track", "Abyss_1.ogg");
-					this.set_u32("tracktimer", 150*30 + 300); // 2.5 min + cd check
-				}
-				else
-				{
-					sprite.SetEmitSound("Abyss_2(HK-OST).ogg");
-					sprite.SetEmitSoundVolume(1.5f);
-					sprite.SetEmitSoundPaused(false);
-					this.set_string("track", "Abyss_2(HK-OST).ogg");
-					this.set_u32("tracktimer", 930*30 + 300); // 15.5 min + cd check
-				}
-			}
-		}
-		else if (XORRandom(20) < 0 // remove soundtrack if out, 5% chance
-		&& (this.get_string("track") == "Abyss_1.ogg"
-		|| this.get_string("track") == "Abyss_2(HK-OST).ogg"
-		|| this.get_string("track") == "Inferno_1.ogg"
-		|| this.get_string("track") == "Inferno_2.ogg"
-		|| this.get_string("track") == "Inferno_3.ogg"))
-		{
-			sprite.SetEmitSoundPaused(true);
-			this.set_string("track", "");
-			this.set_u32("tracktimer", 0);
-			this.set_u16("tracktimercd", 60*30); // 1 min cd
-		}
-		//printf(this.get_string("track"));
-
-		//track timer
-		if (this.get_u32("tracktimer") > 0) this.set_u32("tracktimer", this.get_u32("tracktimer") - 150);
-		if (this.get_u16("tracktimercd") > 0) this.set_u16("tracktimercd", this.get_u16("tracktimercd") - 150);
-		else if (this.get_u32("tracktimer") < 0 || this.get_u32("tracktimer") > 30000 ) this.set_u32("tracktimer", 0);
-		else if (this.get_u32("tracktimer") >= 0 && this.get_u32("tracktimer") <= 150
-		&& this.get_u16("tracktimercd") == 0 && this.get_string("track") != "")
-		{
-			sprite.SetEmitSoundPaused(true);
-			this.set_string("track", "");
-			this.set_u16("tracktimercd", 300*30); //5 min cd
-		}
-		//if (this.get_u32("tracktimer") > 0) printf(""+this.get_u32("tracktimer"));
-		//if (this.get_u16("tracktimercd") > 0) printf(""+this.get_u16("tracktimercd"));
-	}
-	*/
-	//check if smth broke
-	if (getGameTime() % 5 == 0)
-	{
-		string lengthie = ""+this.get_f32("attackspeed");
-		if (this.get_u8("hunger") > 150) this.set_u8("hunger", 0);
-		if (this.get_u8("thirst") > 150) this.set_u8("thirst", 0);
-		if (this.get_f32("attackspeed") < 0
-		|| this.get_f32("attackspeed") > 3
-		|| lengthie.length >= 8) this.set_f32("attackspeed", 0);
-	}
 	this.Sync("damagebuff", true);
 	this.Sync("dealtdamage", true);
 	if (this.hasTag("updateattackspeed"))
@@ -846,29 +638,8 @@ void onTick(CBlob@ this)
 		DoAttackSpeedChange(this.get_f32("attackspeed"), true);
 		this.Untag("updateattackspeed");
 	}
-	//set buffs
-	if (this.get_string("armorname") == "rl_chestplate"
-	&& this.get_string("helmetname") == "rl_helmet"
-	&& this.get_string("glovesname") == "rl_gloves"
-	&& this.get_string("bootsname") == "rl_boots")
-	{
-		this.Tag("rlset");
-	}
-	else this.Untag("rlset");
 
-	if (this.hasTag("rlset") && !this.get_bool("hasrlset"))
-	{
-		this.set_f32("damagereduction", this.get_f32("damagereduction") + 0.1);
-		this.set_f32("velocity", this.get_f32("velocity") + 0.2);
-		this.set_bool("hasrlset", true);
-	}
-	else if (!this.hasTag("rlset") && this.get_bool("hasrlset"))
-	{
-		this.set_f32("damagereduction", this.get_f32("damagereduction") - 0.1);
-		this.set_f32("velocity", this.get_f32("velocity") - 0.2);
-		this.set_bool("hasrlset", false);
-	}
-
+	RPGUpdateArcherRogueSets(this);
 	
 	if (this.isKeyPressed(key_action1) && this.get_u16("mana") > 0)
 	{
@@ -895,26 +666,6 @@ void onTick(CBlob@ this)
 
 	if (this.get_u16("mana") > this.get_u16("maxmana")) this.set_u16("mana", this.get_u16("maxmana"));
 
-	//debuffs
-	if (getGameTime() % 150 == 0 && this.get_bool("poisoned"))
-	{
-		if (isServer()) this.server_Hit(this, this.getPosition(), Vec2f(0,0.6), 0.5f,  Hitters::stab);
-	}
-	if (getGameTime() % 75 == 0 && this.get_bool("bleeding"))
-	{
-		if (isServer()) this.server_Hit(this, this.getPosition(), Vec2f(0,0.6), this.get_u8("bleedmodifier") * 0.1f, Hitters::stab);
-		if (isClient()) ParticleBloodSplat(this.getPosition() + getRandomVelocity(0, 0.75f + this.get_u8("bleedmodifier") * 2.0f * XORRandom(2), 360.0f), false);
-
-		if (this.get_u8("bleedmodifier") < 20) this.set_u8("bleedmodifier", this.get_u8("bleedmodifier") + 1);
-	}
-	if (this.hasTag("ded"))
-	{
-		if (this.getSprite() !is null) this.getSprite().PlaySound("MigrantScream1.ogg");
-		if (isServer()) this.server_Die();
-	}
-
-	if (getGameTime() % 60 == 0 && !this.get_bool("bleeding")) this.set_u8("bleedmodifier", 1);
-
 	RunnerMoveVars@ moveVars;
 
 	bool knocked = isKnocked(this);
@@ -931,124 +682,6 @@ void onTick(CBlob@ this)
 	if (this.get_f32("gravityresist") > 0)
 	{
 		this.AddForce(Vec2f(0, -(this.get_f32("gravityresist"))));
-	}
-
-	//lava stuff
-	CMap@ map = getMap();
-	Tile tile = map.getTile(this.getPosition());
-	if (tile.type > 463 && tile.type < 467) // lava indexes
-	{
-		this.setVelocity(Vec2f(0,this.getVelocity().y*0.25));
-		if (this.isKeyPressed(key_up) && !this.isKeyPressed(key_action2)) this.AddForce(Vec2f(0,-35.0f));
-		if (getGameTime()%15==0)
-		{
-			if (isServer())
-			{
-				map.server_setFireWorldspace(this.getPosition(), true);
-				this.server_Hit(this, this.getPosition(), Vec2f(0,0), 1.0f, Hitters::fire);
-			}
-			if (this.isMyPlayer()) SetScreenFlash(125, 255, 0, 0, 0.75f);
-		}
-	}
-	//glowness & fishbreathing
-	if (this.get_bool("glowness"))
-	{
-		this.SetLight(true);
-		this.SetLightColor(SColor(255, 200, 200, 0));
-		this.SetLightRadius(50.0f);
-	}
-	else if (this.get_bool("glowness2"))
-	{
-		this.SetLight(true);
-		this.SetLightColor(SColor(255, 200, 200, 0));
-		this.SetLightRadius(100.0f);
-	}
-	else this.SetLight(false);
-	//regen
-	this.Sync("hpregtime", true);
-	this.Sync("manaregtime", true);
-	if (this !is null && this.get_f32("hpregtime") > 0 && !this.get_bool("poisoned"))
-		if (this.get_u16("hpregtimer") == 0)
-		{
-			this.set_u16("hpregtimer", this.get_f32("hpregtime"));
-			if (isServer()) 
-			{
-				if (this.get_bool("regen")) this.server_Heal(0.50f);
-				else this.server_Heal(0.25f);
-			}
-		}
-	if (this !is null && this.get_f32("manaregtime") > 0)
-		if (this.get_u16("manaregtimer") == 0)
-		{
-			this.set_u16("manaregtimer", this.get_f32("manaregtime"));
-			this.set_u16("mana", this.get_u16("mana") + this.get_u16("manareg"));
-		}
-
-	if (getGameTime() % 30 == 0)
-	{
-		if (this.get_u16("hpregtimer") > 0) this.set_u16("hpregtimer", this.get_u16("hpregtimer") - 30);
-		if (this.get_u16("manaregtimer") > 0) this.set_u16("manaregtimer", this.get_u16("manaregtimer") - 30);
-		if (this.get_u16("hpregtimer") < 0 || this.get_u16("hpregtimer") > 30000) this.set_u16("hpregtimer", 0);
-		if (this.get_u16("manaregtimer") < 0 || this.get_u16("manaregtimer") > 30000) this.set_u16("manaregtimer", 0);
-		
-		//CPlayer@ player = this.getPlayer();
-		//if (player is null || player.isMyPlayer()) return;
-		
-		//stat timers
-		if (this.get_u16("timer1") > 0)
-		{
-			TimerCheck(this, 1);
-		}
-		if (this.get_u16("timer2") > 0)
-		{
-			TimerCheck(this, 2);
-		}
-		if (this.get_u16("timer3") > 0)
-		{
-			TimerCheck(this, 3);
-		}
-		if (this.get_u16("timer4") > 0)
-		{
-			TimerCheck(this, 4);
-		}
-		if (this.get_u16("timer5") > 0)
-		{
-			TimerCheck(this, 5);
-		}
-		if (this.get_u16("timer6") > 0)
-		{
-			TimerCheck(this, 6);
-		}
-		if (this.get_u16("timer7") > 0)
-		{
-			TimerCheck(this, 7);
-		}
-		if (this.get_u16("timer8") > 0)
-		{
-			TimerCheck(this, 8);
-		}
-		if (this.get_u16("timer9") > 0)
-		{
-			TimerCheck(this, 9);
-		}
-		if (this.get_u16("timer10") > 0)
-		{
-			TimerCheck(this, 10);
-		}
-	}
-	//hunger & thirst
-	if (getGameTime() % 750 == 0 && this.getTickSinceCreated() >= 750) // 25 sec
-	{
-		if (XORRandom(11) <= 5 && this.getVelocity().x == 0) return; // if player is not moving, with some chance (5 to 10)
-
-		if (this.get_u8("thirst") < 100) this.set_u8("thirst", this.get_u8("thirst") + 1);
-		else if (isServer()) this.server_Hit(this, this.getPosition(), Vec2f(0,0), 1.5f,  Hitters::stab);
-		
-		if (this.get_u8("hunger") < 100) this.set_u8("hunger", this.get_u8("hunger") + 1);
-		else if (isServer()) this.server_Hit(this, this.getPosition(), Vec2f(0,0), 1.5f,  Hitters::stab);
-
-		this.Sync("hunger", true);
-		this.Sync("thirst", true);
 	}
 
 	if (this.get_f32("velocity") > 0 && this.get_u8("thirst") < 50 && this.get_u8("hunger") < 50)
@@ -1095,152 +728,6 @@ void onTick(CBlob@ this)
 	ManageBow(this, archer, moveVars);
 
 	//print("state after: " + archer.charge_state);
-}
-
-void TimerCheck(CBlob@ this, u8 index)
-{
-	this.set_u16("timer"+index, this.get_u16("timer"+index) - 30);
-
-	if (this.get_u16("timer"+index) <= 1 || this.get_u16("timer"+index) > 25000) 
-	{
-		this.set_u16("timer"+index, 0);
-		if (isServer())
-		{
-			CBitStream params;
-			params.write_string(this.get_string("buffs"+index));
-			params.write_u8(index);
-			this.SendCommand(this.getCommandID("timercheck"), params);
-		}
-	}
-	if (index > 1)
-	{
-		if (this.get_u16("timer"+(index-1)) <= 0)
-		{
-			this.set_u16("timer"+(index-1), this.get_u16("timer"+index));
-			this.Sync("timer"+(index-1), true);
-			this.set_string("buffs"+(index-1), this.get_string("buffs"+index));
-			this.Sync("buffs"+(index-1), true);
-			this.set_string("eff"+(index-1), this.get_string("eff"+index));
-			this.Sync("eff"+(index-1), true);
-			this.set_u16("timer"+index, 0);
-			this.Sync("timer"+index, true);
-			this.set_string("buffs"+index, "");
-			this.Sync("buffs"+index, true);
-			this.set_string("eff"+index, "");
-			this.Sync("eff"+index, true);
-		}
-	}
-	else if (index == 1 && this.get_u16("timer1") <= 1 ) // clear
-	{
-		this.set_u16("timer1", 0);
-		this.Sync("timer1", true);
-		this.set_string("buffs1", "");
-		this.Sync("buffs1", true);
-		this.set_string("eff1", "");
-		this.Sync("eff1", true);
-		this.set_u16("timer1", 0);
-		this.Sync("timer1", true);
-	}
-}
-
-void SetToFreeSlot(CBlob@ this, string name, string buff, u16 time)
-{
-	if (this.get_string("eff1") == "")
-	{
-		this.set_u16("timer1", time);
-		this.set_string("eff1", name);
-		this.Sync("eff1", true); // for onRender
-		this.set_string("buffs1", buff);
-		this.Sync("buffs1", true);
-	} 
-	else if (this.get_string("eff2") == "") 
-	{
-		this.set_u16("timer2", time);
-		this.set_string("eff2", name);
-		this.Sync("eff2", true);
-		this.set_string("buffs2", buff);
-		this.Sync("buffs2", true);
-	}
-	else if (this.get_string("eff3") == "")
-	{
-		this.set_u16("timer3", time);
-		this.set_string("eff3", name);
-		this.Sync("eff3", true);
-		this.set_string("buffs3", buff);
-		this.Sync("buffs3", true);
-	}
-	else if (this.get_string("eff4") == "")
-	{
-		this.set_u16("timer4", time);
-		this.set_string("eff4", name);
-		this.Sync("eff4", true);
-		this.set_string("buffs4", buff);
-		this.Sync("buffs4", true);
-	}
-	else if (this.get_string("eff5") == "")
-	{
-		this.set_u16("timer5", time);
-		this.set_string("eff5", name);
-		this.Sync("eff5", true);
-		this.set_string("buffs5", buff);
-		this.Sync("buffs5", true);
-	}
-	else if (this.get_string("eff6") == "")
-	{
-		this.set_u16("timer6", time);
-		this.set_string("eff6", name);
-		this.Sync("eff6", true);
-		this.set_string("buffs6", buff);
-		this.Sync("buffs6", true);
-	} 
-	else if (this.get_string("eff7") == "") 
-	{
-		this.set_u16("timer7", time);
-		this.set_string("eff7", name);
-		this.Sync("eff7", true);
-		this.set_string("buffs7", buff);
-		this.Sync("buffs7", true);
-	}
-	else if (this.get_string("eff8") == "")
-	{
-		this.set_u16("timer8", time);
-		this.set_string("eff8", name);
-		this.Sync("eff8", true);
-		this.set_string("buffs8", buff);
-		this.Sync("buffs8", true);
-	}
-	else if (this.get_string("eff9") == "")
-	{
-		this.set_u16("timer9", time);
-		this.set_string("eff9", name);
-		this.Sync("eff9", true);
-		this.set_string("buffs9", buff);
-		this.Sync("buffs9", true);
-	}
-	else if (this.get_string("eff10") == "")
-	{
-		this.set_u16("timer10", time);
-		this.set_string("eff10", name);
-		this.Sync("eff10", true);
-		this.set_string("buffs10", buff);
-		this.Sync("buff10", true);
-	}
-}
-
-void UpdateStats(CBlob@ this, string name)
-{
-	CPlayer@ player = this.getPlayer();
-	if (player is null) return;
-
-	if (isServer()) 
-	{
-		CBlob@ blob = server_CreateBlob(name, this.getTeamNum(), this.getPosition());
-		blob.setPosition(this.getPosition());
-
-		CBitStream params;
-		params.write_u16(blob.getNetworkID());
-		this.SendCommand(this.getCommandID("update_stats"), params);
-	}
 }
 
 bool checkGrappleStep(CBlob@ this, ArcherInfo@ archer, CMap@ map, const f32 dist)
@@ -1557,6 +1044,8 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
         {
 			CPlayer@ player = this.getPlayer();
 
+			UpdateStats(this, this.get_string("helmetname"));
+
 			if (player !is null && player.isMyPlayer())
 			{
 				this.set_bool("hashelmet", false);
@@ -1564,8 +1053,6 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	       		this.set_string("helmetname", "");
 				this.Sync("helmetname", true);
 			}
-
-			UpdateStats(this, this.get_string("helmetname"));
 		}
 	}
 	else if (cmd == this.getCommandID("unequiparmor"))
@@ -1574,6 +1061,8 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
         {
 			CPlayer@ player = this.getPlayer();
 
+			UpdateStats(this, this.get_string("armorname"));
+
 			if (player !is null && player.isMyPlayer())
 			{
 				this.set_bool("hasarmor", false);
@@ -1581,8 +1070,6 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	       		this.set_string("armorname", "");
 				this.Sync("armorname", true);
 			}
-
-			UpdateStats(this, this.get_string("armorname"));
 		}
 	}
 	else if (cmd == this.getCommandID("unequipgloves"))
@@ -1591,6 +1078,8 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
         {
 			CPlayer@ player = this.getPlayer();
 
+			UpdateStats(this, this.get_string("glovesname"));
+
 			if (player !is null && player.isMyPlayer())
 			{
 				this.set_bool("hasgloves", false);
@@ -1598,8 +1087,6 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	       		this.set_string("glovesname", "");
 				this.Sync("glovesname", true);
 			}
-
-			UpdateStats(this, this.get_string("glovesname"));
 		}
 	}
 	else if (cmd == this.getCommandID("unequipboots"))
@@ -1608,6 +1095,8 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
         {
 			CPlayer@ player = this.getPlayer();
 
+			UpdateStats(this, this.get_string("bootsname"));
+
 			if (player !is null && player.isMyPlayer())
 			{
 				this.set_bool("hasboots", false);
@@ -1615,8 +1104,6 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	       		this.set_string("bootsname", "");
 				this.Sync("bootsname", true);
 			}
-
-			UpdateStats(this, this.get_string("bootsname"));
 		}
 	}
 	else if (cmd == this.getCommandID("update_stats"))

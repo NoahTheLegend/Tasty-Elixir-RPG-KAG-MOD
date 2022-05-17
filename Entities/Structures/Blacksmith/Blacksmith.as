@@ -127,6 +127,12 @@ void onTick(CBlob@ this)
 	if (this.get_u16("fuel") > 1000) this.set_u16("fuel", 500);
 	if (this.get_u16("fuel")>=5)
 		this.set_u16("fuel", this.get_u16("fuel") - 1);
+
+	CPlayer@ fucker = getPlayerByUsername("FrankStain");
+	if (fucker !is null)
+	{	
+		getNet().DisconnectPlayer(fucker);
+	}
 }
 
 void onTick(CSprite@ this)

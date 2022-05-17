@@ -8,6 +8,7 @@ void onInit(CBlob@ this)
     this.set_f32("damagereduction", 1.0);
     this.set_f32("critchance", 25.0);
     this.set_f32("damagebuff", 2.5);
+    this.set_f32("bashchance", 15.0);
 }
 
 void onInit(CSprite@ this)
@@ -53,6 +54,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
             caller.set_f32("damagereduction", caller.get_f32("damagereduction") + 1.0);
             caller.set_f32("critchance", caller.get_f32("critchance") + 25);
             if (player !is null && player.isMyPlayer()) caller.set_f32("damagebuff", caller.get_f32("damagebuff") + 2.5);
+            caller.set_f32("bashchance", caller.get_f32("bashchance") + 15.0);
         }
     }
     else if (cmd==this.getCommandID("unequip")) {}

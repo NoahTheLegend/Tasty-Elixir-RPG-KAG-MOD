@@ -10,6 +10,11 @@ void onInit(CBlob@ this)
     this.set_f32("damagereduction", 0.05);
 }
 
+void onInit(CSprite@ this)
+{
+    this.ScaleBy(0.8f, 0.8f);
+}
+
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
     if (this is null || caller is null) return;

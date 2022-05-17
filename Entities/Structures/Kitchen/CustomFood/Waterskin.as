@@ -16,6 +16,7 @@ void onTick(CBlob@ this)
 {
   if (this !is null)
   {
+    if (this.hasTag("nocollide") && this.getTickSinceCreated() > 30) this.Untag("nocollide");
     if (this.get_u8("state") == 3) this.setInventoryName("Empty waterskin");
     if (this.isInWater() && this.get_u8("state") > 0)
     {
@@ -53,6 +54,10 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 {
 	if (this !is null && solid)
 	{
+    if (this.hasTag("nocollide"))
+    {
+      return;
+    }
     if ((this.getVelocity().x > 1.0 || this.getVelocity().y > 0.65) || (this.getVelocity().x < -1.0 || this.getVelocity().y < -0.65))
     {
       if (isClient() && this.get_u8("state") < 3 && !this.isAttached())

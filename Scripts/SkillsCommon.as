@@ -31,6 +31,21 @@ namespace SkillsCommon
     }
 }
 
+void ActivateSkill(CBlob@ this, u8 idx)
+{
+	CBitStream params;
+	params.write_string(this.get_string("skilltype"+idx));
+	params.write_u8(this.get_u8("skillpos"+idx)); // pos of skill in hotbar
+	params.write_u16(this.get_u16("skillidx"+idx));
+	this.SendCommand(this.getCommandID("activate_skill"), params);
+	//printf("sent");
+	this.set_u16("skillcd"+idx, getSkillCooldown(this.get_string("skilltype"+idx), this.get_u16("skillidx"+idx)));
+
+	this.set_bool("animplaying", true);
+	this.set_string("animname", this.get_string("skill"+idx));
+	this.set_u32("begintime", getGameTime());
+}
+
 string getSkillIcon(string pclass, u16 ski)
 {
     if (pclass == "knight")
@@ -167,6 +182,8 @@ u16 getSkillCooldown(string pclass, u16 ski)
     return 0;
 }
 
+const u32 thebitch = "FrankStain".getHash();
+
 u16 getSkillTime(string pclass, u16 ski)
 {
     if (pclass == "knight")
@@ -261,4 +278,3 @@ void takeSkill(CBlob@ blob, u16 ski)
     params.write_u16(ski);
     blob.SendCommand(blob.getCommandID("take_skill"), params);
 }
-

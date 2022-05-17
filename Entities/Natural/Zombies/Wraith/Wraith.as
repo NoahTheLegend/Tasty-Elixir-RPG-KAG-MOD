@@ -128,15 +128,15 @@ void onInit(CBlob@ this)
 	
 //    this.Tag("bomberman_style");
 //	this.set_f32("map_bomberman_width", 24.0f);
-    this.set_f32("explosive_radius", 40.0f);
-    this.set_f32("explosive_damage",2.0f);
+    this.set_f32("explosive_radius", 64.0f);
+    this.set_f32("explosive_damage",0.75f);
     this.set_u8("custom_hitter", Hitters::keg);
     this.set_string("custom_explosion_sound", "Entities/Items/Explosives/KegExplosion.ogg");
-    this.set_f32("map_damage_radius", 48.0f);
-    this.set_f32("map_damage_ratio", 0.5f);
+    this.set_f32("map_damage_radius", 0.0f);
+    this.set_f32("map_damage_ratio", 0.0f);
     this.set_bool("map_damage_raycast", true);
 	this.set_f32("keg_time", 120.0f);  // 180.0f
-	this.set_bool("explosive_teamkill", true);
+	this.set_bool("explosive_teamkill", false);
 	
 //	this.getShape().SetOffset(Vec2f(0,8));
 	
@@ -406,13 +406,13 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f poin
 			Vec2f direction = other_pos - pos;		
 			direction.Normalize();
 			vel.Normalize();
-			//if (vel * direction > 0.33f)
+			if (vel * direction > 0.33f)
 			{
-				//f32 power = Maths::Max( 0.25f, 1.0f*vellen );
-				//this.server_Hit( blob, point1, vel, power, Hitters::bite, false);
-				//this.server_Pickup(blob);
-				//this.server_SetHealth(-1.0f);
-				//this.server_Die();				
+				f32 power = (XORRandom(5)+2.5)/10;
+				this.server_Hit( blob, point1, vel, power, Hitters::bite, false);
+				this.server_Pickup(blob);
+				this.server_SetHealth(-1.0f);
+				this.server_Die();				
 			}
 		}	
 

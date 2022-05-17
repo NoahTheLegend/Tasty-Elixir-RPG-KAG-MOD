@@ -480,6 +480,7 @@ f32 onHit( CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hit
 
 bool doesCollideWithBlob( CBlob@ this, CBlob@ blob )
 {
+	printf(""+this.getTeamNum());
 	if (blob.hasTag("dead"))
 		return false;
 	if (!blob.hasTag("zombie") && blob.hasTag("flesh") && this.getTeamNum() == blob.getTeamNum()) return false;

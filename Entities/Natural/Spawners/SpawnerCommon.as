@@ -11,22 +11,6 @@ shared class Spawner
     u16 delay_after_activation; // to prevent instantly turning off when player is going away
     bool is_active;
     string file_name = "Spawners.png";
-
-    void ShowInfo()
-    {
-        printf("theme: "+theme);
-        for (u16 i = 0; i < mobs.length; i++)
-        {
-            printf("mob+"+i+": "+mobs[i]);
-        }
-        printf("size: "+size);
-        printf("spawn_frequency: "+spawn_frequency);
-        printf("activate_radius: "+activate_radius);
-        printf("spawn_radius: "+spawn_radius);
-        printf("delay: "+delay_after_activation);
-        printf("is_active: "+is_active);
-        printf("file_name: "+file_name);
-    }
 };
 
 bool isActive(CBlob@ this)
@@ -36,12 +20,15 @@ bool isActive(CBlob@ this)
 	{
 		return false;
 	}
+
     CMap@ map = getMap();
     if (map is null) return false;
 
     // activate spawner
     CBlob@[] blobs;
-    map.getBlobsInRadius(this.getPosition(), spawner.activate_radius, blobs);
+    map.getBlobsInRadius(this.getPosition(), this.get_f32("activate_radius"), blobs);
+
+    //if (getGameTime()%60==0) printf(""+this.get_f32("activate_radius");
 
     bool activate = false;
 

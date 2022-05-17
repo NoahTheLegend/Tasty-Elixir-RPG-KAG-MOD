@@ -5,10 +5,9 @@ void onInit(CBlob@ this)
     
     this.Tag("armor");
 
-    this.set_f32("damagereduction", (XORRandom(20)+1)/10);
-    this.set_f32("critchance", XORRandom(20)+1);
-    this.set_f32("damagebuff", (XORRandom(10)+11)/10);
-
+    this.set_f32("damagereduction", 0.5+(XORRandom(10)*0.1));
+    this.set_f32("critchance", 15+XORRandom(21));
+    this.set_f32("damagebuff", 1.0+((XORRandom(6)+10)*0.1));
     this.set_f32("bashchance", 10.0);
 }
 
@@ -54,13 +53,16 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 
             caller.set_f32("damagereduction", caller.get_f32("damagereduction") + this.get_f32("damagereduction"));
             caller.set_f32("critchance", caller.get_f32("critchance") + this.get_f32("critchance"));
-            if (player !is null && player.isMyPlayer()) caller.set_f32("damagebuff", caller.get_f32("damagebuff") + 0.15);
-        
-            //set variables to save XORRandom()ly defined stats
-            caller.set_f32("mythglovesdamagereduction", this.get_f32("damagereduction"));
-            caller.set_f32("mythglovescrithance", this.get_f32("critchance"));
-            caller.set_f32("mythglovesdamagebuff", this.get_f32("damagebuff"));
+            if (player !is null && player.isMyPlayer()) caller.set_f32("damagebuff", caller.get_f32("damagebuff") + this.get_f32("damagebuff"));
             caller.set_f32("bashchance", caller.get_f32("bashchance") + 10.0);
+
+            CPlayer@ player = caller.getPlayer();
+            if (player is null) return;
+            //set variables to save XORRandom()ly defined stats
+            player.set_f32("mythglovesdamagereduction", this.get_f32("damagereduction"));
+            player.set_f32("mythglovescrithance", this.get_f32("critchance"));
+            player.set_f32("mythglovesdamagebuff", this.get_f32("damagebuff"));
+            player.set_f32("mythglovesbashchance", this.get_f32("bashchance"));
         }
     }
     else if (cmd==this.getCommandID("unequip")) {}

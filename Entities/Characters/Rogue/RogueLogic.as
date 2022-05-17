@@ -101,6 +101,7 @@ void onInit(CBlob@ this)
 	this.addCommandID("unequipboots");
 	this.addCommandID("update_stats");
 	this.addCommandID("sync_stats");
+	this.addCommandID("doattackspeedchange");
 
 	this.addCommandID("hitsound");
 
@@ -184,12 +185,6 @@ void onSetPlayer(CBlob@ this, CPlayer@ player)
 	}
 }
 
-void DoAttackSpeedChange(CBlob@ this, f32 speed, bool increase)
-{
-	if (increase) this.set_u8("attackdelayreduce", this.get_u8("attackdelayreduce") - speed * 10);
-	else this.set_u8("attackdelayreduce", this.get_u8("attackdelayreduce") + speed * 10);
-}
-
 void onTick(CBlob@ this)
 {
 	RPGUpdate(this); // do update all things
@@ -211,12 +206,6 @@ void onTick(CBlob@ this)
 
 	this.Sync("damagebuff", true);
 	this.Sync("dealtdamage", true);
-
-	if (this.hasTag("updateattackspeed"))
-	{
-		DoAttackSpeedChange(this, this.get_f32("attackspeed"), true);
-		this.Untag("updateattackspeed");
-	}
 
 	RunnerMoveVars@ moveVars;
 
@@ -770,7 +759,13 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 				}
 				else
 				{
-					if (splb1[0] == "attackspeed") DoAttackSpeedChange(this, this.get_f32("attackspeed"), false);
+					if (splb1[0] == "attackspeed")
+					{
+						CBitStream params;
+						params.write_f32(parseFloat(splb1[2]));
+						params.write_bool(false);
+						this.SendCommand(this.getCommandID("doattackspeedchange"), params);
+					}
 					this.set_f32(splb1[0], this.get_f32(splb1[0]) - parseFloat(splb1[2]));
 				}
 				//this.Sync(splb1[0], true);
@@ -787,7 +782,13 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 				}
 				else
 				{
-					if (splb2[0] == "attackspeed") DoAttackSpeedChange(this, this.get_f32("attackspeed"), false);
+					if (splb2[0] == "attackspeed")
+					{
+						CBitStream params;
+						params.write_f32(parseFloat(splb2[2]));
+						params.write_bool(false);
+						this.SendCommand(this.getCommandID("doattackspeedchange"), params);
+					}
 					this.set_f32(splb2[0], this.get_f32(splb2[0]) - parseFloat(splb2[2]));
 				}
 				//this.Sync(splb2[0], true);
@@ -804,7 +805,13 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 				}
 				else
 				{
-					if (splb3[0] == "attackspeed") DoAttackSpeedChange(this, this.get_f32("attackspeed"), false);
+					if (splb3[0] == "attackspeed")
+					{
+						CBitStream params;
+						params.write_f32(parseFloat(splb3[2]));
+						params.write_bool(false);
+						this.SendCommand(this.getCommandID("doattackspeedchange"), params);
+					}
 					this.set_f32(splb3[0], this.get_f32(splb3[0]) - parseFloat(splb3[2]));
 				}
 				//this.Sync(splb3[0], true);
@@ -926,6 +933,10 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		this.set_u16("maxmana", this.get_u16("maxmana") - blob.get_u16("maxmana"));
 		this.set_f32("critchance", this.get_f32("critchance") - blob.get_f32("critchance"));
 		this.set_f32("damagebuff", this.get_f32("damagebuff") - blob.get_f32("damagebuff"));
+		this.set_f32("attackspeed", this.get_f32("attackspeed") - blob.get_f32("attackspeed"));
+		this.set_f32("vampirism", this.get_f32("vampirism") - blob.get_f32("vampirism"));
+		this.set_f32("bashchance", this.get_f32("bashchance") - blob.get_f32("bashchance"));
+		this.set_f32("gravityresist", this.get_f32("gravityresist") - blob.get_f32("gravityresist"));
 
 		//CBitStream params;
 		//this.SendCommand(this.getCommandID("sync_stats"), params);
@@ -956,8 +967,19 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		this.Sync("maxmana", true);
 		this.Sync("critchance", true);
 		this.Sync("damagebuff", true);
+		this.Sync("attackspeed", true);
 		this.Sync("dealtdamage", true);
-		printf("synced");
+		this.Sync("vampirism", true);
+		this.Sync("bashchance", true);
+		this.Sync("gravityresist", true);
+		//printf("synced");
+	}
+	else if (cmd == this.getCommandID("doattackspeedchange"))
+	{
+		f32 current = params.read_f32();
+		bool increase = params.read_bool();
+		if (increase) this.set_u8("attackdelayreduce", this.get_u8("attackdelayreduce") - current * 10);
+		else this.set_u8("attackdelayreduce", this.get_u8("attackdelayreduce") + current * 10);
 	}
 	else if (cmd == this.getCommandID("hitsound"))
 	{

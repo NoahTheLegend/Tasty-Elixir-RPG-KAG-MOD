@@ -117,7 +117,7 @@ void setEffect(CBlob@ this)
                 case 2: this.set_string("buff3", "hpregtime`f32`-60"); //def
             }
         }
-        if (a4 == k2) this.set_string("buff3", "attackspeed`f32`0.30"); //str
+        if (a4 == k2) this.set_string("buff3", "attackspeed`f32`1.60"); //str
         else if (a4 == k3) this.set_string("buff3", "hpregtime`f32`-60"); //def
         else if (a4 == k4) this.set_string("buff3", "gravity`f32`-?"); //agi
         else if (a4 == k5) this.set_string("buff3", "vampirism-`f32`0.03"); //oth
@@ -169,7 +169,7 @@ void setEffect(CBlob@ this)
                 case 2: this.set_string("buff1", "velocity`f32`0.50"); //agi
             }
         }
-        if (a4 == k2) this.set_string("buff3", "attackspeed`f32`0.10"); //str
+        if (a4 == k2) this.set_string("buff3", "attackspeed`f32`0.20"); //str
         else if (a4 == k3) this.set_string("buff3", "hpregtime`f32`-180"); //def
         else if (a4 == k4) this.set_string("buff3", "gravity`f32`-?"); //agi
         else if (a4 == k5) this.set_string("buff3", "vampirism`f32`0.03"); //oth
@@ -220,7 +220,7 @@ void setEffect(CBlob@ this)
                 case 2: this.set_string("buff1", "velocity`f32`0.50"); //agi
             }
         }
-        if (a4 == k2) this.set_string("buff3", "attackspeed`f32`0.10"); //str
+        if (a4 == k2) this.set_string("buff3", "attackspeed`f32`0.20"); //str
         else if (a4 == k1) this.set_string("buff3", "hpregtime`f32`-60"); //def
         else if (a4 == k4) this.set_string("buff3", "gravityresist`f32`6"); //agi
         else if (a4 == k5) this.set_string("buff3", "vampirism`f32`0.03"); //oth
@@ -271,7 +271,7 @@ void setEffect(CBlob@ this)
                 case 2: this.set_string("buff3", "hpregtime`f32`-60"); //def
             }
         }
-        if (a4 == k2) this.set_string("buff3", "attackspeed`f32`0.10"); //str
+        if (a4 == k2) this.set_string("buff3", "attackspeed`f32`0.20"); //str
         else if (a4 == k3) this.set_string("buff3", "hpregtime`f32`-60"); //def
         else if (a4 == k1) this.set_string("buff3", "gravityresist`f32`2"); //agi
         else if (a4 == k5) this.set_string("buff3", "vampirism`f32`0.09"); //oth
@@ -447,7 +447,13 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
                 {
                     f32 stat = blob.get_f32(splb1[0]);
                     blob.set_f32(splb1[0], blob.get_f32(splb1[0]) + parseFloat(splb1[2]));
-                    if (splb1[0] == "attackspeed") blob.Tag("updateattackspeed");
+                    if (splb1[0] == "attackspeed")
+                    {
+                        CBitStream params;
+						params.write_f32(parseFloat(splb1[2]));
+						params.write_bool(true);
+						blob.SendCommand(blob.getCommandID("doattackspeedchange"), params);
+                    }
                 }
                 blob.Sync(splb1[0], true);
             }
@@ -466,7 +472,13 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
                 {
                     f32 stat = blob.get_f32(splb2[0]);
                     blob.set_f32(splb2[0], blob.get_f32(splb2[0]) + parseFloat(splb2[2]));
-                    if (splb2[0] == "attackspeed") blob.Tag("updateattackspeed");
+                    if (splb2[0] == "attackspeed")
+                    {
+                        CBitStream params;
+						params.write_f32(parseFloat(splb2[2]));
+						params.write_bool(true);
+						blob.SendCommand(blob.getCommandID("doattackspeedchange"), params);
+                    }
                 }
                 blob.Sync(splb2[0], true);
             }
@@ -485,7 +497,13 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
                 {
                     f32 stat = blob.get_f32(splb3[0]);
                     blob.set_f32(splb3[0], blob.get_f32(splb3[0]) + parseFloat(splb3[2]));
-                    if (splb3[0] == "attackspeed") blob.Tag("updateattackspeed");
+                    if (splb3[0] == "attackspeed")
+                    {
+                        CBitStream params;
+						params.write_f32(parseFloat(splb3[2]));
+						params.write_bool(true);
+						blob.SendCommand(blob.getCommandID("doattackspeedchange"), params);
+                    }
                 }
                 blob.Sync(splb3[0], true);
 

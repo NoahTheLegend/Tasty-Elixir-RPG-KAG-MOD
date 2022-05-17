@@ -5,7 +5,7 @@ void onInit(CBlob@ this)
 
     this.Tag("armor");
 
-	this.set_f32("velocity", 0.75);
+	this.set_f32("velocity", 0.45);
     this.set_f32("blockchance", 22.5);
     this.set_f32("damagereduction", 2.5);
     this.set_f32("hpregtime", 5*30);
@@ -51,7 +51,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
             caller.set_bool("hasarmor", true);
 	        caller.set_string("armorname", "titanium_chestplate");
 
-	        caller.set_f32("velocity", caller.get_f32("velocity") - 0.75);
+	        caller.set_f32("velocity", caller.get_f32("velocity") - 0.45);
             caller.set_f32("blockchance", caller.get_f32("blockchance") + 22.5);
             caller.set_f32("damagereduction", caller.get_f32("damagereduction") + 2.5);
             if (player !is null && player.isMyPlayer()) caller.set_f32("hpregtime", caller.get_f32("hpregtime") - 5*30);

@@ -5,7 +5,7 @@ void onInit(CBlob@ this)
 
     this.Tag("armor");
 
-	this.set_f32("velocity", 0.5);
+	this.set_f32("velocity", 0.35);
     this.set_f32("blockchance", 15.0);
     this.set_f32("damagereduction", 1.5);
 }
@@ -48,7 +48,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
             caller.set_bool("hasboots", true);
 	        caller.set_string("bootsname", "titanium_boots");
 
-	        caller.set_f32("velocity", caller.get_f32("velocity") - 0.5);
+	        caller.set_f32("velocity", caller.get_f32("velocity") - 0.35);
             caller.set_f32("blockchance", caller.get_f32("blockchance") + 15.0);
             caller.set_f32("damagereduction", caller.get_f32("damagereduction") + 1.5);
         }

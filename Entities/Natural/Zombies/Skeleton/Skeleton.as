@@ -130,7 +130,7 @@ void onInit(CBlob@ this)
 	this.set("tags to eat", tags);
 	
 	this.set_f32("bite damage", 0.5f);
-	this.set_u16("bite freq", 30);
+	this.set_u16("bite freq", 2*30);
 	this.set_f32("damagereduction", 0.05);
 	//brain
 	this.set_u8(personality_property, DEFAULT_PERSONALITY);

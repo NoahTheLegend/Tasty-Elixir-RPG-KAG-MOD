@@ -13,7 +13,7 @@ void onInit(CBlob@ this)
 
 void onInit(CSprite@ this)
 {
-    this.ScaleBy(0.775f, 0.775f);
+    this.ScaleBy(0.625f, 0.625f);
 }
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)

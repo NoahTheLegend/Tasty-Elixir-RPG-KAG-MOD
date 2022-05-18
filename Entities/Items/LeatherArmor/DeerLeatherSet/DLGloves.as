@@ -8,7 +8,7 @@ void onInit(CBlob@ this)
     this.set_f32("damagereduction", 0.1);
     this.set_f32("damagebuff", 0.25);
     this.set_f32("critchance", 12.0);
-    this.set_f32("attackspeed", 0.05);
+    this.set_f32("attackspeed", 0.1);
 }
 
 void onInit(CSprite@ this)
@@ -54,7 +54,12 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
             caller.set_f32("damagereduction", caller.get_f32("damagereduction") + 0.1);
             if (player !is null && player.isMyPlayer()) caller.set_f32("damagebuff", caller.get_f32("damagebuff") + 0.25);
             caller.set_f32("critchance", caller.get_f32("critchance") + 12.0);
-            caller.set_f32("attackspeed", caller.get_f32("attackspeed") + 0.05);
+            caller.set_f32("attackspeed", caller.get_f32("attackspeed") + 0.1);
+
+            CBitStream params;
+		    params.write_f32(this.get_f32("attackspeed"));
+		    params.write_bool(true);
+		    caller.SendCommand(caller.getCommandID("doattackspeedchange"), params);
         }
     }
     else if (cmd==this.getCommandID("unequip")) {}

@@ -61,6 +61,8 @@ void onInit(CBlob@ this)
 	this.addCommandID("unequiparmor");
 	this.addCommandID("unequipgloves");
 	this.addCommandID("unequipboots");
+	this.addCommandID("unequipweapon");
+	this.addCommandID("unequipsecondaryweapon");
 	this.addCommandID("update_stats");
 	this.addCommandID("sync_stats");
 	this.addCommandID("doattackspeedchange");
@@ -1106,6 +1108,40 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			}
 		}
 	}
+	else if (cmd == this.getCommandID("unequipweapon"))
+	{
+		if (this.get_bool("hasweapon"))
+        {
+			CPlayer@ player = this.getPlayer();
+
+			UpdateStats(this, this.get_string("weaponname"));
+
+			if (player !is null && player.isMyPlayer())
+			{
+				this.set_bool("hasweapon", false);
+				this.Sync("hasweapon", true);
+	       		this.set_string("weaponname", "");
+				this.Sync("weaponname", true);
+			}
+		}
+	}
+	else if (cmd == this.getCommandID("unequipsecondaryweapon"))
+	{
+		if (this.get_bool("hassecondaryweapon"))
+        {
+			CPlayer@ player = this.getPlayer();
+
+			UpdateStats(this, this.get_string("secondaryweaponname"));
+
+			if (player !is null && player.isMyPlayer())
+			{
+				this.set_bool("hassecondaryweapon", false);
+				this.Sync("hassecondaryweapon", true);
+	       		this.set_string("secondaryweaponname", "");
+				this.Sync("secondaryweaponname", true);
+			}
+		}
+	}
 	else if (cmd == this.getCommandID("update_stats"))
 	{
 		CPlayer@ player = this.getPlayer();
@@ -1133,6 +1169,14 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 		//CBitStream params;
 		//this.SendCommand(this.getCommandID("sync_stats"), params);
+
+		if (blob.get_f32("attackspeed") > 0)
+        {
+            CBitStream params;
+			params.write_f32(blob.get_f32("attackspeed"));
+			params.write_bool(true);
+			this.SendCommand(this.getCommandID("doattackspeedchange"), params);
+        }
 	}
 	else if (cmd == this.getCommandID("sync_stats"))
 	{

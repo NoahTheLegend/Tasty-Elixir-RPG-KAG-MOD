@@ -48,8 +48,8 @@ void onInit(CBlob@ this)
 {
 	KnightInfo knight;
 
-	this.set_u8("attackdelay", 0);
-	this.set_u8("attackdelayreduce", 30);
+	this.set_u16("attackdelay", 0);
+	this.set_u16("attackdelayreduce", 300);
 
 	knight.state = KnightStates::normal;
 	knight.swordTimer = 0;
@@ -99,6 +99,8 @@ void onInit(CBlob@ this)
 	this.addCommandID("unequiparmor");
 	this.addCommandID("unequipgloves");
 	this.addCommandID("unequipboots");
+	this.addCommandID("unequipweapon");
+	this.addCommandID("unequipsecondaryweapon");
 	this.addCommandID("update_stats");
 	this.addCommandID("sync_stats");
 	this.addCommandID("doattackspeedchange");
@@ -189,6 +191,11 @@ void onTick(CBlob@ this)
 {
 	RPGUpdate(this); // do update all things
 
+	//if(getGameTime()%15==0) printf("dred = "+this.get_u16("attackdelayreduce"));
+	//if(getGameTime()%15==0) printf("time = "+this.get_u16("attackdelay"));
+
+	if (this.get_u16("attackdelay") > 1000) this.set_u16("attackdelay", this.get_u16("attackdelayreduce"));
+
 	RPGUpdateArcherRogueSets(this);
 
 	//agility extra buff's timer of silence skill
@@ -276,7 +283,13 @@ void onTick(CBlob@ this)
 			this.set_u16("mana", this.get_u16("mana") + this.get_u16("manareg"));
 		}
 
-	if (this.get_u8("attackdelay") > 0) this.set_u8("attackdelay", this.get_u8("attackdelay") - 1);
+	if (this.get_u16("attackdelay") > 0) 
+	{
+		if (this.get_u16("attackdelay") <= 9)
+			this.set_u16("attackdelay", 0);
+		else
+ 			this.set_u16("attackdelay", this.get_u16("attackdelay") - 10);
+	}
 
 	if (getGameTime() % 30 == 0)
 	{
@@ -381,12 +394,12 @@ void onTick(CBlob@ this)
 	bool specialShieldState = isSpecialShieldState(knight.state);
 	bool swordState = isSwordState(knight.state);
 	bool pressed_a1 = this.isKeyPressed(key_action1);
-	if (this.isKeyJustReleased(key_action1) && this.get_u8("attackdelay") == 0)
+	if (this.isKeyJustReleased(key_action1) && this.get_u16("attackdelay") == 0)
 	{
 		this.Sync("attackdelayreduce", true);
-		this.set_u8("attackdelay", this.get_u8("attackdelayreduce"));
+		this.set_u16("attackdelay", this.get_u16("attackdelayreduce"));
 		this.Sync("attackdelay", true);
-		//printf(""+this.get_u8("attackdelay"));
+		//printf(""+this.get_u16("attackdelay"));
 	}
 	bool pressed_a2 = this.isKeyPressed(key_action2);
 	bool walking = (this.isKeyPressed(key_left) || this.isKeyPressed(key_right));
@@ -524,7 +537,7 @@ void onTick(CBlob@ this)
 		{
 			knight.state = KnightStates::normal;
 		}
-		else if ((this.get_u8("attackdelay") == 0 || this.get_u8("attackdelay") >= this.get_u8("attackdelayreduce") - 5) && this.isKeyJustReleased(key_action1) && knight.state == KnightStates::sword_drawn)
+		else if (this.get_u16("attackdelay") == 0 || this.get_u16("attackdelay") >= this.get_u16("attackdelayreduce") - 5 && this.isKeyJustReleased(key_action1) && knight.state == KnightStates::sword_drawn)
 		{
 			knight.swordTimer = 0;
 
@@ -763,6 +776,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 					{
 						CBitStream params;
 						params.write_f32(parseFloat(splb1[2]));
+						printf(""+parseFloat(splb1[2]));
 						params.write_bool(false);
 						this.SendCommand(this.getCommandID("doattackspeedchange"), params);
 					}
@@ -913,6 +927,40 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			}
 		}
 	}
+	else if (cmd == this.getCommandID("unequipweapon"))
+	{
+		if (this.get_bool("hasweapon"))
+        {
+			CPlayer@ player = this.getPlayer();
+
+			UpdateStats(this, this.get_string("weaponname"));
+
+			if (player !is null && player.isMyPlayer())
+			{
+				this.set_bool("hasweapon", false);
+				this.Sync("hasweapon", true);
+	       		this.set_string("weaponname", "");
+				this.Sync("weaponname", true);
+			}
+		}
+	}
+	else if (cmd == this.getCommandID("unequipsecondaryweapon"))
+	{
+		if (this.get_bool("hassecondaryweapon"))
+        {
+			CPlayer@ player = this.getPlayer();
+
+			UpdateStats(this, this.get_string("secondaryweaponname"));
+
+			if (player !is null && player.isMyPlayer())
+			{
+				this.set_bool("hassecondaryweapon", false);
+				this.Sync("hassecondaryweapon", true);
+	       		this.set_string("secondaryweaponname", "");
+				this.Sync("secondaryweaponname", true);
+			}
+		}
+	}
 	else if (cmd == this.getCommandID("update_stats"))
 	{
 		CPlayer@ player = this.getPlayer();
@@ -934,12 +982,21 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		this.set_f32("critchance", this.get_f32("critchance") - blob.get_f32("critchance"));
 		this.set_f32("damagebuff", this.get_f32("damagebuff") - blob.get_f32("damagebuff"));
 		this.set_f32("attackspeed", this.get_f32("attackspeed") - blob.get_f32("attackspeed"));
+		if (blob.get_f32("attackspeed") > 0)
+        {
+            CBitStream params;
+			params.write_f32(blob.get_f32("attackspeed"));
+			params.write_bool(false);
+			this.SendCommand(this.getCommandID("doattackspeedchange"), params);
+        }
 		this.set_f32("vampirism", this.get_f32("vampirism") - blob.get_f32("vampirism"));
 		this.set_f32("bashchance", this.get_f32("bashchance") - blob.get_f32("bashchance"));
 		this.set_f32("gravityresist", this.get_f32("gravityresist") - blob.get_f32("gravityresist"));
 
 		//CBitStream params;
 		//this.SendCommand(this.getCommandID("sync_stats"), params);
+
+		
 	}
 	else if (cmd == this.getCommandID("sync_stats"))
 	{
@@ -977,9 +1034,11 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	else if (cmd == this.getCommandID("doattackspeedchange"))
 	{
 		f32 current = params.read_f32();
+		//printf("curr="+current);
 		bool increase = params.read_bool();
-		if (increase) this.set_u8("attackdelayreduce", this.get_u8("attackdelayreduce") - current * 10);
-		else this.set_u8("attackdelayreduce", this.get_u8("attackdelayreduce") + current * 10);
+		//printf("this.get_u8(attackdelayreduce) - current * 10 = "+(this.get_u16("attackdelayreduce") - current * 5));
+		if (increase) this.set_u16("attackdelayreduce", this.get_u16("attackdelayreduce") - (current * 50));
+		else this.set_u16("attackdelayreduce", this.get_u16("attackdelayreduce") + (current * 50));
 	}
 	else if (cmd == this.getCommandID("hitsound"))
 	{

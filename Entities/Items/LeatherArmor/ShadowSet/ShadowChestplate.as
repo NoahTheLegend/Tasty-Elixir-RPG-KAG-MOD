@@ -8,7 +8,7 @@ void onInit(CBlob@ this)
     this.set_f32("velocity", -0.4);
     this.set_f32("dodgechance", 27.5);
     this.set_f32("damagereduction", 1.5);
-    this.set_f32("attackspeed", 0.25);
+    this.set_f32("attackspeed", 0.4);
 }
 
 void onInit(CSprite@ this)
@@ -54,7 +54,12 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 	        caller.set_f32("velocity", caller.get_f32("velocity") + 0.4);
             caller.set_f32("dodgechance", caller.get_f32("dodgechance") + 27.5);
             caller.set_f32("damagereduction", caller.get_f32("damagereduction") + 1.5);
-            caller.set_f32("attackspeed", caller.get_f32("attackspeed") + 0.25);
+            caller.set_f32("attackspeed", caller.get_f32("attackspeed") + 0.4);
+
+            CBitStream params;
+		    params.write_f32(this.get_f32("attackspeed"));
+		    params.write_bool(true);
+		    caller.SendCommand(caller.getCommandID("doattackspeedchange"), params);
         }
     }
     else if (cmd==this.getCommandID("unequip")) {}

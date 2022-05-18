@@ -313,15 +313,6 @@ void onTick(CBlob@ this)
 
 	RPGUpdateKnightSets(this);
 
-	bool ctrl;
-	bool e;
-	if (controls !is null)
-	{
-		ctrl = controls.isKeyPressed(KEY_LCONTROL);
-		e = controls.isKeyPressed(KEY_KEY_E);
-	}
-	if (ctrl && e && this.isFacingLeft()) this.SetFacingLeft(false);
-
 	RunnerMoveVars@ moveVars;
 	if (!this.get("moveVars", @moveVars))
 	{
@@ -1493,6 +1484,14 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 		//CBitStream params;
 		//this.SendCommand(this.getCommandID("sync_stats"), params);
+
+		if (blob.get_f32("attackspeed") > 0)
+        {
+            CBitStream params;
+			params.write_f32(blob.get_f32("attackspeed"));
+			params.write_bool(true);
+			this.SendCommand(this.getCommandID("doattackspeedchange"), params);
+        }
 	}
 	else if (cmd == this.getCommandID("sync_stats"))
 	{

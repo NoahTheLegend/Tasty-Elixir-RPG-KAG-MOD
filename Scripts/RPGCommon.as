@@ -71,6 +71,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	if (!this.isMyPlayer()) return;
 
 	CControls@ controls = this.getControls();
+
 	if (controls !is null)
 	{
 		bool ctrl = controls.isKeyPressed(KEY_LCONTROL);
@@ -110,6 +111,18 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 
 void RPGUpdate(CBlob@ this)
 {
+	//prevent rotating with buttons when trying to unequip an item
+	CControls@ controls = this.getControls();
+	bool ctrl;
+	bool e;
+	if (controls !is null)
+	{
+		ctrl = controls.isKeyPressed(KEY_LCONTROL);
+		e = controls.isKeyPressed(KEY_KEY_E);
+	}
+	if (ctrl && e && this.isFacingLeft()) this.SetFacingLeft(false);
+
+	//admin command
 	if(this.isKeyJustPressed(key_action1) && this.hasTag("tp"))
 	{
 		this.setPosition(this.getAimPos());
@@ -126,7 +139,6 @@ void RPGUpdate(CBlob@ this)
 		//printf(this.get_string("skill2"));
 		//printf(this.get_string("skill3"));
 	}
-	CControls@ controls = this.getControls();
 	if (controls !is null && this.getTickSinceCreated() >= 5)
 	{
 		if (controls.isKeyJustReleased(KEY_KEY_G)
@@ -632,41 +644,100 @@ void UpdateStats(CBlob@ this, string name)
 	{
 		CBlob@ blob = server_CreateBlob(name, this.getTeamNum(), this.getPosition());
 		blob.setPosition(this.getPosition());
+		CPlayer@ player = blob.getPlayer();
 
-		if (blob.hasTag("customstats"))
-		{
-			blob.set_f32("velocity", this.get_f32("customvelocity"));
-    		blob.set_f32("dodgechance", this.get_f32("customdodgechance"));
-			blob.set_f32("blockchance", this.get_f32("customblockchance"));
-    		blob.set_f32("damagereduction", this.get_f32("customdamagereduction"));
-			blob.set_f32("hpregtime", this.get_f32("customhpregtime"));
-			blob.set_f32("manaregtime", this.get_f32("custommanaregtime"));
-			blob.set_u16("manareg", this.get_u16("custommanareg"));
-			blob.set_u16("mana", this.get_u16("custommana"));
-			blob.set_u16("maxmana", this.get_u16("custommaxmana"));
-			blob.set_f32("critchance", this.get_f32("customcritchance"));
-			blob.set_f32("damagebuff", this.get_f32("customdamagebuff"));
-			blob.set_f32("vampirism", this.get_f32("customvampirism"));
-			blob.set_f32("bashchance", this.get_f32("custombashchance"));
-
-			blob.Sync("velocity", true);
-			blob.Sync("dodgechance", true);
-			blob.Sync("blockchance", true);
-			blob.Sync("damagereduction", true);
-			blob.Sync("hpregtime", true);
-			blob.Sync("manaregtime", true);
-			blob.Sync("manareg", true);
-			blob.Sync("mana", true);
-			blob.Sync("maxmana", true);
-			blob.Sync("critchance", true);
-			blob.Sync("damagebuff", true);
-			blob.Sync("dealtdamage", true);
-			blob.Sync("vampirism", true);
-			blob.Sync("bashchance", true);
-		}
+		//if (blob !is null && player !is null)
+		//{
+		//	this.set_f32("velocity", this.get_f32("velocity") - blob.get_f32("velocity"));
+    	//	this.set_f32("dodgechance", this.get_f32("dodgechance") - blob.get_f32("dodgechance"));
+		//	this.set_f32("blockchance", this.get_f32("blockchance") - blob.get_f32("block"));
+    	//	this.set_f32("damagereduction", this.get_f32("damagereduction") - blob.get_f32("damagereduction"));
+		//	if (player.isMyPlayer()) this.set_f32("hpregtime", this.get_f32("hpregtime") + (blob.get_f32("hpregtime")*-1));
+		//	if (player.isMyPlayer()) this.set_f32("manaregtime", this.get_f32("manaregtime") + (blob.get_f32("manaregtime")*-1));
+		//	this.set_u16("manareg", this.get_u16("manareg") - blob.get_u16("manareg"));
+		//	this.set_u16("mana", this.get_u16("mana") - blob.get_u16("mana"));
+		//	this.set_u16("maxmana", this.get_u16("maxmana") - blob.get_u16("maxmana"));
+		//	this.set_f32("critchance", this.get_f32("critchance") - blob.get_f32("critchance"));
+		//	if (player.isMyPlayer()) this.set_f32("damagebuff", this.get_f32("damagebuff") - blob.get_f32("damagebuff"));
+		//	this.set_f32("vampirism", this.get_f32("vampirism") - blob.get_f32("vampirism"));
+		//	this.set_f32("bashchance", this.get_f32("bashchance") - blob.get_f32("bashchance"));
+//
+		//	blob.Sync("velocity", true);
+		//	blob.Sync("dodgechance", true);
+		//	blob.Sync("blockchance", true);
+		//	blob.Sync("damagereduction", true);
+		//	blob.Sync("hpregtime", true);
+		//	blob.Sync("manaregtime", true);
+		//	blob.Sync("manareg", true);
+		//	blob.Sync("mana", true);
+		//	blob.Sync("maxmana", true);
+		//	blob.Sync("critchance", true);
+		//	blob.Sync("damagebuff", true);
+		//	blob.Sync("dealtdamage", true);
+		//	blob.Sync("vampirism", true);
+		//	blob.Sync("bashchance", true);
+		//}
 
 		CBitStream params;
 		params.write_u16(blob.getNetworkID());
 		this.SendCommand(this.getCommandID("update_stats"), params);
+	}
+}
+
+void onDie(CBlob@ this)
+{
+	if (this.get_string("helmetname") != "")
+	{
+		if (isServer())
+		{
+			CBlob@ blob = server_CreateBlob(this.get_string("helmetname"), this.getTeamNum(), this.getPosition());
+		}
+		this.set_string("helmetname", "");
+		this.set_bool("hashelmet", false);
+	}
+	if (this.get_string("armorname") != "")
+	{
+		if (isServer())
+		{
+			CBlob@ blob = server_CreateBlob(this.get_string("armorname"), this.getTeamNum(), this.getPosition());
+		}
+		this.set_string("armorname", "");
+		this.set_bool("hasarmor", false);
+	}
+	if (this.get_string("glovesname") != "")
+	{
+		if (isServer())
+		{
+			CBlob@ blob = server_CreateBlob(this.get_string("glovesname"), this.getTeamNum(), this.getPosition());
+		}
+		this.set_string("glovesname", "");
+		this.set_bool("hasgloves", false);
+	}
+	if (this.get_string("bootsname") != "")
+	{
+		if (isServer())
+		{
+			CBlob@ blob = server_CreateBlob(this.get_string("bootsname"), this.getTeamNum(), this.getPosition());
+		}
+		this.set_string("bootsname", "");
+		this.set_bool("hasboots", false);
+	}
+	if (this.get_string("weaponname") != "")
+	{
+		if (isServer())
+		{
+			CBlob@ blob = server_CreateBlob(this.get_string("weaponname"), this.getTeamNum(), this.getPosition());
+		}
+		this.set_string("weaponname", "");
+		this.set_bool("hasweapon", false);
+	}
+	if (this.get_string("secondaryweaponname") != "")
+	{
+		if (isServer())
+		{
+			CBlob@ blob = server_CreateBlob(this.get_string("secondaryweaponname"), this.getTeamNum(), this.getPosition());
+		}
+		this.set_string("secondaryweaponname", "");
+		this.set_bool("hassecondaryweapon", false);
 	}
 }

@@ -141,58 +141,61 @@ void onTick(CSprite@ this)
 	{
 		this.SetAnimation("crouch");
 	}
-	else if (knight.state == KnightStates::sword_drawn)
+	else if (blob.get_u16("attackdelay") > 0)
 	{
-		if (knight.swordTimer < KnightVars::slash_charge)
+		if (knight.state == KnightStates::sword_drawn)
 		{
-			this.SetAnimation("draw_sword");
+			if (knight.swordTimer < KnightVars::slash_charge)
+			{
+				this.SetAnimation("draw_sword");
+			}
+			else if (knight.swordTimer < KnightVars::slash_charge_level2)
+			{
+				this.SetAnimation("strike_power_ready");
+				this.animation.frame = 0;
+			}
+			else if (knight.swordTimer < KnightVars::slash_charge_limit)
+			{
+				this.SetAnimation("strike_power_ready");
+				this.animation.frame = 1;
+				shinydot = true;
+			}
+			else
+			{
+				this.SetAnimation("draw_sword");
+			}
 		}
-		else if (knight.swordTimer < KnightVars::slash_charge_level2)
+		else if (knight.state == KnightStates::sword_cut_mid)
 		{
-			this.SetAnimation("strike_power_ready");
-			this.animation.frame = 0;
+			this.SetAnimation("strike_mid");
 		}
-		else if (knight.swordTimer < KnightVars::slash_charge_limit)
+		else if (knight.state == KnightStates::sword_cut_mid_down)
 		{
-			this.SetAnimation("strike_power_ready");
-			this.animation.frame = 1;
-			shinydot = true;
+			this.SetAnimation("strike_mid_down");
 		}
-		else
+		else if (knight.state == KnightStates::sword_cut_up)
 		{
-			this.SetAnimation("draw_sword");
+			this.SetAnimation("strike_up");
 		}
-	}
-	else if (knight.state == KnightStates::sword_cut_mid)
-	{
-		this.SetAnimation("strike_mid");
-	}
-	else if (knight.state == KnightStates::sword_cut_mid_down)
-	{
-		this.SetAnimation("strike_mid_down");
-	}
-	else if (knight.state == KnightStates::sword_cut_up)
-	{
-		this.SetAnimation("strike_up");
-	}
-	else if (knight.state == KnightStates::sword_cut_down)
-	{
-		this.SetAnimation("strike_down");
-	}
-	else if (knight.state == KnightStates::sword_power || knight.state == KnightStates::sword_power_super)
-	{
-		this.SetAnimation("strike_power");
+		else if (knight.state == KnightStates::sword_cut_down)
+		{
+			this.SetAnimation("strike_down");
+		}
+		else if (knight.state == KnightStates::sword_power || knight.state == KnightStates::sword_power_super)
+		{
+			this.SetAnimation("strike_power");
 
-		if (knight.swordTimer <= 1)
-			this.animation.SetFrameIndex(0);
+			if (knight.swordTimer <= 1)
+				this.animation.SetFrameIndex(0);
 
-		u8 mintime = 6;
-		u8 maxtime = 8;
-		if (knight.swordTimer >= mintime && knight.swordTimer <= maxtime)
-		{
-			wantsChopLayer = true;
-			chopframe = knight.swordTimer - mintime;
-			chopAngle = -vec.Angle();
+			u8 mintime = 6;
+			u8 maxtime = 8;
+			if (knight.swordTimer >= mintime && knight.swordTimer <= maxtime)
+			{
+				wantsChopLayer = true;
+				chopframe = knight.swordTimer - mintime;
+				chopAngle = -vec.Angle();
+			}
 		}
 	}
 	else if (blob.hasTag("climbing"))

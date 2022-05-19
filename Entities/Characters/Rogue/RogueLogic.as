@@ -181,9 +181,27 @@ void onInit(CBlob@ this)
 
 void onSetPlayer(CBlob@ this, CPlayer@ player)
 {
+	CRules@ rules = getRules();
 	if (player !is null)
 	{
+		string name = player.getUsername();
 		player.SetScoreboardVars("ScoreboardIcons.png", 3, Vec2f(16, 16));
+		//set level
+		if (rules.get_u16(name+"level") != 0)
+        {
+            player.set_u16("level", rules.get_u16(name+"level"));
+            //printf("blevel="+player.get_u16("level"));
+            if (rules.get_u32(name+"exp") != 0)
+            {
+                player.set_u32("exp", rules.get_u32(name+"exp"));
+                //printf("bexp="+player.get_u32("exp"));
+            }
+            player.set_u32("progressionstep", progression[player.get_u16("level")]);
+        }
+        else
+        {
+            ResetLevel(this, player);
+        }
 	}
 }
 
@@ -537,7 +555,7 @@ void onTick(CBlob@ this)
 		{
 			knight.state = KnightStates::normal;
 		}
-		else if (this.get_u16("attackdelay") == 0 || this.get_u16("attackdelay") >= this.get_u16("attackdelayreduce") - 5 && this.isKeyJustReleased(key_action1) && knight.state == KnightStates::sword_drawn)
+		else if (this.isKeyJustReleased(key_action1) && this.get_u16("attackdelay") == 0 || this.get_u16("attackdelay") == this.get_u16("attackdelayreduce") && knight.state == KnightStates::sword_drawn)
 		{
 			knight.swordTimer = 0;
 
@@ -994,9 +1012,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		this.set_f32("gravityresist", this.get_f32("gravityresist") - blob.get_f32("gravityresist"));
 
 		//CBitStream params;
-		//this.SendCommand(this.getCommandID("sync_stats"), params);
-
-		
+		//this.SendCommand(this.getCommandID("sync_stats"), params);	
 	}
 	else if (cmd == this.getCommandID("sync_stats"))
 	{
@@ -1037,8 +1053,8 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		//printf("curr="+current);
 		bool increase = params.read_bool();
 		//printf("this.get_u8(attackdelayreduce) - current * 10 = "+(this.get_u16("attackdelayreduce") - current * 5));
-		if (increase) this.set_u16("attackdelayreduce", this.get_u16("attackdelayreduce") - (current * 50));
-		else this.set_u16("attackdelayreduce", this.get_u16("attackdelayreduce") + (current * 50));
+		if (increase) this.set_u16("attackdelayreduce", Maths::Ceil(this.get_u16("attackdelayreduce") - (current * 50)));
+		else this.set_u16("attackdelayreduce", Maths::Ceil(this.get_u16("attackdelayreduce") + (current * 50)));
 	}
 	else if (cmd == this.getCommandID("hitsound"))
 	{

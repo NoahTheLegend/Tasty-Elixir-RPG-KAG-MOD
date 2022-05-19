@@ -5,7 +5,7 @@ void onInit(CBlob@ this)
 
     this.Tag("armor");
 
-    this.set_f32("damagereduction", 1.0+(XORRandom(6))*0.1);
+    this.set_f32("damagereduction", 1.25);
     this.set_f32("manaregtime", 3*30);
     this.set_u16("maxmana", 100);
     this.set_u16("manareg", 45);
@@ -57,11 +57,6 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
             caller.set_u16("maxmana", caller.get_u16("maxmana") + 100);
             caller.set_u16("manareg", caller.get_u16("manareg") + 45);
             caller.set_f32("vampirism", caller.get_f32("vampirism") + 0.1);
-
-            CPlayer@ player = caller.getPlayer();
-            if (player is null) return;
-            //set variables to save XORRandom()ly defined stats
-            player.set_f32("mythhelmetdamagereduction", this.get_f32("damagereduction"));
         }
     }
     else if (cmd==this.getCommandID("unequip")) {}

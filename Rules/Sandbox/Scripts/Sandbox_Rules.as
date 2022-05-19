@@ -423,11 +423,22 @@ void onInit(CRules@ this)
 
 void onRestart(CRules@ this)
 {
+	for (u16 i = 0; i < getPlayersCount(); i++)
+	{
+		CPlayer@ player = getPlayer(i);
+		if (player !is null)
+		{
+			string name = player.getUsername();
+			player.set_u16("level", 0);
+			player.set_u32("exp", 0);
+		}
+	}
 	Reset(this);
 }
 
 void Reset(CRules@ this)
 {
+	this.set_u32("clearFrequency", getGameTime()+30*60*30);
 	string[] names = {
 	"burdockspice",
 	"burnetspice",

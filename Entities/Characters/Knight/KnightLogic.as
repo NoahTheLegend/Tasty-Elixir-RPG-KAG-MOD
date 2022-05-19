@@ -209,9 +209,27 @@ void onInit(CBlob@ this)
 
 void onSetPlayer(CBlob@ this, CPlayer@ player)
 {
+	CRules@ rules = getRules();
 	if (player !is null)
 	{
+		string name = player.getUsername();
 		player.SetScoreboardVars("ScoreboardIcons.png", 3, Vec2f(16, 16));
+		//set level
+		if (rules.get_u16(name+"level") != 0)
+        {
+            player.set_u16("level", rules.get_u16(name+"level"));
+           // printf("blevel="+player.get_u16("level"));
+            if (rules.get_u32(name+"exp") != 0)
+            {
+                player.set_u32("exp", rules.get_u32(name+"exp"));
+                //printf("bexp="+player.get_u32("exp"));
+            }
+            player.set_u32("progressionstep", progression[player.get_u16("level")]);
+        }
+        else
+        {
+            ResetLevel(this, player);
+        }
 	}
 }
 
@@ -306,6 +324,11 @@ void RunStateMachine(CBlob@ this, KnightInfo@ knight, RunnerMoveVars@ moveVars)
 void onTick(CBlob@ this)
 {
 	RPGUpdate(this); // do update all things
+	CPlayer@ player = this.getPlayer();
+	if (player !is null)
+	{
+		LevelUpdate(this, player);
+	}
 
 	CControls@ controls = this.getControls();
 	this.Sync("damagebuff", true);
@@ -631,7 +654,7 @@ class NormalState : KnightState
 		}
 		else if (this.isKeyPressed(key_action2))
 		{
-			if (canRaiseShield(this))
+			if (canRaiseShield(this) && !this.hasTag("doublesword"))
 			{
 				knight.state = KnightStates::shielding;
 				return true;
@@ -1258,6 +1281,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			//reminder: name`type`val_
 			if (splb1.length >= 3)
 			{
+				this.Untag("potioned");
 				if (splb1[1] == "bool")
 				{
 					this.set_bool(splb1[0], false);
@@ -1429,6 +1453,18 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
         {
 			CPlayer@ player = this.getPlayer();
 
+			if (this.hasTag("doublesword"))
+			{
+				this.set_f32("attackspeed", this.get_f32("attackspeed") - 0.8);
+				this.set_f32("critchance", this.get_f32("critchance") - 10.0);
+				this.Untag("doublesword");
+
+				CBitStream params;
+				params.write_f32(0.8);
+				params.write_bool(false);
+				this.SendCommand(this.getCommandID("doattackspeedchange"), params);
+			}
+
 			UpdateStats(this, this.get_string("weaponname"));
 
 			if (player !is null && player.isMyPlayer())
@@ -1445,6 +1481,18 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		if (this.get_bool("hassecondaryweapon"))
         {
 			CPlayer@ player = this.getPlayer();
+
+			if (this.hasTag("doublesword"))
+			{
+				this.set_f32("attackspeed", this.get_f32("attackspeed") - 0.8);
+				this.set_f32("critchance", this.get_f32("critchance") - 10.0);
+				this.Untag("doublesword");
+
+				CBitStream params;
+				params.write_f32(0.8);
+				params.write_bool(false);
+				this.SendCommand(this.getCommandID("doattackspeedchange"), params);
+			}
 
 			UpdateStats(this, this.get_string("secondaryweaponname"));
 
@@ -1489,7 +1537,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
         {
             CBitStream params;
 			params.write_f32(blob.get_f32("attackspeed"));
-			params.write_bool(true);
+			params.write_bool(false);
 			this.SendCommand(this.getCommandID("doattackspeedchange"), params);
         }
 	}
@@ -1532,15 +1580,15 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		bool increase = params.read_bool();
 		if (increase)
 		{
-			KnightVars::slash_charge -= current * 5;
-			KnightVars::slash_charge_level2 -= current * 5;
-			KnightVars::resheath_cut_time -= current;
+			KnightVars::slash_charge -= Maths::Ceil(current * 3);
+			KnightVars::slash_charge_level2 -= Maths::Ceil(current * 3);
+			KnightVars::resheath_cut_time -= Maths::Ceil(current * 3);
 		}
 		else 
 		{
-			KnightVars::slash_charge += current * 5;
-			KnightVars::slash_charge_level2 += current * 5;
-			KnightVars::resheath_cut_time += current;
+			KnightVars::slash_charge += Maths::Ceil(current * 3);
+			KnightVars::slash_charge_level2 += Maths::Ceil(current * 3);
+			KnightVars::resheath_cut_time += Maths::Ceil(current * 3);
 		}
 	}
 	else if (cmd == this.getCommandID("hitsound"))

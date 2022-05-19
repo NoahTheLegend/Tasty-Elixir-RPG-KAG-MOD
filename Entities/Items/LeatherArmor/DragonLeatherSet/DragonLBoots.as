@@ -5,10 +5,10 @@ void onInit(CBlob@ this)
 
     this.Tag("armor");
     //move these vars to code bodies. My bad.
-    this.set_f32("velocity", -0.35-(XORRandom(5)*0.1));
-    this.set_f32("dodgechance", 15.0+XORRandom(16));
+    this.set_f32("velocity", -0.4);
+    this.set_f32("dodgechance", 25.0);
     this.set_f32("damagereduction", 0.75);
-    this.set_f32("gravityresist", 5.0+XORRandom(3));
+    this.set_f32("gravityresist", 6.0);
 }
 
 void onInit(CSprite@ this)
@@ -53,13 +53,6 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
             caller.set_f32("dodgechance", caller.get_f32("dodgechance") + this.get_f32("dodgechance"));
             caller.set_f32("damagereduction", caller.get_f32("damagereduction") + this.get_f32("damagereduction"));
             caller.set_f32("gravityresist", caller.get_f32("gravityresist") + this.get_f32("gravityresist"));
-
-            CPlayer@ player = caller.getPlayer();
-            if (player is null) return;
-            player.set_f32("dragonbootsvelocity", this.get_f32("velocity"));
-            player.set_f32("dragonbootsdodgechance", this.get_f32("dodgechance"));
-            player.set_f32("dragonbootsdamagereduction", this.get_f32("damagereduction"));
-            player.set_f32("dragonbootsgravityresist", this.get_f32("gravityresist"));
         }
     }
     else if (cmd==this.getCommandID("unequip")) {}

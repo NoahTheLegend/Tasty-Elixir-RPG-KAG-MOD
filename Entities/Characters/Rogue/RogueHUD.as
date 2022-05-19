@@ -44,6 +44,7 @@ void DrawStats(CSprite@ this)
 	Vec2f cam_offset = getCamera().getInterpolationOffset();
 	Vec2f mouseWorld = getControls().getMouseWorldPos();
 	bool mouseOnBlob = (mouseWorld - blob.getPosition()).getLength() < blob.getRadius();
+	u32 width = getDriver().getScreenWidth();
 	u32 height = getDriver().getScreenHeight();
 	CPlayer@ player = blob.getPlayer();
 	if (player is null) return;
@@ -79,6 +80,27 @@ void DrawStats(CSprite@ this)
 			GUI::DrawText("Last dealt damage: " + blob.get_f32("dealtdamage") + " HP", Vec2f(15, 15), SColor(255, 222, 222, 16));
 			GUI::DrawText("Thirst: " + blob.get_u8("thirst")+"%", Vec2f(15, 45), SColor(255, 11, 146, 202));
 			GUI::DrawText("Hunger: " + blob.get_u8("hunger")+"%", Vec2f(15, 60), SColor(255, 255, 140, 4));
+			u32 numseconds = (60-((getGameTime()/30)%60));
+			string seconds = ""+numseconds;
+			if (numseconds < 10) seconds = "0"+numseconds;
+			GUI::DrawTextCentered("Time before lying items get removed: "+(((getRules().get_u32("clearFrequency")-getGameTime())/30)/60+":"+seconds), Vec2f(width/2, 15), SColor(255, 255, 100, 0));
+			GUI::DrawText("Level: "+player.get_u16("level"), Vec2f(15, 85), SColor(255, 180, 255, 180));
+			GUI::DrawText("EXP", Vec2f(27.5, 120), SColor(255, 180, 255, 180));
+
+			float current = player.get_u32("exp");
+        	float step = player.get_u32("progressionstep");
+			u16 level = player.get_u16("level");
+        	f32 res;
+			//if (getGameTime()%30==0) printf(""+player.get_u32("exp"));
+			if (step > 0) res = current/step*1.0f;
+			//if (getGameTime()%10==0) printf("res="+res);
+			GUI::DrawProgressBar(Vec2f(15, 105), Vec2f(70, 117.5), res);
+		}
+		if (!player.hasTag("helpsheet"))
+		{
+			GUI::DrawText("E to drink, use, equip armor. CTRL + E to unequip armor", Vec2f(width - 400, 15), SColor(255, 255, 255, 255));
+			GUI::DrawText("!help, !commands to see needed info", Vec2f(width - 271, 35), SColor(255, 255, 255, 255));
+			GUI::DrawText("You can move skills (drag them to free slots)", Vec2f(width - 320, 55), SColor(255, 255, 255, 255));
 		}
 	}
 }

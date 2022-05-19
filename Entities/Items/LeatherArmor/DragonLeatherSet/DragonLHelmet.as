@@ -5,8 +5,8 @@ void onInit(CBlob@ this)
 
     this.Tag("armor");
     //move these vars to code bodies. My bad.
-    this.set_f32("damagereduction", 0.5+(XORRandom(5)*0.1));
-    this.set_f32("manaregtime", 4*30);
+    this.set_f32("damagereduction", 1.0);
+    this.set_f32("manaregtime", 5*30);
     this.set_u16("maxmana", 100);
     this.set_u16("manareg", 40);
 }
@@ -52,13 +52,9 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 	        caller.set_string("helmetname", "dragon_helmet");
 
 	        caller.set_f32("damagereduction", caller.get_f32("damagereduction") + this.get_f32("damagereduction"));
-            if (player !is null && player.isMyPlayer()) caller.set_f32("manaregtime", caller.get_f32("manaregtime") - 4*30);
+            if (player !is null && player.isMyPlayer()) caller.set_f32("manaregtime", caller.get_f32("manaregtime") - 5*30);
             caller.set_u16("maxmana", caller.get_u16("maxmana") + 100);
             caller.set_u16("manareg", caller.get_u16("manareg") + 40);
-
-            CPlayer@ player = caller.getPlayer();
-            if (player is null) return;
-            player.set_f32("dragonhelmetdamagereduction", this.get_f32("damagereduction"));
         }
     }
     else if (cmd==this.getCommandID("unequip")) {}

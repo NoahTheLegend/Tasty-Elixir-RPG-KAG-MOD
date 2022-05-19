@@ -659,14 +659,14 @@ f32 getArrowDamage(CBlob@ this, f32 vellen = -1.0f)
 		}
 		if (vellen >= arrowFastSpeed)
 		{
-			return (1.0f + this.get_f32("damagebuff"))*2;
+			return (1.75f + this.get_f32("damagebuff"))*2;
 		}
 		else if (vellen >= arrowMediumSpeed)
 		{
-			return (1.0f + this.get_f32("damagebuff"))*2;
+			return (1.25f + this.get_f32("damagebuff"))*2;
 		}
 
-		return 0.5f + this.get_f32("damagebuff");	
+		return 0.75f + this.get_f32("damagebuff");	
 	}
 	else
 	{
@@ -681,14 +681,14 @@ f32 getArrowDamage(CBlob@ this, f32 vellen = -1.0f)
 
 		if (vellen >= arrowFastSpeed)
 		{
-			return 1.0f + this.get_f32("damagebuff");
+			return 1.75f + this.get_f32("damagebuff");
 		}
 		else if (vellen >= arrowMediumSpeed)
 		{
-			return 1.0f + this.get_f32("damagebuff");
+			return 1.25f + this.get_f32("damagebuff");
 		}
 
-		return 0.5f + this.get_f32("damagebuff")/2;
+		return 0.75f + this.get_f32("damagebuff")/2;
 	}
 }
 

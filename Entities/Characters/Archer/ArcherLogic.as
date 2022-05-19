@@ -148,9 +148,27 @@ void onInit(CBlob@ this)
 
 void onSetPlayer(CBlob@ this, CPlayer@ player)
 {
+	CRules@ rules = getRules();
 	if (player !is null)
 	{
-		player.SetScoreboardVars("ScoreboardIcons.png", 2, Vec2f(16, 16));
+		string name = player.getUsername();
+		player.SetScoreboardVars("ScoreboardIcons.png", 3, Vec2f(16, 16));
+		//set level
+		if (rules.get_u16(name+"level") != 0)
+        {
+            player.set_u16("level", rules.get_u16(name+"level"));
+            //printf("blevel="+player.get_u16("level"));
+            if (rules.get_u32(name+"exp") != 0)
+            {
+                player.set_u32("exp", rules.get_u32(name+"exp"));
+                //printf("bexp="+player.get_u32("exp"));
+            }
+            player.set_u32("progressionstep", progression[player.get_u16("level")]);
+        }
+        else
+        {
+            ResetLevel(this, player);
+        }
 	}
 }
 
@@ -474,22 +492,22 @@ void ManageBow(CBlob@ this, ArcherInfo@ archer, RunnerMoveVars@ moveVars)
 						{
 							if (XORRandom(100) < this.get_f32("critchance"))
 							{
-								this.server_Hit(stabTarget, stabTarget.getPosition(), Vec2f_zero, (this.get_f32("stabdmg") + this.get_f32("damagebuff"))*2,  Hitters::stab);
+								this.server_Hit(stabTarget, stabTarget.getPosition(), Vec2f_zero, (2*this.get_f32("stabdmg")),  Hitters::stab);
 								Sound::Play("AnimeSword.ogg", this.getPosition(), 1.3f);
-								this.set_f32("dealtdamage", (this.get_f32("stabdmg") + this.get_f32("damagebuff"))*2 - stabTarget.get_f32("damagereduction"));
+								this.set_f32("dealtdamage", (2*this.get_f32("stabdmg")) - stabTarget.get_f32("damagereduction"));
 								if(isServer())
 								{
-									this.server_Heal((this.get_f32("stabdmg") + this.get_f32("damagebuff"))*this.get_f32("vampirism")*2);
+									this.server_Heal((this.get_f32("stabdmg")*2)*this.get_f32("vampirism")*2);
 								}
 							}
 							else
 							{
-								this.server_Hit(stabTarget, stabTarget.getPosition(), Vec2f_zero, this.get_f32("stabdmg") + this.get_f32("damagebuff"),  Hitters::stab);
+								this.server_Hit(stabTarget, stabTarget.getPosition(), Vec2f_zero, this.get_f32("stabdmg"),  Hitters::stab);
 								Sound::Play("SwordSheath.ogg", this.getPosition(), 1.3f);
-								this.set_f32("dealtdamage", this.get_f32("stabdmg") + this.get_f32("damagebuff") - stabTarget.get_f32("damagereduction"));
+								this.set_f32("dealtdamage", this.get_f32("stabdmg") - stabTarget.get_f32("damagereduction"));
 								if(isServer())
 								{
-									this.server_Heal((this.get_f32("stabdmg") + this.get_f32("damagebuff"))*this.get_f32("vampirism"));
+									this.server_Heal(this.get_f32("stabdmg")*this.get_f32("vampirism"));
 								}
 							}
 							if (this.get_bool("concentration"))
@@ -1160,8 +1178,20 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		this.set_u16("manareg", this.get_u16("manareg") - blob.get_u16("manareg"));
 		this.set_u16("mana", this.get_u16("mana") - blob.get_u16("mana"));
 		this.set_u16("maxmana", this.get_u16("maxmana") - blob.get_u16("maxmana"));
+
+        string[] wep = blob.getName().split("_");
+        string type;
+        if (wep.length > 1) type = wep[1];
+        if (type == "dagger")
+        {
+            this.set_f32("stabdmg", this.get_f32("stabdmg") - blob.get_f32("damagebuff"));
+    	}
+    	else
+   		{
+        	this.set_f32("stabdmg", this.get_f32("stabdmg") - blob.get_f32("damagebuff"));
+    	}
+
 		this.set_f32("critchance", this.get_f32("critchance") - blob.get_f32("critchance"));
-		this.set_f32("damagebuff", this.get_f32("damagebuff") - blob.get_f32("damagebuff"));
 		this.set_f32("attackspeed", this.get_f32("attackspeed") - blob.get_f32("attackspeed"));
 		this.set_f32("vampirism", this.get_f32("vampirism") - blob.get_f32("vampirism"));
 		this.set_f32("bashchance", this.get_f32("bashchance") - blob.get_f32("bashchance"));
@@ -1174,7 +1204,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
         {
             CBitStream params;
 			params.write_f32(blob.get_f32("attackspeed"));
-			params.write_bool(true);
+			params.write_bool(false);
 			this.SendCommand(this.getCommandID("doattackspeedchange"), params);
         }
 	}
@@ -1240,13 +1270,13 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		bool increase = params.read_bool();
 		if (increase)
 		{
-			this.set_f32("readytimemod", this.get_f32("readytimemod")+current*5);
-			this.set_f32("shootperiodmod", this.get_f32("shootperiodmod")+current*5);
+			this.set_f32("readytimemod", this.get_f32("readytimemod")+Maths::Ceil(current * 5));
+			this.set_f32("shootperiodmod", this.get_f32("shootperiodmod")+Maths::Ceil(current * 5));
 		}
 		else 
 		{
-			this.set_f32("readytimemod", this.get_f32("readytimemod")-current*5);
-			this.set_f32("shootperiodmod", this.get_f32("shootperiodmod")-current*5);
+			this.set_f32("readytimemod", this.get_f32("readytimemod")-Maths::Ceil(current * 5));
+			this.set_f32("shootperiodmod", this.get_f32("shootperiodmod")-Maths::Ceil(current * 5));
 		}
 	}
 	else if (cmd == this.getCommandID("shoot arrow"))

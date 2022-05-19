@@ -14,14 +14,53 @@ void onInit(CRules@ this)
 
 	sv_gravity = 9.81f;
 	particles_gravity.y = 0.25f;
-
-
+	this.set_u32("clearFrequency", getGameTime()+30*60*30);
+	//printf("freqset: "+this.get_u32("clearFrequency"));
 }
 
 void onTick(CRules@ this)
 {
 	if (!getNet().isServer())
 		return;
+
+	//if (getGameTime()%30==0) printf("u32: "+this.get_u32("clearFrequency"));
+	//printf(""+(getGameTime() == this.get_u32("clearFrequency")));
+
+	if (getGameTime() == this.get_u32("clearFrequency"))
+	{
+		printf("cleaned?");
+		this.set_u32("clearFrequency", getGameTime()+30*60*30); //ticks a second*seconds*minutes
+		//printf("freqset: "+this.get_u32("clearFrequency"));
+		// lear everything
+		CBlob@[] clearBlobs;
+		getBlobsByTag("doClean", clearBlobs);
+
+		for (u32 i = 0; i < clearBlobs.length; i++)
+		{
+			CBlob@ blob = clearBlobs[i];
+			if (blob is null) continue;
+			if (blob.isAttached() || blob.isInInventory()) continue;
+			CMap@ map = blob.getMap();
+			if (map is null) continue;
+
+			CBlob@[] checkp;
+			map.getBlobsInRadius(blob.getPosition(), 64.0f, checkp);
+			bool skip = false;
+			for (u32 i = 0; i < checkp.length; i++)
+			{
+				CBlob@ blobp = checkp[i];
+				if (blobp is null) continue;
+				if (blobp.getPlayer() !is null)
+				{
+					skip = true;
+					break;
+				}
+			}
+			if (skip) continue;
+
+			if (isServer()) blob.server_Die();
+		}
+	}
 
 	RulesCore@ core;
 	this.get("core", @core);
@@ -31,6 +70,24 @@ void onTick(CRules@ this)
 		core.Update();
 	}
 }
+
+
+void onPlayerLeave(CRules@ this, CPlayer@ player)
+{
+	if (player !is null)
+	{
+		string name = player.getUsername();
+		if (player.get_u16("level") != 0)
+		{
+			this.set_u16(name+"level", player.get_u16("level"));
+		}
+		if (player.get_u32("exp") != 0)
+		{
+			this.set_u32(name+"exp", player.get_u32("exp"));
+		}
+	}
+}
+
 
 void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ killer, u8 customData)
 {
@@ -46,8 +103,9 @@ void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ killer, u8 customData)
 	}
 
 	CBlob@ victimblob = victim.getBlob();
-	//if (victimblob is null)
+	if (victimblob is null) return;
 
+	//printf(""+victimblob.get_bool("hasarmor")+" e "+victimblob.get_string("armorname"));
 	if (victimblob.get_bool("hasarmor") && victimblob.get_string("armorname") != "")
 	{
 		if (isServer()) 
@@ -57,6 +115,7 @@ void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ killer, u8 customData)
 			getRules().Sync(victim.getUsername()+"armorname", true);
 			DoSaveStats(victim, blob);
 			blob.server_Die();
+			//printf("e");
 		}
 	}
 	if (victimblob.get_bool("hashelmet") && victimblob.get_string("helmetname") != "")
@@ -188,8 +247,8 @@ void DoSetStats(CPlayer@ player)
 	}
 	if (getRules().get_f32(player.getUsername()+"manaregtime")>0)		
 	{
-		printf("rules "+getRules().get_f32(player.getUsername()+"manaregtime"));
-		printf("blob  "+blob.get_f32("manaregtime"));
+		//printf("rules "+getRules().get_f32(player.getUsername()+"manaregtime"));
+		//printf("blob  "+blob.get_f32("manaregtime"));
 		blob.set_f32("manaregtime",  blob.get_f32("manaregtime") - getRules().get_f32(player.getUsername()+"manaregtime"));
 		getRules().set_f32(player.getUsername()+"manaregtime", 0);
 	}

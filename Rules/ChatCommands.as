@@ -403,21 +403,20 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 bool onClientProcessChat(CRules@ this, const string& in text_in, string& out text_out, CPlayer@ player)
 {
 	string[]@ args = text_in.split(" ");
-	if (args[0] == "/check")
-	{
-		if (args[1] == "server")
-		{
-			if (isClient()) printf("cockserver");
-		}
-		else
-		{
-			if (isClient()) printf("cockclient");
-		}
-	}
-	else if (text_in == "!commands")
+	if (text_in == "!commands")
 	{
 		if (isClient() && player.isMyPlayer()) client_AddToChat("!help for basic info\n!soundtracks to disable and enable soundtracks", SColor(255, 50, 50, 50));
 		if (isClient() && player.isMyPlayer()) client_AddToChat("!showstats to disable and enable stats list\n!showstate to disable and enable state list", SColor(255, 50, 50, 50));
+		if (isClient() && player.isMyPlayer()) client_AddToChat("!showhelp to disable and enable the help sheet", SColor(255, 50, 50, 50));
+		if (isClient() && player.isMyPlayer()) client_AddToChat("!showall to disable and enable HUD", SColor(255, 50, 50, 50));
+	}
+	else if (text_in == "!addxp" || (args.length == 2 && args[0] == "!addxp"))
+	{
+		if (args.length > 1)
+		{
+			player.set_u32("exp", player.get_u32("exp") + parseFloat(args[1]));
+		}
+		else player.set_u32("exp", player.get_u32("exp") + 100);
 	}
 	else if (text_in == "!showstats")
 	{
@@ -437,6 +436,26 @@ bool onClientProcessChat(CRules@ this, const string& in text_in, string& out tex
 		if (isClient() && player.isMyPlayer()) 
 		{
 			client_AddToChat("Stats: "+state, SColor(255, 255, 0, 0));
+		}
+	}
+	else if (text_in == "!showhelp")
+	{
+		string state;
+
+		if (!player.hasTag("helpsheet")) 
+		{
+			player.Tag("helpsheet");
+			state = "disabled";
+		}
+		else if (player.hasTag("helpsheet"))
+		{
+			player.Untag("helpsheet");
+			state = "enabled";
+		}
+
+		if (isClient() && player.isMyPlayer()) 
+		{
+			client_AddToChat("Help sheet: "+state, SColor(255, 255, 0, 0));
 		}
 	}
 	else if (text_in == "!showstate")
@@ -459,6 +478,32 @@ bool onClientProcessChat(CRules@ this, const string& in text_in, string& out tex
 			client_AddToChat("State: "+state, SColor(255, 255, 0, 0));
 		}
 	}
+	else if (text_in == "!showall")
+	{
+		string state;
+
+		if (!player.hasTag("disableall")) 
+		{
+			player.Tag("disablestats");
+			player.Tag("disablestate");
+			player.Tag("helpsheet");
+			player.Tag("disableall");
+			state = "disabled";
+		}
+		else if (player.hasTag("disableall"))
+		{
+			player.Untag("disablestats");
+			player.Untag("disablestate");
+			player.Untag("helpsheet");
+			player.Untag("disableall");
+			state = "enabled";
+		}
+
+		if (isClient() && player.isMyPlayer()) 
+		{
+			client_AddToChat("Everything: "+state, SColor(255, 255, 0, 0));
+		}
+	}
 	else if (text_in == "!help")
 	{
 		if (isClient() && player.isMyPlayer()) client_AddToChat("This is non-necessary role-play gamemode.\nYou may follow RP speech on your own\n", SColor(255, 50, 50, 50));
@@ -466,6 +511,7 @@ bool onClientProcessChat(CRules@ this, const string& in text_in, string& out tex
 		if (isClient() && player.isMyPlayer()) client_AddToChat("What do i do here?\n\nYou're in a rogue-like RPG game!\nFight mobs, bosses and loot dungeons!\nYou may also trade with NPC or other players to get some money\n", SColor(255, 50, 50, 50));
 		if (isClient() && player.isMyPlayer()) client_AddToChat("Controls: WASD to move, left mouse button to attack, right mouse button to use secondary ability, E to interact with stuff\nYou might also have skills to use, check a button that activates it!\n", SColor(255, 50, 50, 50));
 		if (isClient() && player.isMyPlayer()) client_AddToChat("To equip an armor or weapons hold it and press E button. To unequip, hold left control and press E button.\nYou can also scroll chat with SHIFT+ARROW_UP or SHIFT+ARROW_DOWN", SColor(255, 50, 50, 50));
+		if (isClient() && player.isMyPlayer()) client_AddToChat("Skillset: G-H-J-K-L", SColor(255, 50, 50, 50));
 		return true;
 	}
 	else if (text_in == "!soundtracks")

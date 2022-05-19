@@ -1,3 +1,5 @@
+#include "Level.as";
+
 shared class InitKnightStats
 {
     f32 velocity = 2.5;
@@ -288,7 +290,7 @@ void RPGUpdate(CBlob@ this)
 		if (this.get_u8("hunger") > 150) this.set_u8("hunger", 0);
 		if (this.get_u8("thirst") > 150) this.set_u8("thirst", 0);
 		if (this.get_f32("attackspeed") < 0
-		|| this.get_f32("attackspeed") > 3
+		|| this.get_f32("attackspeed") > 10
 		|| lengthie.length >= 8) this.set_f32("attackspeed", 0);
 	}
 
@@ -477,6 +479,116 @@ void RPGUpdateKnightSets(CBlob@ this)
 		this.set_f32("damagebuff", this.get_f32("damagebuff") - 0.25);
 		this.set_bool("hassteelset", false);
 	}
+	
+	if (this.get_string("armorname") == "golden_chestplate"
+	&& this.get_string("helmetname") == "golden_helmet"
+	&& this.get_string("glovesname") == "golden_gloves"
+	&& this.get_string("bootsname") == "golden_boots")
+	{
+		this.Tag("goldenset");
+	}
+	else this.Untag("goldenset");
+
+	if (this.hasTag("goldenset") && !this.get_bool("hasgoldenset"))
+	{
+		this.set_f32("damagereduction", this.get_f32("damagereduction") + 0.35);
+		this.set_f32("damagebuff", this.get_f32("damagebuff") + 0.25);
+		this.set_bool("hasgoldenset", true);
+	}
+	else if (!this.hasTag("goldenset") && this.get_bool("hasgoldenset"))
+	{
+		this.set_f32("damagereduction", this.get_f32("damagereduction") - 0.35);
+		this.set_f32("damagebuff", this.get_f32("damagebuff") - 0.25);
+		this.set_bool("hasgoldenset", false);
+	}
+
+	if (this.get_string("armorname") == "chromium_chestplate"
+	&& this.get_string("helmetname") == "chromium_helmet"
+	&& this.get_string("glovesname") == "chromium_gloves"
+	&& this.get_string("bootsname") == "chromium_boots")
+	{
+		this.Tag("chromiumset");
+	}
+	else this.Untag("chromiumset");
+
+	if (this.hasTag("chromiumset") && !this.get_bool("haschromiumset"))
+	{
+		this.set_f32("damagereduction", this.get_f32("damagereduction") + 0.35);
+		this.set_f32("damagebuff", this.get_f32("damagebuff") + 0.25);
+		this.set_bool("haschromiumset", true);
+	}
+	else if (!this.hasTag("chromiumset") && this.get_bool("haschromiumset"))
+	{
+		this.set_f32("damagereduction", this.get_f32("damagereduction") - 0.35);
+		this.set_f32("damagebuff", this.get_f32("damagebuff") - 0.25);
+		this.set_bool("haschromiumset", false);
+	}
+
+	if (this.get_string("armorname") == "palladium_chestplate"
+	&& this.get_string("helmetname") == "palladium_helmet"
+	&& this.get_string("glovesname") == "palladium_gloves"
+	&& this.get_string("bootsname") == "palladium_boots")
+	{
+		this.Tag("palladiumset");
+	}
+	else this.Untag("palladiumset");
+
+	if (this.hasTag("palladiumset") && !this.get_bool("haspalladiumset"))
+	{
+		this.set_f32("damagereduction", this.get_f32("damagereduction") + 0.35);
+		this.set_f32("damagebuff", this.get_f32("damagebuff") + 0.25);
+		this.set_bool("haspalladiumset", true);
+	}
+	else if (!this.hasTag("palladiumset") && this.get_bool("haspalladiumset"))
+	{
+		this.set_f32("damagereduction", this.get_f32("damagereduction") - 0.35);
+		this.set_f32("damagebuff", this.get_f32("damagebuff") - 0.25);
+		this.set_bool("haspalladiumset", false);
+	}
+
+	if (this.get_string("armorname") == "platinum_chestplate"
+	&& this.get_string("helmetname") == "platinum_helmet"
+	&& this.get_string("glovesname") == "platinum_gloves"
+	&& this.get_string("bootsname") == "platinum_boots")
+	{
+		this.Tag("platinumset");
+	}
+	else this.Untag("platinumset");
+
+	if (this.hasTag("platinumset") && !this.get_bool("hasplatinumset"))
+	{
+		this.set_f32("damagereduction", this.get_f32("damagereduction") + 0.35);
+		this.set_f32("damagebuff", this.get_f32("damagebuff") + 0.25);
+		this.set_bool("hasplatinumset", true);
+	}
+	else if (!this.hasTag("platinumset") && this.get_bool("hasplatinumset"))
+	{
+		this.set_f32("damagereduction", this.get_f32("damagereduction") - 0.35);
+		this.set_f32("damagebuff", this.get_f32("damagebuff") - 0.25);
+		this.set_bool("hasplatinumset", false);
+	}
+
+	if (this.get_string("armorname") == "titanium_chestplate"
+	&& this.get_string("helmetname") == "titanium_helmet"
+	&& this.get_string("glovesname") == "titanium_gloves"
+	&& this.get_string("bootsname") == "titanium_boots")
+	{
+		this.Tag("titaniumset");
+	}
+	else this.Untag("titaniumset");
+
+	if (this.hasTag("titaniumset") && !this.get_bool("hastitaniumset"))
+	{
+		this.set_f32("damagereduction", this.get_f32("damagereduction") + 0.35);
+		this.set_f32("damagebuff", this.get_f32("damagebuff") + 0.25);
+		this.set_bool("hastitaniumset", true);
+	}
+	else if (!this.hasTag("titaniumset") && this.get_bool("hastitaniumset"))
+	{
+		this.set_f32("damagereduction", this.get_f32("damagereduction") - 0.35);
+		this.set_f32("damagebuff", this.get_f32("damagebuff") - 0.25);
+		this.set_bool("hastitaniumset", false);
+	}
 }
 
 void RPGUpdateArcherRogueSets(CBlob@ this)
@@ -643,8 +755,6 @@ void UpdateStats(CBlob@ this, string name)
 	if (isServer()) 
 	{
 		CBlob@ blob = server_CreateBlob(name, this.getTeamNum(), this.getPosition());
-		blob.setPosition(this.getPosition());
-		CPlayer@ player = blob.getPlayer();
 
 		//if (blob !is null && player !is null)
 		//{
@@ -686,11 +796,34 @@ void UpdateStats(CBlob@ this, string name)
 
 void onDie(CBlob@ this)
 {
+	//save level
+	CPlayer@ player = this.getPlayer();
+	CRules@ rules = getRules();
+	if (player !is null)
+	{
+		string name = player.getUsername();
+		if (player.get_u16("level") != 0)
+		{
+			rules.set_u16(name+"level", player.get_u16("level"));
+		}
+		if (player.get_u32("exp") != 0)
+		{
+			rules.set_u32(name+"exp", player.get_u32("exp"));
+		}
+	}
+
+	CBlob@ spawn = getBlobByName("tdm_spawn"); // does not work for legendary armor
+	if (spawn is null) return;
+	if (!this.isOverlapping(spawn)) return;
+
 	if (this.get_string("helmetname") != "")
 	{
 		if (isServer())
 		{
-			CBlob@ blob = server_CreateBlob(this.get_string("helmetname"), this.getTeamNum(), this.getPosition());
+			CBlob@ blob = server_CreateBlob(this.get_string("helmetname"));
+			blob.setPosition(this.getPosition());
+			blob.server_setTeamNum(this.getTeamNum());
+			blob.Init();
 		}
 		this.set_string("helmetname", "");
 		this.set_bool("hashelmet", false);
@@ -699,7 +832,10 @@ void onDie(CBlob@ this)
 	{
 		if (isServer())
 		{
-			CBlob@ blob = server_CreateBlob(this.get_string("armorname"), this.getTeamNum(), this.getPosition());
+			CBlob@ blob = server_CreateBlob(this.get_string("armorname"));
+			blob.setPosition(this.getPosition());
+			blob.server_setTeamNum(this.getTeamNum());
+			blob.Init();
 		}
 		this.set_string("armorname", "");
 		this.set_bool("hasarmor", false);
@@ -708,7 +844,10 @@ void onDie(CBlob@ this)
 	{
 		if (isServer())
 		{
-			CBlob@ blob = server_CreateBlob(this.get_string("glovesname"), this.getTeamNum(), this.getPosition());
+			CBlob@ blob = server_CreateBlob(this.get_string("glovesname"));
+			blob.setPosition(this.getPosition());
+			blob.server_setTeamNum(this.getTeamNum());
+			blob.Init();
 		}
 		this.set_string("glovesname", "");
 		this.set_bool("hasgloves", false);
@@ -717,7 +856,10 @@ void onDie(CBlob@ this)
 	{
 		if (isServer())
 		{
-			CBlob@ blob = server_CreateBlob(this.get_string("bootsname"), this.getTeamNum(), this.getPosition());
+			CBlob@ blob = server_CreateBlob(this.get_string("bootsname"));
+			blob.setPosition(this.getPosition());
+			blob.server_setTeamNum(this.getTeamNum());
+			blob.Init();
 		}
 		this.set_string("bootsname", "");
 		this.set_bool("hasboots", false);

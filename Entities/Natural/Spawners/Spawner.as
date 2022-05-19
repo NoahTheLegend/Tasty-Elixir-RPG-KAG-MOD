@@ -177,7 +177,7 @@ void onTick(CBlob@ this) // 1 tick every second!
 
     if (active || this.get_u32("delay_timer") > gametime)
     {
-        printf(""+this.get_u32("last_spawn"));
+        //printf(""+this.get_u32("last_spawn"));
         if (this.get_u32("last_spawn") <= 30)
         {
             //printf("spawned?");

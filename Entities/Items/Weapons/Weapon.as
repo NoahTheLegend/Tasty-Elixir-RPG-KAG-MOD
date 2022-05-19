@@ -481,7 +481,22 @@ void ApplyStats(CBlob@ this, CBlob@ blob)
 	blob.set_u16("manareg", this.get_u16("manareg") + blob.get_u16("manareg")); blob.Sync("manareg", true);
 	blob.set_u16("maxmana", this.get_u16("maxmana") + blob.get_u16("maxmana")); blob.Sync("maxmana", true);
 	blob.set_f32("critchance", this.get_f32("critchance") + blob.get_f32("critchance")); blob.Sync("critchance", true);
-	if (player.isMyPlayer()) blob.set_f32("damagebuff", this.get_f32("damagebuff") + blob.get_f32("damagebuff")); blob.Sync("damagebuff", true);
+	if (player.isMyPlayer()) 
+    {
+        string[] wep = this.getName().split("_");
+        string type;
+        if (wep.length > 1) type = wep[1];
+        if (blob.getName() == "archer" && type == "dagger")
+        {
+            blob.set_f32("stabdmg", this.get_f32("damagebuff") + blob.get_f32("stabdmg"));
+            blob.Sync("stabdmg", true);
+        }
+        else
+        {
+            blob.set_f32("damagebuff", this.get_f32("damagebuff") + blob.get_f32("damagebuff"));
+            blob.Sync("damagebuff", true);
+        }
+    }
 	blob.set_f32("attackspeed", this.get_f32("attackspeed") + blob.get_f32("attackspeed")); blob.Sync("attackspeed", true);
 	blob.set_f32("vampirism", this.get_f32("vampirism") + blob.get_f32("vampirism")); blob.Sync("vampirism", true);
 	blob.set_f32("bashchance", this.get_f32("bashchance") + blob.get_f32("bashchance")); blob.Sync("bashchance", true);
@@ -513,6 +528,26 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 
         if (caller !is null)
         {
+            if (caller.getName() == "knight" && type == "sword")
+            {
+                string[] weapontype = caller.get_string("weaponname").split("_");
+                if (weapontype.length > 1)
+                {
+                    string weapon = weapontype[1];
+                    if (type == weapon
+                    && (caller.get_bool("hasweapon")))
+                    {
+                        caller.Tag("doublesword");
+                        caller.set_f32("attackspeed", caller.get_f32("attackspeed") + 0.8);
+                        caller.set_f32("critchance", caller.get_f32("critchance") + 10.0);
+
+                        CBitStream params;
+						params.write_f32(0.8);
+						params.write_bool(true);
+						caller.SendCommand(caller.getCommandID("doattackspeedchange"), params);
+                    }
+                }
+            }
             if (!caller.get_bool("hasweapon") && (type == "sword" || type == "dagger" || type == "bow"))
             {
                 if (caller.getName() == "archer" && !caller.get_bool("hassecondaryweapon") && type == "dagger")
@@ -532,6 +567,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
                 caller.set_bool("hassecondaryweapon", true);
 	            caller.set_string("secondaryweaponname", fullname); 
             }
+            //give extra buffs for doublesword knight
 
             if (caller.getCarriedBlob() !is null) caller.getCarriedBlob().server_Die();
 

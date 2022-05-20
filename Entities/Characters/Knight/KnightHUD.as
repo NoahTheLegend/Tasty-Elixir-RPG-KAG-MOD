@@ -33,6 +33,12 @@ void ManageCursors(CBlob@ this)
 	}
 }
 
+const f32 offsetx = 200;
+const f32 offsety = 300;
+const f32 scale = 0.5f;
+const Vec2f dim = Vec2f(48,48);
+const f32 gap = getDriver().getScreenWidth()/15;
+
 void DrawStats(CSprite@ this)
 {
 	CBlob@ blob = this.getBlob();
@@ -105,20 +111,20 @@ void DrawStats(CSprite@ this)
 				isOnBtn = true;
 			else
 				isOnBtn = false;
+			if (blob.get_u8("delay")>3) blob.set_u8("delay", blob.get_u8("delay")-1);
 			if (isOnBtn) 
 			{
-				if (rl1) // draw skills
+				if (rl1) // draw skills button
 				{
-					if (blob.get_u8("delay")>3) blob.set_u8("delay", blob.get_u8("delay")-1);
 					if (!blob.hasTag("openWindow") && blob.get_u8("delay") <= 3) 
 					{
 						blob.Tag("openWindow");
-						blob.set_u8("delay", 120);
+						blob.set_u8("delay", 30);
 					}
 					else if (blob.get_u8("delay") <= 3)
 					{
 						blob.Untag("openWindow");
-						blob.set_u8("delay", 120);
+						blob.set_u8("delay", 30);
 					}
 				}
 				if (l1) GUI::DrawButtonPressed(Vec2f(15, 140), Vec2f(70, 165));
@@ -128,7 +134,14 @@ void DrawStats(CSprite@ this)
 
 			if (blob.hasTag("openWindow"))
 			{
-				GUI::DrawWindow(Vec2f(width/2-width/5, height/2-height/5), Vec2f(width/2, height/2));
+				GUI::DrawWindow(Vec2f(offsetx, offsety), Vec2f(width-offsetx, height-offsety));
+				player.set_u8("skillpoints", 15);
+				player.set_u8("lvlr1", 10);
+				player.set_u8("lvlr2", 10);
+				
+				Draw1RowSkills(blob);
+				Draw2RowSkills(blob);
+				Draw3RowSkills(blob);
 			}
 
 			GUI::DrawText("Skills", Vec2f(22, 143), SColor(255, 210, 225, 210));
@@ -140,6 +153,37 @@ void DrawStats(CSprite@ this)
 			GUI::DrawText("You can move skills (drag them to free slots)", Vec2f(width - 320, 55), SColor(255, 255, 255, 255));
 		}
 	}
+}
+
+bool mouseOverIcon(CBlob@ this, Vec2f pos, f32 scale)
+{
+	f32 size = 64;
+
+	CControls@ controls = this.getControls();
+	if (controls is null) return false;
+	Vec2f mpos = controls.getMouseScreenPos();
+
+	if (mpos.x >= pos.x && mpos.y >= pos.y
+	&& mpos.x <= pos.x+size && mpos.y <= pos.y+size) return true;
+	return false;
+}
+
+bool canResearchSkill(CBlob@ this, u8 index, u8 row)
+{
+	CPlayer@ player = this.getPlayer();
+	if (player !is null)
+	{
+		if (player.get_u8("skillpoints") == 0) return false;
+		else if (index == 0) return true;
+		return hasSkill(player, index, row);
+	}
+	return false;
+}
+
+bool hasSkill(CPlayer@ player, u8 index, u8 row)
+{
+	if (player.get_u8("lvlr"+row) <= index) return false;
+	return true;
 }
 
 void onRender(CSprite@ this)
@@ -191,4 +235,58 @@ void onRender(CSprite@ this)
 	if (player is null) return;
 
 	GUI::DrawIcon(iconsFilename, frame, Vec2f(16, 32), tl + Vec2f(8 + (slotsSize - 1) * 40, -16), 1.0f, player.getTeamNum());
+}
+
+void Draw1RowSkills(CBlob@ blob)
+{
+	DrawSkill(blob, "FuryIcon.png", 0, 1, false, 0, 0);
+	DrawSkill(blob, "MassbashIcon.png", 1, 1, true, gap, 0);
+	DrawSkill(blob, "EnduranceIcon.png", 2, 1, true, gap*2, 0);
+	DrawSkill(blob, "InnerrageIcon.png", 3, 1, true, gap*3, 0);
+	DrawSkill(blob, "PowercoreIcon.png", 4, 1, true, gap*4, 0);
+	DrawSkill(blob, "FierybreathIcon.png", 5, 1, true, gap*5, 0);
+	DrawSkill(blob, "FireringIcon.png", 6, 1, true, gap*6, 0);
+	DrawSkill(blob, "MassstrengthIcon.png", 7, 1, true, gap*7, 0);
+	DrawSkill(blob, "MeteorsummonIcon.png", 8, 1, true, gap*8, 0);
+	DrawSkill(blob, "FlamingessenceIcon.png", 9, 1, true, gap*9, 0);
+}
+
+void Draw2RowSkills(CBlob@ blob)
+{
+	const u8 gapy = 86;
+	DrawSkill(blob, "SwordsmasteryIcon.png", 0, 2, false, 0, gapy);
+	DrawSkill(blob, "ParryIcon.png", 1, 2, true, gap, gapy);
+	DrawSkill(blob, "PenetratinghitIcon.png", 2, 2, true, gap*2, gapy);
+	DrawSkill(blob, "SwordthrowIcon.png", 3, 2, true, gap*3, gapy);
+	DrawSkill(blob, "SwordspinIcon.png", 4, 2, true, gap*4, gapy);
+	DrawSkill(blob, "FulminanthitsIcon.png", 5, 2, true, gap*5, gapy);
+	DrawSkill(blob, "ManaflameIcon.png", 6, 2, true, gap*6, gapy);
+	DrawSkill(blob, "ProclamationIcon.png", 7, 2, true, gap*7, gapy);
+	DrawSkill(blob, "QuakeIcon.png", 8, 2, true, gap*8, gapy);
+	DrawSkill(blob, "HyperwavesIcon.png", 9, 2, true, gap*9, gapy);
+}
+
+void Draw3RowSkills(CBlob@ blob)
+{
+	const u8 gapy = 86*2;
+	DrawSkill(blob, "Indevelopment.png", 0, 3, false, 0, gapy);
+	DrawSkill(blob, "Indevelopment.png", 1, 3, true, gap, gapy);
+	DrawSkill(blob, "Indevelopment.png", 2, 3, true, gap*2, gapy);
+	DrawSkill(blob, "Indevelopment.png", 3, 3, true, gap*3, gapy);
+	DrawSkill(blob, "Indevelopment.png", 4, 3, true, gap*4, gapy);
+	DrawSkill(blob, "Indevelopment.png", 5, 3, true, gap*5, gapy);
+	DrawSkill(blob, "Indevelopment.png", 6, 3, true, gap*6, gapy);
+	DrawSkill(blob, "Indevelopment.png", 7, 3, true, gap*7, gapy);
+	DrawSkill(blob, "Indevelopment.png", 8, 3, true, gap*8, gapy);
+	DrawSkill(blob, "Indevelopment.png", 9, 3, true, gap*9, gapy);
+}
+
+void DrawSkill(CBlob@ blob, string filename, u8 lvl, u8 row, bool hasArrow, u16 gapx, u8 gapy)
+{
+	GUI::DrawIcon(filename, 0, dim, Vec2f(offsetx+32+gapx, offsety+32+gapy), scale);
+	if (hasArrow && canResearchSkill(blob, lvl, row)) GUI::DrawArrow2D(Vec2f(offsetx+32+50+gapx-gap, offsety+32+24+gapy), Vec2f(offsetx+32+gapx-2, offsety+32+24+gapy), SColor(255,0,0,0));
+	if (!canResearchSkill(blob, lvl, row))
+		GUI::DrawRectangle(Vec2f(offsetx+32+gapx, offsety+32+gapy), Vec2f(offsetx+32+48+gapx, offsety+32+48+gapy), SColor(150, 0, 0, 0));
+	else if (mouseOverIcon(blob, Vec2f(offsetx+32+gapx, offsety+32+gapy), scale))
+		GUI::DrawRectangle(Vec2f(offsetx+32+gapx, offsety+32+gapy), Vec2f(offsetx+32+48+gapx, offsety+32+48+gapy), SColor(100, 255, 255, 255));
 }

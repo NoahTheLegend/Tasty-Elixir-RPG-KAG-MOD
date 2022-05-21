@@ -46,6 +46,19 @@ void knight_clear_actor_limits(CBlob@ this)
 
 void onInit(CBlob@ this)
 {
+	this.addCommandID("unequiphelmet");
+	this.addCommandID("unequiparmor");
+	this.addCommandID("unequipgloves");
+	this.addCommandID("unequipboots");
+	this.addCommandID("unequipweapon");
+	this.addCommandID("unequipsecondaryweapon");
+	this.addCommandID("update_stats");
+	this.addCommandID("sync_stats");
+	this.addCommandID("hitsound");
+	this.addCommandID("doattackspeedchange");
+	this.addCommandID("receive_effect");
+	this.addCommandID("timercheck");
+	
 	KnightInfo knight;
 
 	this.set_u16("attackdelay", 0);
@@ -94,31 +107,6 @@ void onInit(CBlob@ this)
 	this.set_u8("dashcd", 0);
 	this.set_u8("dashbufftimer", 0);
 
-	//armor/weapons check
-	this.addCommandID("unequiphelmet");
-	this.addCommandID("unequiparmor");
-	this.addCommandID("unequipgloves");
-	this.addCommandID("unequipboots");
-	this.addCommandID("unequipweapon");
-	this.addCommandID("unequipsecondaryweapon");
-	this.addCommandID("update_stats");
-	this.addCommandID("sync_stats");
-	this.addCommandID("doattackspeedchange");
-
-	this.addCommandID("hitsound");
-
-	this.set_bool("hasarmor", false);
-	this.set_string("armorname", "");
-
-	this.set_bool("hasboots", false);
-	this.set_string("bootsname", "");
-
-	this.set_bool("hasgloves", false);
-	this.set_string("glovesname", "");
-
-	this.set_bool("hashelmet", false);
-	this.set_string("helmetname", "");
-
 	//stats
 	InitRogueStats stats;
 	this.set_f32("velocity", stats.velocity);
@@ -142,41 +130,6 @@ void onInit(CBlob@ this)
 
 	//gathered set vars
 	this.set_bool("hasrlset", false);
-	//hunger&thirst
-	this.set_u8("hunger", 0);
-	this.set_u8("thirst", 0);
-	//other
-	this.set_bool("poisoned", false);
-	this.set_bool("bleeding", false);
-	this.set_u8("bleedmodifier", 1);
-	this.set_bool("regen", false);
-	this.set_u16("silenceskilltimer", 0);
-	//effecttimers & buffs at their slots
-	this.set_u16("timer1", 0);
-	this.set_u16("timer2", 0);
-	this.set_u16("timer3", 0);
-	this.set_u16("timer4", 0);
-	this.set_u16("timer5", 0);
-	this.set_u16("timer6", 0);
-	this.set_u16("timer7", 0);
-	this.set_u16("timer8", 0);
-	this.set_u16("timer9", 0);
-	this.set_u16("timer10", 0);
-
-	this.addCommandID("timercheck");
-
-	this.set_string("buffs1", "");
-	this.set_string("buffs2", "");
-	this.set_string("buffs3", "");
-	this.set_string("buffs4", "");
-	this.set_string("buffs5", "");
-	this.set_string("buffs6", "");
-	this.set_string("buffs7", "");
-	this.set_string("buffs8", "");
-	this.set_string("buffs9", "");
-	this.set_string("buffs10", "");
-
-	this.addCommandID("receive_effect");
 }
 
 void onSetPlayer(CBlob@ this, CPlayer@ player)
@@ -477,6 +430,18 @@ void onTick(CBlob@ this)
 			pressed_a1 = false;
 			pressed_a2 = false;
 		}
+	}
+	if (this.hasTag("noAttack"))
+	{
+		knight.state = KnightStates::normal; //cancel any attacks or shielding
+		knight.swordTimer = 0;
+		knight.slideTime = 0;
+		knight.doubleslash = false;
+		this.set_s32("currentKnightState", 0);
+
+		pressed_a1 = false;
+		pressed_a2 = false;
+		walking = false;
 	}
 
 	if (knocked > 0)// || myplayer && getHUD().hasMenus())

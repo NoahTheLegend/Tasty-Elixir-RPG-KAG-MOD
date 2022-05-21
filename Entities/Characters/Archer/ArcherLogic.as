@@ -21,6 +21,19 @@ const int STAB_TIME = 20;
 
 void onInit(CBlob@ this)
 {
+	this.addCommandID("unequiphelmet");
+	this.addCommandID("unequiparmor");
+	this.addCommandID("unequipgloves");
+	this.addCommandID("unequipboots");
+	this.addCommandID("unequipweapon");
+	this.addCommandID("unequipsecondaryweapon");
+	this.addCommandID("update_stats");
+	this.addCommandID("sync_stats");
+	this.addCommandID("hitsound");
+	this.addCommandID("doattackspeedchange");
+	this.addCommandID("receive_effect");
+	this.addCommandID("timercheck");
+	
 	ArcherInfo archer;
 	this.set("archerInfo", @archer);
 
@@ -56,31 +69,6 @@ void onInit(CBlob@ this)
 	this.addCommandID("showdamage");
 	getRules().addCommandID("showdamage");
 
-	//armor/weapons check
-	this.addCommandID("unequiphelmet");
-	this.addCommandID("unequiparmor");
-	this.addCommandID("unequipgloves");
-	this.addCommandID("unequipboots");
-	this.addCommandID("unequipweapon");
-	this.addCommandID("unequipsecondaryweapon");
-	this.addCommandID("update_stats");
-	this.addCommandID("sync_stats");
-	this.addCommandID("doattackspeedchange");
-
-	this.addCommandID("hitsound");
-
-	this.set_bool("hasarmor", false);
-	this.set_string("armorname", "");
-
-	this.set_bool("hasboots", false);
-	this.set_string("bootsname", "");
-
-	this.set_bool("hasgloves", false);
-	this.set_string("glovesname", "");
-
-	this.set_bool("hashelmet", false);
-	this.set_string("helmetname", "");
-
 	//stats
 	InitArcherStats stats;
 	this.set_f32("velocity", stats.velocity);
@@ -107,43 +95,6 @@ void onInit(CBlob@ this)
 
 	//gathered set vars
 	this.set_bool("hasrlset", false);
-
-	//hunger&thirst
-	this.set_u8("hunger", 0);
-	this.set_u8("thirst", 0);
-
-	//other
-	this.set_bool("poisoned", false);
-	this.set_bool("bleeding", false);
-	this.set_u8("bleedmodifier", 1);
-	this.set_bool("regen", false);
-	
-	//effecttimers & buffs at their slots
-	this.set_u16("timer1", 0);
-	this.set_u16("timer2", 0);
-	this.set_u16("timer3", 0);
-	this.set_u16("timer4", 0);
-	this.set_u16("timer5", 0);
-	this.set_u16("timer6", 0);
-	this.set_u16("timer7", 0);
-	this.set_u16("timer8", 0);
-	this.set_u16("timer9", 0);
-	this.set_u16("timer10", 0);
-
-	this.addCommandID("timercheck");
-
-	this.set_string("buffs1", "");
-	this.set_string("buffs2", "");
-	this.set_string("buffs3", "");
-	this.set_string("buffs4", "");
-	this.set_string("buffs5", "");
-	this.set_string("buffs6", "");
-	this.set_string("buffs7", "");
-	this.set_string("buffs8", "");
-	this.set_string("buffs9", "");
-	this.set_string("buffs10", "");
-
-	this.addCommandID("receive_effect");
 }
 
 void onSetPlayer(CBlob@ this, CPlayer@ player)
@@ -331,11 +282,14 @@ void ManageBow(CBlob@ this, ArcherInfo@ archer, RunnerMoveVars@ moveVars)
 	}
 	else if (this.isKeyPressed(key_action1))
 	{
-		if (this.getCarriedBlob() !is null) if (this.getCarriedBlob().getName() == "drill"
-		|| this.getCarriedBlob().getName() == "irondrill"
-		|| this.getCarriedBlob().getName() == "steeldrill") return;
-		moveVars.walkFactor *= 0.75f;
-		moveVars.canVault = false;
+		if (this.getCarriedBlob() !is null) 
+			if (this.getCarriedBlob().getName() == "drill"
+				|| this.getCarriedBlob().getName() == "irondrill"
+				|| this.getCarriedBlob().getName() == "steeldrill") return;
+				moveVars.walkFactor *= 0.75f;
+				moveVars.canVault = false;
+
+		if (this.hasTag("noAttack")) return;
 
 		const bool just_action1 = this.isKeyJustPressed(key_action1);
 

@@ -10,7 +10,14 @@ namespace Effects
         SHIELDBLOCK,
         CONCENTRATION,
         SILENCE,
-        REASSURANCE
+        REASSURANCE,
+		FURY,
+		ENDURANCE,
+		INNERRAGE,
+		POWERCORE,
+		FIRERING,
+		MASSSTRENGTH,
+		SWORDSMASTERY
     }
 }
 
@@ -26,6 +33,13 @@ string getEffectIcon(u16 eff)
         case Effects::CONCENTRATION: return "ConcentrationEffectIcon.png";
         case Effects::SILENCE: return "SilenceEffectIcon.png";
         case Effects::REASSURANCE: return "ReassuranceEffectIcon.png";
+		case Effects::FURY: return "FuryIcon.png";
+		case Effects::ENDURANCE: return "EnduranceIcon.png";
+		case Effects::INNERRAGE: return "InnerrageIcon.png";
+		case Effects::POWERCORE: return "PowercoreIcon.png";
+		case Effects::FIRERING: return "FireringIcon.png";
+		case Effects::MASSSTRENGTH: return "MassstrengthIcon.png";
+		case Effects::SWORDSMASTERY: return "SwordsmasteryIcon.png";
     }
     return "No Icon";
 }
@@ -42,6 +56,13 @@ string getEffectName(u16 eff)
         case Effects::CONCENTRATION: return "SKILL: CONCENTRATION";
         case Effects::SILENCE: return "SKILL: SILENCE";
         case Effects::REASSURANCE: return "SKILL: REASSURANCE";
+		case Effects::FURY: return "SKILL: FURY";
+		case Effects::ENDURANCE: return "SKILL: ENDURANCE";
+		case Effects::INNERRAGE: return "SKILL: INNER RAGE";
+		case Effects::POWERCORE: return "SKILL: POWER CORE";
+		case Effects::FIRERING: return "SKILL: FIRE RING";
+		case Effects::MASSSTRENGTH: return "SKILL: MASS STRENGTH";
+		case Effects::SWORDSMASTERY: return "SKILL: SWORDS MASTERY";
     }
     return "No Effect";
 }
@@ -58,22 +79,25 @@ string getEffectDescription(u16 eff)
         case Effects::CONCENTRATION: return "You are in harmony\nwith environment!";
         case Effects::SILENCE: return "Ready to stab!";
         case Effects::REASSURANCE: return "Optimism as a solution.";
+		case Effects::FURY: return "You gain extra damage when being hit!";
+		case Effects::ENDURANCE: return "You regenerate more health\nwhen you have few HP.";
+		case Effects::INNERRAGE: return "You gain extra buffs\nwhen you have few HP.";
+		case Effects::POWERCORE: return "You gain immunity to\ndamage, and after\nthat +1.0 of agility.";
+		case Effects::FIRERING: return "Fire ring is warming\nyou externally!";
+		case Effects::MASSSTRENGTH: return "Your damage is buffed.";
+		case Effects::SWORDSMASTERY: return "You gain extra bonuses\nwhen holding two swords!";
     }
     return "No Description";
 }
 
 bool getEffectType(string name) // string because entry is splitted string, without parseInt() 
 {
-    if (name == "1") return true;
-    else if (name == "2") return true;
-    else if (name == "3") return true;
-    else if (name == "4") return false;
-    else if (name == "5") return false;
-    else if (name == "6") return false;
-    else if (name == "7") return false;
-    else if (name == "8") return false;
+	u8 idx = parseFloat(name);
+    if (idx == 1) return true;
+    else if (idx == 2 || idx == 3) return true;
+    else if (idx > 3 && idx < 15) return false;
 
-    return false;
+    return true;
 }
 
 bool hasEffect(CBlob@ blob, u16 eff)
@@ -85,89 +109,39 @@ void giveEffect(CBlob@ blob, u16 eff)
 {
     CBitStream params;
     params.write_u16(eff);
+	params.write_u32(1800+XORRandom(900));
     blob.SendCommand(blob.getCommandID("receive_effect"), params);
+}
+
+void SetToSlot(CBlob@ this, string name, string buff, u16 time, u8 idx)
+{
+	this.set_u16("timer"+idx, time);
+	this.set_string("eff"+idx, name);
+	this.Sync("eff"+idx, true); // for onRender
+	this.set_string("buffs"+idx, buff);
+	this.Sync("buffs"+idx, true);
 }
 
 void SetToFreeSlot(CBlob@ this, string name, string buff, u16 time)
 {
 	if (this.get_string("eff1") == "")
-	{
-		this.set_u16("timer1", time);
-		this.set_string("eff1", name);
-		this.Sync("eff1", true); // for onRender
-		this.set_string("buffs1", buff);
-		this.Sync("buffs1", true);
-	} 
+		SetToSlot(this, name, buff, time, 1);
 	else if (this.get_string("eff2") == "") 
-	{
-		this.set_u16("timer2", time);
-		this.set_string("eff2", name);
-		this.Sync("eff2", true);
-		this.set_string("buffs2", buff);
-		this.Sync("buffs2", true);
-	}
+		SetToSlot(this, name, buff, time, 2);
 	else if (this.get_string("eff3") == "")
-	{
-		this.set_u16("timer3", time);
-		this.set_string("eff3", name);
-		this.Sync("eff3", true);
-		this.set_string("buffs3", buff);
-		this.Sync("buffs3", true);
-	}
+		SetToSlot(this, name, buff, time, 3);
 	else if (this.get_string("eff4") == "")
-	{
-		this.set_u16("timer4", time);
-		this.set_string("eff4", name);
-		this.Sync("eff4", true);
-		this.set_string("buffs4", buff);
-		this.Sync("buffs4", true);
-	}
+		SetToSlot(this, name, buff, time, 4);
 	else if (this.get_string("eff5") == "")
-	{
-		this.set_u16("timer5", time);
-		this.set_string("eff5", name);
-		this.Sync("eff5", true);
-		this.set_string("buffs5", buff);
-		this.Sync("buffs5", true);
-	}
+		SetToSlot(this, name, buff, time, 5);
 	else if (this.get_string("eff6") == "")
-	{
-		this.set_u16("timer6", time);
-		this.set_string("eff6", name);
-		this.Sync("eff6", true);
-		this.set_string("buffs6", buff);
-		this.Sync("buffs6", true);
-	} 
+		SetToSlot(this, name, buff, time, 6);
 	else if (this.get_string("eff7") == "") 
-	{
-		this.set_u16("timer7", time);
-		this.set_string("eff7", name);
-		this.Sync("eff7", true);
-		this.set_string("buffs7", buff);
-		this.Sync("buffs7", true);
-	}
+		SetToSlot(this, name, buff, time, 7);
 	else if (this.get_string("eff8") == "")
-	{
-		this.set_u16("timer8", time);
-		this.set_string("eff8", name);
-		this.Sync("eff8", true);
-		this.set_string("buffs8", buff);
-		this.Sync("buffs8", true);
-	}
+		SetToSlot(this, name, buff, time, 8);
 	else if (this.get_string("eff9") == "")
-	{
-		this.set_u16("timer9", time);
-		this.set_string("eff9", name);
-		this.Sync("eff9", true);
-		this.set_string("buffs9", buff);
-		this.Sync("buffs9", true);
-	}
+		SetToSlot(this, name, buff, time, 9);
 	else if (this.get_string("eff10") == "")
-	{
-		this.set_u16("timer10", time);
-		this.set_string("eff10", name);
-		this.Sync("eff10", true);
-		this.set_string("buffs10", buff);
-		this.Sync("buff10", true);
-	}
+		SetToSlot(this, name, buff, time, 10);
 }

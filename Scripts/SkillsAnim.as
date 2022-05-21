@@ -70,55 +70,28 @@ void onTick(CSprite@ this)
             shieldblock.SetVisible(true);
             shieldblock.SetFacingLeft(false);
 
-            if (getGameTime() == begin+4)
-            {
-                shbanim.SetFrameIndex(1);
-            }
-            if (getGameTime() == begin+7)
-            {
-                shbanim.SetFrameIndex(2);
-            }
-            if (getGameTime() == begin+9)
-            {
-                shbanim.SetFrameIndex(3);
-            }
-            if (getGameTime() == begin+11)
-            {
-                shbanim.SetFrameIndex(4);
-            }
+            if (getGameTime() == begin+4) DoAnim(this, shbanim, 1, false, "", 0, 0);
+            if (getGameTime() == begin+7) DoAnim(this, shbanim, 2, false, "", 0, 0);
+            if (getGameTime() == begin+9) DoAnim(this, shbanim, 3, false, "", 0, 0);
+            if (getGameTime() == begin+11) DoAnim(this, shbanim, 5, false, "", 0, 0);
             if (getGameTime() == begin+13)
             {
-                shbanim.SetFrameIndex(5);
+                DoAnim(this, shbanim, 5, false, "", 5, 0);
                 this.PlaySound("ArrowHit.ogg", 3.0f, 1.1f);
                 this.PlaySound("ShieldBeingHit.ogg", 0.5f, 1.2f);
             }
-            if (getGameTime() == begin+16)
-            {
-                this.PlaySound("ArrowHit.ogg", 3.0f, 1.1f);
-            }
-            if (getGameTime() == begin+19)
-            {
-                shbanim.SetFrameIndex(6);
-            }
-            if (getGameTime() == begin+25)
-            {
-                shbanim.SetFrameIndex(7);
-            }
-            if (getGameTime() == begin+31)
-            {
-                shbanim.SetFrameIndex(8);
-            }
-            if (getGameTime() == begin+36)
-            {
-                shbanim.SetFrameIndex(9);
-            }
+            if (getGameTime() == begin+16) DoAnim(this, shbanim, 5, true, "ArrowHit.ogg", 3.0, 1.1);
+            if (getGameTime() == begin+19) DoAnim(this, shbanim, 6, false, "", 0, 0);
+            if (getGameTime() == begin+25) DoAnim(this, shbanim, 7, false, "", 0, 0);
+            if (getGameTime() == begin+31) DoAnim(this, shbanim, 8, false, "", 0, 0);
+            if (getGameTime() == begin+36) DoAnim(this, shbanim, 9, false, "", 0, 0);
             if (getGameTime() == begin+40)
             {
                 blob.set_bool("animplaying", false);
 			    blob.set_string("animname", "");
 			    blob.set_u32("begintime", 0);
                 shieldblock.SetVisible(false);
-                shbanim.SetFrameIndex(0);
+                DoAnim(this, shbanim, 0, false, "", 0, 0);
             }
         }
         else if (blob.get_string("animname") == "Concentration")
@@ -132,71 +105,30 @@ void onTick(CSprite@ this)
             concentration.SetVisible(true);
             concentration.SetFacingLeft(false);
 
-            if (getGameTime() == begin+8)
+            u32 gametime = getGameTime();
+            if (gametime == begin+8) DoAnim(this, concanim, 1, true, "Concentration.ogg", 0.5f, 0.975f);
+            else if (gametime == begin+16) DoAnim(this, concanim, 2, false, "", 0, 0);
+            else if (gametime == begin+23) DoAnim(this, concanim, 3, false, "", 0, 0);
+            else if (gametime == begin+29) DoAnim(this, concanim, 4, false, "", 0, 0);
+            else if (gametime == begin+35) DoAnim(this, concanim, 3, false, "", 0, 0);
+            else if (gametime == begin+41) DoAnim(this, concanim, 4, false, "", 0, 0);
+            else if (gametime == begin+47) DoAnim(this, concanim, 3, false, "", 0, 0);
+            else if (gametime == begin+53) DoAnim(this, concanim, 4, false, "", 0, 0);
+            else if (gametime == begin+59) DoAnim(this, concanim, 3, false, "", 0, 0);
+            else if (gametime == begin+65) DoAnim(this, concanim, 4, false, "", 0, 0);
+            else if (gametime == begin+70) DoAnim(this, concanim, 3, false, "", 0, 0);
+            else if (gametime == begin+75) DoAnim(this, concanim, 4, false, "", 0, 0);
+            else if (gametime == begin+80) DoAnim(this, concanim, 3, false, "", 0, 0);
+            else if (gametime == begin+85) DoAnim(this, concanim, 2, false, "", 0, 0);
+            else if (gametime == begin+90) DoAnim(this, concanim, 1, false, "", 0, 0);
+            else if (gametime == begin+95) 
             {
-                concanim.SetFrameIndex(1);
-                this.PlaySound("Concentration.ogg", 0.5f, 0.975f);
-            }
-            if (getGameTime() == begin+16)
-            {
-                concanim.SetFrameIndex(2);
-            }
-            if (getGameTime() == begin+23)
-            {
-                concanim.SetFrameIndex(3);
-            }
-            if (getGameTime() == begin+29)
-            {
-                concanim.SetFrameIndex(4);
-            }
-            if (getGameTime() == begin+35)
-            {
-                concanim.SetFrameIndex(3);
-            }
-            if (getGameTime() == begin+41)
-            {
-                concanim.SetFrameIndex(4);
-            }
-            if (getGameTime() == begin+47)
-            {
-                concanim.SetFrameIndex(3);
-            }
-            if (getGameTime() == begin+53)
-            {
-                concanim.SetFrameIndex(4);
-            }
-            if (getGameTime() == begin+59)
-            {
-                concanim.SetFrameIndex(3);
-            }
-            if (getGameTime() == begin+65)
-            {
-                concanim.SetFrameIndex(4);
-            }
-            if (getGameTime() == begin+70)
-            {
-                concanim.SetFrameIndex(3);
-            }
-            if (getGameTime() == begin+75)
-            {
-                concanim.SetFrameIndex(2);
-            }
-            if (getGameTime() == begin+80)
-            {
-                concanim.SetFrameIndex(1);
-            }
-            if (getGameTime() == begin+85)
-            {
-                concanim.SetFrameIndex(0);
-            }
-            if (getGameTime() == begin+90)
-            {
+                DoAnim(this, concanim, 0, false, "0", 0, 0);
                 blob.set_bool("animplaying", false);
 			    blob.set_string("animname", "");
 			    blob.set_u32("begintime", 0);
                 concentration.SetVisible(false);
-                concanim.SetFrameIndex(0);
-            }
+            } 
         }
         else if (blob.get_string("animname") == "Silence")
         {
@@ -217,24 +149,11 @@ void onTick(CSprite@ this)
             reassurance.SetVisible(true);
             reassurance.SetFacingLeft(false);
 
-            if (getGameTime() == begin+4)
-            {
-                reasanim.SetFrameIndex(1);
-            }
-            if (getGameTime() == begin+8)
-            {
-                reasanim.SetFrameIndex(2);
-                this.PlaySound("ReassuranceAppear.ogg", 2.0f, 1.0f);
-            }
-            if (getGameTime() == begin+68)
-            {
-                reasanim.SetFrameIndex(1);
-            }
-            if (getGameTime() == begin+72)
-            {
-                reasanim.SetFrameIndex(0);
-            }
-            if (getGameTime() == begin+76)
+            if (getGameTime() == begin+4) DoAnim(this, reasanim, 1, false, "", 0, 0);
+            else if (getGameTime() == begin+8) DoAnim(this, reasanim, 2, true, "ReassuranceAppear.ogg", 2.0, 1.0);
+            else if (getGameTime() == begin+68) DoAnim(this, reasanim, 1, false, "", 0, 0); 
+            else if (getGameTime() == begin+72) DoAnim(this, reasanim, 1, false, "", 0, 0);
+            else if (getGameTime() == begin+76)
             {
                 blob.set_bool("animplaying", false);
 			    blob.set_string("animname", "");
@@ -243,4 +162,10 @@ void onTick(CSprite@ this)
             }
         }
     }
+}
+
+void DoAnim(CSprite@ this, Animation@ anim, u8 index, bool playsound, string filename, f32 volume, f32 pitch)
+{
+    anim.SetFrameIndex(index);
+    if (playsound) this.PlaySound(filename, volume, pitch);
 }

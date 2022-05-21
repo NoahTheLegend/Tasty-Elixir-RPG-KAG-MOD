@@ -111,6 +111,58 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	}
 }
 
+void RPGInit(CBlob@ this)
+{
+	//armor/weapons check
+	this.set_bool("hasarmor", false);
+	this.set_string("armorname", "");
+
+	this.set_bool("hasboots", false);
+	this.set_string("bootsname", "");
+
+	this.set_bool("hasgloves", false);
+	this.set_string("glovesname", "");
+
+	this.set_bool("hashelmet", false);
+	this.set_string("helmetname", "");
+
+	//skills stuff
+	this.set_u8("stimer", 0);
+
+	//hunger&thirst
+	this.set_u8("hunger", 0);
+	this.set_u8("thirst", 0);
+
+	//other
+	this.set_bool("poisoned", false);
+	this.set_bool("bleeding", false);
+	this.set_u8("bleedmodifier", 1);
+	this.set_bool("regen", false);
+
+	//effecttimers & buffs at their slots
+	this.set_u16("timer1", 0);
+	this.set_u16("timer2", 0);
+	this.set_u16("timer3", 0);
+	this.set_u16("timer4", 0);
+	this.set_u16("timer5", 0);
+	this.set_u16("timer6", 0);
+	this.set_u16("timer7", 0);
+	this.set_u16("timer8", 0);
+	this.set_u16("timer9", 0);
+	this.set_u16("timer10", 0);
+
+	this.set_string("buffs1", "");
+	this.set_string("buffs2", "");
+	this.set_string("buffs3", "");
+	this.set_string("buffs4", "");
+	this.set_string("buffs5", "");
+	this.set_string("buffs6", "");
+	this.set_string("buffs7", "");
+	this.set_string("buffs8", "");
+	this.set_string("buffs9", "");
+	this.set_string("buffs10", "");
+}
+
 void RPGUpdate(CBlob@ this)
 {
 	//prevent rotating with buttons when trying to unequip an item

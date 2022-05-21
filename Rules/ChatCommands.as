@@ -6,6 +6,7 @@
 #include "MakeSeed.as";
 #include "MakeCrate.as";
 #include "MakeScroll.as";
+#include "SkillsCommon.as";
 
 const bool chatCommandCooldown = false; // enable if you want cooldown on your server
 const uint chatCommandDelay = 3 * 30; // Cooldown in seconds
@@ -417,6 +418,25 @@ bool onClientProcessChat(CRules@ this, const string& in text_in, string& out tex
 			player.set_u32("exp", player.get_u32("exp") + parseFloat(args[1]));
 		}
 		else player.set_u32("exp", player.get_u32("exp") + 100);
+	}
+	else if (args.length == 3 && args[0] == "!addskill")
+	{
+		u16 index = parseFloat(args[2]);
+		string type = args[1];
+		CBlob@ blob = player.getBlob();
+		if (blob !is null)
+		{
+			giveSkill(blob, type, index);
+		}
+	}
+	else if (args.length == 2 && args[0] == "!takeskill")
+	{
+		u8 pos = parseFloat(args[1]);
+		CBlob@ blob = player.getBlob();
+		if (blob !is null)
+		{
+			takeSkill(blob, pos);
+		}
 	}
 	else if (text_in == "!showstats")
 	{

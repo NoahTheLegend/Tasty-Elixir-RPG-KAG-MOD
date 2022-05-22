@@ -1,6 +1,7 @@
 
 #include "SkillsCommon.as";
 #include "StatEffectsCommon.as";
+#include "KnockedCommon.as";
 
 void onInit(CBlob@ this)
 {
@@ -53,12 +54,12 @@ void onTick(CBlob@ this)
 {
     CPlayer@ player = this.getPlayer();
 
-    if (this.getTickSinceCreated() == 90 && player !is null && player.isMyPlayer())
+    if (this.getTickSinceCreated() == 29 && player !is null && player.isMyPlayer())
 	{
         //give skills. Causes *some command not found*. Probably because writing string in params?
 	    DoInitGiveAway(this);
 	}
-    else if (this.getTickSinceCreated() == 160 && player !is null && player.isMyPlayer())
+    else if (this.getTickSinceCreated() == 30 && player !is null && player.isMyPlayer())
     {
         CBitStream params;
         params.write_string("common");
@@ -196,8 +197,8 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
         string type = params.read_string();
         u16 skill = params.read_u16();
 
-        printf("type: "+type);
-        printf("skill: "+getSkillName(this.getName(), skill));
+        //printf("type: "+type);
+        //printf("skill: "+getSkillName(this.getName(), skill));
 
         //if (this.hasTag("has"+getSkillName(this.get_string("skilltype"), skill))) return;
         this.set_string("skilltype", type);
@@ -215,7 +216,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
     else if (cmd == this.getCommandID("take_skill"))
     {
         u8 pos = params.read_u8();
-        
+
         this.set_string("skill"+pos, "");
         this.set_string("skilltype"+pos, "");
         this.set_u16("skillidx"+pos, 255);
@@ -372,6 +373,79 @@ void SetBuffs(CBlob@ this, string buffs)
 
 const u16 scrwidth = getDriver().getScreenWidth();
 const u16 scrheight = getDriver().getScreenHeight();
+
+const Vec2f mid = Vec2f(scrwidth/2-24, scrheight/2-48); // - 24 cuz icons dimensions are 48x48
+
+const Vec2f[] wheel_elem_poses = {
+    Vec2f(0, -102)+mid,
+    Vec2f(64, -48)+mid,
+    Vec2f(120, 24)+mid,
+    Vec2f(64, 96)+mid,
+    Vec2f(0, 160)+mid,
+    Vec2f(-64, 96)+mid,
+    Vec2f(-120, 24)+mid,
+    Vec2f(-64, -48)+mid,
+    Vec2f(0, -196)+mid,
+    Vec2f(88, -140)+mid,
+    Vec2f(164, -76)+mid,
+    Vec2f(216, 24)+mid,
+    Vec2f(164, 124)+mid,
+    Vec2f(88, 188)+mid,
+    Vec2f(0, 248)+mid,
+    Vec2f(-88, 188)+mid,
+    Vec2f(-164, 124)+mid,
+    Vec2f(-216, 24)+mid,
+    Vec2f(-164, -76)+mid,
+    Vec2f(-88, -140)+mid
+};
+
+bool isMouseOverSkillWheelElem(Vec2f mp, Vec2f pos, u8 size, u8 tolerance)
+{
+    if (mp.x >= pos.x-tolerance && mp.y >= pos.y-tolerance
+    && mp.x <= pos.x+size+tolerance && mp.y <= pos.y+size+tolerance) return true;
+    return false;
+}
+
+void DrawSkillWheel(CBlob@ this, Vec2f mousePos, f32 scale)
+{
+    string[] wskills;
+    for (u8 i = 1; i <= 20; i++)
+    {
+        wskills.push_back(this.get_string("skill"+i));
+    }
+
+    SetScreenFlash(125, 0,0,0 , 0.1f);
+    
+    for (u8 i = 0; i < wskills.length; i++)
+    {
+        string skillname = wskills[i];
+        Vec2f pos;
+        
+        pos = wheel_elem_poses[i];
+
+        if (i == 0) 
+        {
+            //printf("x: "+pos.x+" y: "+pos.y);
+            //printf(skillname);
+        }
+        string[] split = skillname.split(" "); // split and reconstruct if there is a space between words
+        string name;
+        if (split.length == 2) name = split[0]+split[1];
+        else name = skillname;
+        if (name != "") GUI::DrawIcon(name+"Icon.png", 0, Vec2f(48,48), Vec2f(pos), scale);
+
+        if (isMouseOverSkillWheelElem(mousePos, pos, 48, 6))
+        {
+            GUI::DrawRectangle(pos-Vec2f(8,8), pos+Vec2f(48+8,48+8), SColor(100,255,255,255));
+            //if (!this.hasTag("lockWheelSound"))
+            //{
+            //    this.Tag("lockWheelSound");
+            //    this.getSprite().PlaySound("select.ogg");
+            //}
+        }
+        else this.Untag("lockWheelSound");
+    }
+}
 
 void RenderSkills(CSprite@ this, u8 idx, u16 offsetx, u16 offsety)
 {
@@ -643,8 +717,37 @@ void onRender(CSprite@ this)
 {
     CBlob@ blob = this.getBlob();
     if (blob is null || !blob.isMyPlayer()) return;
+    CPlayer@ player = blob.getPlayer();
+    if (player is null || !player.isMyPlayer()) return;
 
     Vec2f mousePos = getControls().getMouseScreenPos();
+    CControls@ controls = blob.getControls();
+    if (controls !is null)
+    {
+        if (controls.isKeyPressed(KEY_KEY_V))
+        {
+            DrawSkillWheel(blob, mousePos, 0.5);
+            controls.setCameraLock(true);
+        }
+        else if (controls.isKeyJustReleased(KEY_KEY_V))
+        {
+            for (u8 i = 0; i < wheel_elem_poses.length; ++i)
+            {
+                if (isMouseOverSkillWheelElem(mousePos, wheel_elem_poses[i], 48, 6))
+                {
+                    u8 index = getSkillPosition(blob, blob.get_string("skill"+(i+1)));
+                    if (blob.get_string("skill"+index) == "") continue; // skip if slot is empty, causing some problems
+                    ActivateSkill(blob, index);
+                    //printf("index "+index);
+                    //printf("skill "+blob.get_string("skill"+index));
+                }
+            }
+        }
+        else 
+        {
+            controls.setCameraLock(false);
+        }
+    }
 
     if (blob.get_string("skill1") != "") 
         RenderSkills(this, 1, 0, 0);

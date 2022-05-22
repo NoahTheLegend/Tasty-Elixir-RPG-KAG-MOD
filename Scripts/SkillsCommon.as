@@ -19,7 +19,7 @@ namespace SkillsKnight
         PENETRATINGHIT,
         SWORDTHROW,
         SWORDSPIN,
-        FLUMINANTHITS,
+        FULMINANTHITS,
         MANAFLAME,
         PROCLAMATION,
         QUAKE,
@@ -53,6 +53,14 @@ namespace SkillsCommon
 
 void ActivateSkill(CBlob@ this, u8 idx)
 {
+    CPlayer@ player = this.getPlayer();
+    if (this.get_bool("animplaying") || this.get_u16("mana") < getSkillMana(this.get_string("skilltype"+idx), this.get_u16("skillidx"+idx))
+		|| this.get_string("skill"+idx) == ""
+		|| this.get_u16("skillcd"+idx) > 0) 
+        {
+            if (player !is null && player.isMyPlayer() && this.get_u16("skillcd"+idx) < getSkillCooldown(this.get_string("skilltype"+idx), idx-1)) this.getSprite().PlaySound("NoAmmo.ogg", 1.0f);
+            return;
+        }
 	CBitStream params;
 	params.write_string(this.get_string("skilltype"+idx));
 	params.write_u8(this.get_u8("skillpos"+idx)); // pos of skill in hotbar
@@ -61,7 +69,7 @@ void ActivateSkill(CBlob@ this, u8 idx)
 	//printf("sent");
 	this.set_u16("skillcd"+idx, getSkillCooldown(this.get_string("skilltype"+idx), this.get_u16("skillidx"+idx)));
 
-    if (hasAnimation(this.getName(), idx))
+    if (hasAnimation(this.get_string("skilltype"+idx), idx))
     {
 	    this.set_bool("animplaying", true);
 	    this.set_string("animname", this.get_string("skill"+idx));
@@ -71,6 +79,7 @@ void ActivateSkill(CBlob@ this, u8 idx)
 
 bool hasAnimation(string pclass, u16 ski)
 {
+    ski -= 1;
     if (pclass == "knight")
     {
         switch(ski)
@@ -91,7 +100,7 @@ bool hasAnimation(string pclass, u16 ski)
             case SkillsKnight::PENETRATINGHIT: return false; 
             case SkillsKnight::SWORDTHROW: return false;
             case SkillsKnight::SWORDSPIN: return false;
-            case SkillsKnight::FLUMINANTHITS: return false;
+            case SkillsKnight::FULMINANTHITS: return false;
             case SkillsKnight::MANAFLAME: return false;
             case SkillsKnight::PROCLAMATION: return true;
             case SkillsKnight::QUAKE: return true;
@@ -109,12 +118,13 @@ bool hasAnimation(string pclass, u16 ski)
     {
         switch(ski)
         {
-            case SkillsRogue::SILENCE: return false;
+            case SkillsRogue::SILENCE: return true;
         }
 
     }
-    else if (pclass == "common")
+    else
     {
+        ski -= 1;
         switch(ski)
         {
             case SkillsCommon::REASSURANCE: return true;
@@ -145,7 +155,7 @@ string getSkillIcon(string pclass, u16 ski)
             case SkillsKnight::PENETRATINGHIT: return "PenetratinghitIcon.png";
             case SkillsKnight::SWORDTHROW: return "SwordthrowIcon.png";
             case SkillsKnight::SWORDSPIN: return "SwordspinIcon.png";
-            case SkillsKnight::FLUMINANTHITS: return "FulminanthitsIcon.png";
+            case SkillsKnight::FULMINANTHITS: return "FulminanthitsIcon.png";
             case SkillsKnight::MANAFLAME: return "ManaflameIcon.png";
             case SkillsKnight::PROCLAMATION: return "ProclamationIcon.png";
             case SkillsKnight::QUAKE: return "QuakeIcon.png";
@@ -199,7 +209,7 @@ string getSkillName(string pclass, u16 ski)
             case SkillsKnight::PENETRATINGHIT: return "Penetrating hit";
             case SkillsKnight::SWORDTHROW: return "Sword throw";
             case SkillsKnight::SWORDSPIN: return "Sword spin";
-            case SkillsKnight::FLUMINANTHITS: return "Fluminant hits";
+            case SkillsKnight::FULMINANTHITS: return "Fulminant hits";
             case SkillsKnight::MANAFLAME: return "Mana flame";
             case SkillsKnight::PROCLAMATION: return "Proclamation";
             case SkillsKnight::QUAKE: return "Quake";
@@ -253,8 +263,8 @@ string getSkillDescription(string pclass, u16 ski)
             case SkillsKnight::PENETRATINGHIT: return "Active:\nYou attack in a large zone before you.";
             case SkillsKnight::SWORDTHROW: return "Active:\nYou throw a sword, that deals damage,\nequal to yours additional damage*2";
             case SkillsKnight::SWORDSPIN: return "Active:\nYou hit all enemies standing nearby";
-            case SkillsKnight::FLUMINANTHITS: return "Active\nYou stab several times in a short time";
-            case SkillsKnight::MANAFLAME: return "Active\nSummons a magic flame, that hits nearby\nenemies and restore you 5% of mana for each";
+            case SkillsKnight::FULMINANTHITS: return "Active:\nYou stab several times in a short time";
+            case SkillsKnight::MANAFLAME: return "Active:\nSummons a magic flame, that hits nearby\nenemies and restores you 5% of mana for each";
             case SkillsKnight::PROCLAMATION: return "Passive:\nYou summon several knights\nthat fight with you";
             case SkillsKnight::QUAKE: return "Active:\nYou hit ground and it pushes all nearby enemies to up.\nAlso stuns them for 5 seconds";
             case SkillsKnight::HYPERWAVES: return "Active:\nYou cast 2 sound waves, that move\nfrom you, damage and push all enemies\nin opposite way.";
@@ -307,7 +317,7 @@ u16 getSkillCooldown(string pclass, u16 ski)
             case SkillsKnight::PENETRATINGHIT: return 15*30;
             case SkillsKnight::SWORDTHROW: return 20*30;
             case SkillsKnight::SWORDSPIN: return 30*30;
-            case SkillsKnight::FLUMINANTHITS: return 45*30;
+            case SkillsKnight::FULMINANTHITS: return 45*30;
             case SkillsKnight::MANAFLAME: return 45*30;
             case SkillsKnight::PROCLAMATION: return 120*30;
             case SkillsKnight::QUAKE: return 30*30;
@@ -363,7 +373,7 @@ u16 getSkillTime(string pclass, u16 ski)
             case SkillsKnight::PENETRATINGHIT: return 0; // no time
             case SkillsKnight::SWORDTHROW: return 0; // no time
             case SkillsKnight::SWORDSPIN: return 0; // no time
-            case SkillsKnight::FLUMINANTHITS: return 0; // no time
+            case SkillsKnight::FULMINANTHITS: return 0; // no time
             case SkillsKnight::MANAFLAME: return 0; // no time
             case SkillsKnight::PROCLAMATION: return 45*30; // time of allies' life 
             case SkillsKnight::QUAKE: return 5*30; // bash time
@@ -417,7 +427,7 @@ u16 getSkillMana(string pclass, u16 ski)
             case SkillsKnight::PENETRATINGHIT: return 15;
             case SkillsKnight::SWORDTHROW: return 20;
             case SkillsKnight::SWORDSPIN: return 25;
-            case SkillsKnight::FLUMINANTHITS: return 40;
+            case SkillsKnight::FULMINANTHITS: return 40;
             case SkillsKnight::MANAFLAME: return 30;
             case SkillsKnight::PROCLAMATION: return 50;
             case SkillsKnight::QUAKE: return 20;
@@ -458,6 +468,21 @@ u8 getSkillPosition(CBlob@ this, string name) // move to skills.as later
         else if (this.get_string("skill3") == name) return 3;
         else if (this.get_string("skill4") == name) return 4;
         else if (this.get_string("skill5") == name) return 5;
+        else if (this.get_string("skill6") == name) return 6;
+		else if (this.get_string("skill7") == name) return 7;
+        else if (this.get_string("skill8") == name) return 8;
+        else if (this.get_string("skill9") == name) return 9;
+        else if (this.get_string("skill10") == name) return 10;
+        else if (this.get_string("skill11") == name) return 11;
+		else if (this.get_string("skill12") == name) return 12;
+        else if (this.get_string("skill13") == name) return 13;
+        else if (this.get_string("skill14") == name) return 14;
+        else if (this.get_string("skill15") == name) return 15;
+        else if (this.get_string("skill16") == name) return 16;
+		else if (this.get_string("skill17") == name) return 17;
+        else if (this.get_string("skill18") == name) return 18;
+        else if (this.get_string("skill19") == name) return 19;
+        else if (this.get_string("skill20") == name) return 20;
     }
 	return 255;
 }

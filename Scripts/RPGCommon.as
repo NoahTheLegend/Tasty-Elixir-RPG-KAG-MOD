@@ -195,15 +195,11 @@ void RPGUpdate(CBlob@ this)
 	}
 	if (controls !is null && this.getTickSinceCreated() >= 5)
 	{
-		if (controls.isKeyJustReleased(KEY_KEY_G)
-		&& this.get_u16("mana") >= getSkillMana(this.get_string("skilltype1"), this.get_u16("skillidx1"))
-		&& this.get_string("skill1") != ""
-		&& this.get_u16("skillcd1") == 0 && !this.get_bool("animplaying"))
+		if (controls.isKeyJustReleased(KEY_KEY_G))
 		{
 			ActivateSkill(this, 1);
 		}
-		else if (controls.isKeyJustReleased(KEY_KEY_H) && this.get_string("skill2") != ""
-		&& this.get_u16("skillcd2") == 0 && !this.get_bool("animplaying"))
+		else if (controls.isKeyJustReleased(KEY_KEY_H))
 		{
 			ActivateSkill(this, 2);
 		}

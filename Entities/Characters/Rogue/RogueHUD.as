@@ -2,6 +2,7 @@
 
 #include "ActorHUDStartPos.as";
 #include "CustomBlocks.as";
+#include "SkillsCommon.as";
 
 const string iconsFilename = "Entities/Characters/Rogue/RogueIcons.png";
 const int slotsSize = 6;
@@ -136,13 +137,12 @@ void DrawStats(CSprite@ this)
 			if (blob.hasTag("openWindow"))
 			{
 				GUI::DrawWindow(Vec2f(offsetx, offsety), Vec2f(width-offsetx, height-offsety));
-				player.set_u8("skillpoints", 15);
-				player.set_u8("lvlr1", 10);
-				player.set_u8("lvlr2", 10);
 				
 				Draw1RowSkills(blob);
 				Draw2RowSkills(blob);
 				Draw3RowSkills(blob);
+
+				GUI::DrawTextCentered("Skill points: "+player.get_u16("skillpoints"), Vec2f(scrwidth/2, scrheight/2-132.5), SColor(255,0,0,0));
 			}
 
 			GUI::DrawText("Skills", Vec2f(22, 143), SColor(255, 210, 225, 210));
@@ -174,7 +174,7 @@ bool canResearchSkill(CBlob@ this, u8 index, u8 row)
 	CPlayer@ player = this.getPlayer();
 	if (player !is null)
 	{
-		if (player.get_u8("skillpoints") == 0) return false;
+		if (player.get_u16("skillpoints") == 0) return false;
 		else if (index == 0) return true;
 		return hasSkill(player, index, row);
 	}
@@ -183,7 +183,7 @@ bool canResearchSkill(CBlob@ this, u8 index, u8 row)
 
 bool hasSkill(CPlayer@ player, u8 index, u8 row)
 {
-	if (player.get_u8("lvlr"+row) <= index) return false;
+	if (player.get_u16("lvlr"+row) <= index) return false;
 	return true;
 }
 
@@ -242,54 +242,61 @@ void onRender(CSprite@ this)
 
 void Draw1RowSkills(CBlob@ blob)
 {
-	DrawSkill(blob, "DodgeIcon.png", 0, 1, false, 0, 0);
-	DrawSkill(blob, "AmbushIcon.png", 1, 1, true, gap, 0);
-	DrawSkill(blob, "DoublestabIcon.png", 2, 1, true, gap*2, 0);
-	DrawSkill(blob, "ForesightIcon.png", 3, 1, true, gap*3, 0);
-	DrawSkill(blob, "RudeshockIcon.png", 4, 1, true, gap*4, 0);
-	DrawSkill(blob, "TendonundercutIcon.png", 5, 1, true, gap*5, 0);
-	DrawSkill(blob, "SpikeballsIcon.png", 6, 1, true, gap*6, 0);
-	DrawSkill(blob, "ThrowingknivesIcon.png", 7, 1, true, gap*7, 0);
-	DrawSkill(blob, "DeflectIcon.png", 8, 1, true, gap*8, 0);
-	DrawSkill(blob, "FlurryIcon.png", 9, 1, true, gap*9, 0);
+	DrawSkill(blob, 1, "DodgeIcon.png", 0, 1, false, 0, 0);
+	DrawSkill(blob, 2, "AmbushIcon.png", 1, 1, true, gap, 0);
+	DrawSkill(blob, 3, "DoublestabIcon.png", 2, 1, true, gap*2, 0);
+	DrawSkill(blob, 4, "ForesightIcon.png", 3, 1, true, gap*3, 0);
+	DrawSkill(blob, 5, "RudeshockIcon.png", 4, 1, true, gap*4, 0);
+	DrawSkill(blob, 6, "TendonundercutIcon.png", 5, 1, true, gap*5, 0);
+	DrawSkill(blob, 7, "SpikeballsIcon.png", 6, 1, true, gap*6, 0);
+	DrawSkill(blob, 8, "ThrowingknivesIcon.png", 7, 1, true, gap*7, 0);
+	DrawSkill(blob, 9, "DeflectIcon.png", 8, 1, true, gap*8, 0);
+	DrawSkill(blob, 10, "FlurryIcon.png", 9, 1, true, gap*9, 0);
 }
 
 void Draw2RowSkills(CBlob@ blob)
 {
 	const u8 gapy = 86;
-	DrawSkill(blob, "PrickinghitIcon.png", 0, 2, false, 0, gapy);
-	DrawSkill(blob, "PoisonedhitIcon.png", 1, 2, true, gap, gapy);
-	DrawSkill(blob, "BloodlustIcon.png", 2, 2, true, gap*2, gapy);
-	DrawSkill(blob, "ParalysisdartIcon.png", 3, 2, true, gap*3, gapy);
-	DrawSkill(blob, "PoisoncloudIcon.png", 4, 2, true, gap*4, gapy);
-	DrawSkill(blob, "IlluminationIcon.png", 5, 2, true, gap*5, gapy);
-	DrawSkill(blob, "InternalinstabilityIcon.png", 6, 2, true, gap*6, gapy);
-	DrawSkill(blob, "FlawIcon.png", 7, 2, true, gap*7, gapy);
-	DrawSkill(blob, "ShadowdaggersIcon.png", 8, 2, true, gap*8, gapy);
-	DrawSkill(blob, "ShadowessenceIcon.png", 9, 2, true, gap*9, gapy);
+	DrawSkill(blob, 11, "PrickinghitIcon.png", 0, 2, false, 0, gapy);
+	DrawSkill(blob, 12, "PoisonedhitIcon.png", 1, 2, true, gap, gapy);
+	DrawSkill(blob, 13, "BloodlustIcon.png", 2, 2, true, gap*2, gapy);
+	DrawSkill(blob, 14, "ParalysisdartIcon.png", 3, 2, true, gap*3, gapy);
+	DrawSkill(blob, 15, "PoisoncloudIcon.png", 4, 2, true, gap*4, gapy);
+	DrawSkill(blob, 16, "IlluminationIcon.png", 5, 2, true, gap*5, gapy);
+	DrawSkill(blob, 17, "InternalinstabilityIcon.png", 6, 2, true, gap*6, gapy);
+	DrawSkill(blob, 18, "FlawIcon.png", 7, 2, true, gap*7, gapy);
+	DrawSkill(blob, 19, "ShadowdaggersIcon.png", 8, 2, true, gap*8, gapy);
+	DrawSkill(blob, 20, "ShadowessenceIcon.png", 9, 2, true, gap*9, gapy);
 }
 
 void Draw3RowSkills(CBlob@ blob)
 {
 	const u8 gapy = 86*2;
-	DrawSkill(blob, "Indevelopment.png", 0, 3, false, 0, gapy);
-	DrawSkill(blob, "Indevelopment.png", 1, 3, true, gap, gapy);
-	DrawSkill(blob, "Indevelopment.png", 2, 3, true, gap*2, gapy);
-	DrawSkill(blob, "Indevelopment.png", 3, 3, true, gap*3, gapy);
-	DrawSkill(blob, "Indevelopment.png", 4, 3, true, gap*4, gapy);
-	DrawSkill(blob, "Indevelopment.png", 5, 3, true, gap*5, gapy);
-	DrawSkill(blob, "Indevelopment.png", 6, 3, true, gap*6, gapy);
-	DrawSkill(blob, "Indevelopment.png", 7, 3, true, gap*7, gapy);
-	DrawSkill(blob, "Indevelopment.png", 8, 3, true, gap*8, gapy);
-	DrawSkill(blob, "Indevelopment.png", 9, 3, true, gap*9, gapy);
+	DrawSkill(blob, 255, "Indevelopment.png", 0, 3, false, 0, gapy);
+	DrawSkill(blob, 255, "Indevelopment.png", 1, 3, true, gap, gapy);
+	DrawSkill(blob, 255, "Indevelopment.png", 2, 3, true, gap*2, gapy);
+	DrawSkill(blob, 255, "Indevelopment.png", 3, 3, true, gap*3, gapy);
+	DrawSkill(blob, 255, "Indevelopment.png", 4, 3, true, gap*4, gapy);
+	DrawSkill(blob, 255, "Indevelopment.png", 5, 3, true, gap*5, gapy);
+	DrawSkill(blob, 255, "Indevelopment.png", 6, 3, true, gap*6, gapy);
+	DrawSkill(blob, 255, "Indevelopment.png", 7, 3, true, gap*7, gapy);
+	DrawSkill(blob, 255, "Indevelopment.png", 8, 3, true, gap*8, gapy);
+	DrawSkill(blob, 255, "Indevelopment.png", 9, 3, true, gap*9, gapy);
 }
 
-void DrawSkill(CBlob@ blob, string filename, u8 lvl, u8 row, bool hasArrow, u16 gapx, u8 gapy)
+const u16 scrwidth = getDriver().getScreenWidth();
+const u16 scrheight = getDriver().getScreenHeight();
+
+void DrawSkill(CBlob@ blob, u8 idx, string filename, u8 lvl, u8 row, bool hasArrow, u16 gapx, u8 gapy)
 {
 	GUI::DrawIcon(filename, 0, dim, Vec2f(offsetx+32+gapx, offsety+32+gapy), scale);
 	if (hasArrow && canResearchSkill(blob, lvl, row)) GUI::DrawArrow2D(Vec2f(offsetx+32+50+gapx-gap, offsety+32+24+gapy), Vec2f(offsetx+32+gapx-2, offsety+32+24+gapy), SColor(255,0,0,0));
-	if (!canResearchSkill(blob, lvl, row))
-		GUI::DrawRectangle(Vec2f(offsetx+32+gapx, offsety+32+gapy), Vec2f(offsetx+32+48+gapx, offsety+32+48+gapy), SColor(150, 0, 0, 0));
-	else if (mouseOverIcon(blob, Vec2f(offsetx+32+gapx, offsety+32+gapy), scale))
+	if (mouseOverIcon(blob, Vec2f(offsetx+32+gapx, offsety+32+gapy), scale))
+	{
 		GUI::DrawRectangle(Vec2f(offsetx+32+gapx, offsety+32+gapy), Vec2f(offsetx+32+48+gapx, offsety+32+48+gapy), SColor(100, 255, 255, 255));
+				GUI::DrawTextCentered(""+getSkillName(blob.getName(), idx), Vec2f(scrwidth/2, scrheight/2+170), SColor(255,135,255,135));
+		GUI::DrawTextCentered(""+getSkillDescription(blob.getName(), idx), Vec2f(scrwidth/2, scrheight/2+220), SColor(255,255,255,255));
+	}
+	else if (!canResearchSkill(blob, lvl, row))
+		GUI::DrawRectangle(Vec2f(offsetx+32+gapx, offsety+32+gapy), Vec2f(offsetx+32+48+gapx, offsety+32+48+gapy), SColor(150, 0, 0, 0));
 }

@@ -253,7 +253,7 @@ string getSkillDescription(string pclass, u16 ski)
             case SkillsKnight::ENDURANCE: return "Passive:\nIf your health is lower,\nthan 3 HP, you gain +0.5 of\nhealth regen";
             case SkillsKnight::INNERRAGE: return "Passive:\nIf your health is lower,\nthan 3 HP, you gain +15% of crit\n+0.5 of attack speed,\nand you burst an explosion";
             case SkillsKnight::POWERCORE: return "Active:\nYou become immune to damage for\n10 seconds and gain -1.0 of agility.\nAfter that time lasts,\nyou gain +1.0 agility for 10 seconds";
-            case SkillsKnight::FIERYBREATH: return "Active:\nYou set on fire all enemies in\n8 block radius";
+            case SkillsKnight::FIERYBREATH: return "Active:\nYou set on fire all enemies in\n8 blocks radius";
             case SkillsKnight::FIRERING: return "Active:\nSummons a magic ring, that hits\nand sets on fire nearby enemies";
             case SkillsKnight::MASSSTRENGTH: return "Active:\nPlayers except you in 10 blocks\nradius gain +1.5 of additional\ndamage. You heal 3 HP yourself";
             case SkillsKnight::METEORSUMMON: return "Active:\nSummons a magic meteor on a\nchosen enemy. It bashes enemy for\n5 seconds and deals damage, equal\nto yours additional damage*4";
@@ -265,7 +265,7 @@ string getSkillDescription(string pclass, u16 ski)
             case SkillsKnight::SWORDSPIN: return "Active:\nYou hit all enemies standing nearby";
             case SkillsKnight::FULMINANTHITS: return "Active:\nYou stab several times in a short time";
             case SkillsKnight::MANAFLAME: return "Active:\nSummons a magic flame, that hits nearby\nenemies and restores you 5% of mana for each";
-            case SkillsKnight::PROCLAMATION: return "Passive:\nYou summon several knights\nthat fight with you";
+            case SkillsKnight::PROCLAMATION: return "Passive:\nYou summon several knights\nthat will fight for you";
             case SkillsKnight::QUAKE: return "Active:\nYou hit ground and it pushes all nearby enemies to up.\nAlso stuns them for 5 seconds";
             case SkillsKnight::HYPERWAVES: return "Active:\nYou cast 2 sound waves, that move\nfrom you, damage and push all enemies\nin opposite way.";
         }

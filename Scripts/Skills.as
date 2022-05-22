@@ -10,7 +10,7 @@ void onInit(CBlob@ this)
     this.addCommandID("activate_skill");
     this.addCommandID("check");
 
-    for (u8 i = 0; i <= 20; ++i)
+    for (u8 i = 0; i <= 21; ++i)
     {
         this.set_string("skill"+i, "");
         this.set_string("skilltype"+i, "");
@@ -20,6 +20,10 @@ void onInit(CBlob@ this)
         this.set_u16("skillmaxcd"+i, 0);
     }
 }
+
+u16[] pskills = {
+
+};
 
 void DoInitGiveAway(CBlob@ this)
 {
@@ -47,6 +51,23 @@ void DoInitGiveAway(CBlob@ this)
             params.write_u16(0);
             this.SendCommand(this.getCommandID("receive_skill"), params);
         }
+        	if (player !is null)
+
+		//set skills
+		for (u8 i = 0; i < 20; i++)
+		{
+            u16 ski = player.get_u16("hasskill"+i);
+			if (ski > 0 && ski < 255)
+			{
+                bool skip;
+				for (u8 i = 0; i < pskills.length; i++)
+                {
+                    if (ski == pskills[i]) skip = true;
+                }
+                if (skip) continue;
+                pskills.push_back(ski);
+            }
+		}
     }
 }
 
@@ -54,17 +75,24 @@ void onTick(CBlob@ this)
 {
     CPlayer@ player = this.getPlayer();
 
-    if (this.getTickSinceCreated() == 29 && player !is null && player.isMyPlayer())
+    if (this.getTickSinceCreated() == 30 && player !is null && player.isMyPlayer())
 	{
         //give skills. Causes *some command not found*. Probably because writing string in params?
 	    DoInitGiveAway(this);
-	}
-    else if (this.getTickSinceCreated() == 30 && player !is null && player.isMyPlayer())
-    {
+
         CBitStream params;
         params.write_string("common");
         params.write_u16(0);
         this.SendCommand(this.getCommandID("receive_skill"), params);
+	}
+
+    if (pskills.length > 0)
+    {
+        CBitStream params;
+        params.write_string(this.getName());
+        params.write_u16(pskills[0]);
+        this.SendCommand(this.getCommandID("receive_skill"), params);    
+        pskills.erase(0);
     }
     
     //if (getGameTime()%90==0)printf("skilltimer: "+getSkillTime(this.getName(), this.get_u16("skillidx1")));
@@ -208,6 +236,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
         {
             if (this.get_string("skill"+i) == "")
             {
+                //printf("skill "+skill);
                 SetToFreeSkillSlot(this, i, skill);
                 return;
             }

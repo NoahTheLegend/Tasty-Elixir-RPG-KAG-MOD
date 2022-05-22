@@ -53,6 +53,7 @@ void LevelUpdate(CBlob@ this, CPlayer@ player)
     {
         player.set_u32("exp", player.get_u32("exp")-progression[player.get_u16("level")]);
         player.set_u16("level", player.get_u16("level")+1);
+        player.set_u16("skillpoints", player.get_u16("skillpoints") + 1);
         player.set_u32("progressionstep", progression[player.get_u16("level")]);
         //printf(""+progression[player.get_u16("level")]);
         if (player.get_u32("exp") > 15000) player.set_u32("exp", 0);

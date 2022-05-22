@@ -1,4 +1,5 @@
 #include "Level.as";
+#include "SkillsCommon.as";
 
 shared class InitKnightStats
 {
@@ -205,6 +206,15 @@ void RPGUpdate(CBlob@ this)
 		}
 	}
 	CPlayer@ player = this.getPlayer();
+	if (player.hasTag("resetTags"))
+	{
+		player.Untag("resetTags");
+		for (u8 i = 1; i < 20; i++)
+		{
+			string name = getSkillName(this.getName(), i);
+			player.Untag(name);
+		}
+	}
 	//soundtracks
 	if (getGameTime() % 150 == 0 && this.getName() != "archer"
     && player !is null && !player.hasTag("disablesoundtracks")) // every 5 seconds check
@@ -858,7 +868,19 @@ void onDie(CBlob@ this)
 		{
 			rules.set_u32(name+"exp", player.get_u32("exp"));
 		}
+		//save skills
+		for (u8 i = 0; i <= 20; i++)
+		{
+			u16 index = this.get_u16("skillidx"+(i+1));
+			//printf("index: "+index);
+			if (index == 255 || index == 0) continue;
+
+			player.set_u16("hasskill"+i, index);
+		}
+		printf(" ");
 	}
+
+	
 
 	CBlob@ spawn = getBlobByName("tdm_spawn"); // does not work for legendary armor
 	if (spawn is null) return;

@@ -74,18 +74,18 @@ void onTick(CRules@ this)
 
 void onPlayerLeave(CRules@ this, CPlayer@ player)
 {
-	if (player !is null)
-	{
-		string name = player.getUsername();
-		if (player.get_u16("level") != 0)
-		{
-			this.set_u16(name+"level", player.get_u16("level"));
-		}
-		if (player.get_u32("exp") != 0)
-		{
-			this.set_u32(name+"exp", player.get_u32("exp"));
-		}
-	}
+	//if (player !is null)
+	//{
+	//	string name = player.getUsername();
+	//	if (player.get_u16("level") != 0)
+	//	{
+	//		this.set_u16(name+"level", player.get_u16("level"));
+	//	}
+	//	if (player.get_u32("exp") != 0)
+	//	{
+	//		this.set_u32(name+"exp", player.get_u32("exp"));
+	//	}
+	//}
 }
 
 

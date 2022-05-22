@@ -166,22 +166,22 @@ void onSetPlayer(CBlob@ this, CPlayer@ player)
 	{
 		string name = player.getUsername();
 		player.SetScoreboardVars("ScoreboardIcons.png", 3, Vec2f(16, 16));
-		//set level
-		if (rules.get_u16(name+"level") != 0)
-        {
-            player.set_u16("level", rules.get_u16(name+"level"));
-           // printf("blevel="+player.get_u16("level"));
-            if (rules.get_u32(name+"exp") != 0)
-            {
-                player.set_u32("exp", rules.get_u32(name+"exp"));
-                //printf("bexp="+player.get_u32("exp"));
-            }
-            player.set_u32("progressionstep", progression[player.get_u16("level")]);
-        }
-        else
-        {
-            ResetLevel(this, player);
-        }
+		////set level
+		//if (rules.get_u16(name+"level") != 0)
+        //{
+        //    player.set_u16("level", rules.get_u16(name+"level"));
+        //   // printf("blevel="+player.get_u16("level"));
+        //    if (rules.get_u32(name+"exp") != 0)
+        //    {
+        //        player.set_u32("exp", rules.get_u32(name+"exp"));
+        //        //printf("bexp="+player.get_u32("exp"));
+        //    }
+        //    player.set_u32("progressionstep", progression[player.get_u16("level")]);
+        //}
+        //else
+        //{
+        //    ResetLevel(this, player);
+        //}
 	}
 }
 
@@ -281,6 +281,8 @@ void onTick(CBlob@ this)
 	{
 		LevelUpdate(this, player);
 	}
+
+	//if (getGameTime()%30==0)printf(""+this.get_u16("skillidx3"));
 
 	CControls@ controls = this.getControls();
 	this.Sync("damagebuff", true);

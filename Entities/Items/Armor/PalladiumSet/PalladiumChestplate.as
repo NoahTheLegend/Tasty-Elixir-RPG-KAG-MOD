@@ -6,9 +6,8 @@ void onInit(CBlob@ this)
     this.Tag("armor");
 
     this.set_f32("velocity", 0.4);
-    this.set_f32("critchance", 10.0);
     this.set_f32("blockchance", 17.5);
-    this.set_f32("damagereduction", 1.0);
+    this.set_f32("damagereduction", 1.5);
     this.set_f32("hpregtime", 3*30);
     this.set_f32("bashchance", 5.0);
 }
@@ -55,9 +54,8 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 	        caller.set_string("armorname", "palladium_chestplate");
 
 	        caller.set_f32("velocity", caller.get_f32("velocity") - 0.4);
-            caller.set_f32("critchance", caller.get_f32("critchance") - 10.0);
             caller.set_f32("blockchance", caller.get_f32("blockchance") + 17.5);
-            caller.set_f32("damagereduction", caller.get_f32("damagereduction") + 1.0);
+            caller.set_f32("damagereduction", caller.get_f32("damagereduction") + 1.5);
             if (player !is null && player.isMyPlayer()) caller.set_f32("hpregtime", caller.get_f32("hpregtime") - 3*30);
             caller.set_f32("bashchance", caller.get_f32("bashchance") + 5.0);
         }

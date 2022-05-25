@@ -448,7 +448,7 @@ void ManageBow(CBlob@ this, ArcherInfo@ archer, RunnerMoveVars@ moveVars)
 							{
 								this.server_Hit(stabTarget, stabTarget.getPosition(), Vec2f_zero, (2*this.get_f32("stabdmg")),  Hitters::stab);
 								Sound::Play("AnimeSword.ogg", this.getPosition(), 1.3f);
-								this.set_f32("dealtdamage", (2*this.get_f32("stabdmg")) - stabTarget.get_f32("damagereduction"));
+								this.set_f32("dealtdamage", (2*this.get_f32("stabdmg")) - ((2*this.get_f32("stabdmg")) * (stabTarget.get_f32("damagereduction")/10)));
 								if(isServer())
 								{
 									this.server_Heal((this.get_f32("stabdmg")*2)*this.get_f32("vampirism")*2);
@@ -458,7 +458,7 @@ void ManageBow(CBlob@ this, ArcherInfo@ archer, RunnerMoveVars@ moveVars)
 							{
 								this.server_Hit(stabTarget, stabTarget.getPosition(), Vec2f_zero, this.get_f32("stabdmg"),  Hitters::stab);
 								Sound::Play("SwordSheath.ogg", this.getPosition(), 1.3f);
-								this.set_f32("dealtdamage", this.get_f32("stabdmg") - stabTarget.get_f32("damagereduction"));
+								this.set_f32("dealtdamage", this.get_f32("stabdmg") - (this.get_f32("stabdmg") * (stabTarget.get_f32("damagereduction")/10)));
 								if(isServer())
 								{
 									this.server_Heal(this.get_f32("stabdmg")*this.get_f32("vampirism"));
@@ -590,6 +590,12 @@ void ManageBow(CBlob@ this, ArcherInfo@ archer, RunnerMoveVars@ moveVars)
 void onTick(CBlob@ this)
 {
 	RPGUpdate(this); // do update all things
+	CPlayer@ player = this.getPlayer();
+	if (player !is null)
+	{
+		LevelUpdate(this, player);
+		//printf(""+player.get_u16("hasskill2"));
+	}
 
 	CControls@ controls = this.getControls();
 	this.Sync("damagebuff", true);

@@ -5,7 +5,7 @@ void onInit(CBlob@ this)
     
     this.Tag("armor");
 
-    this.set_f32("damagereduction", 0.35);
+    this.set_f32("damagereduction", 0.85);
     this.set_f32("critchance", 15.0);
     this.set_f32("damagebuff", 1.5);
     this.set_f32("bashchance", 5.0);
@@ -51,7 +51,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
             caller.set_bool("hasgloves", true);
 	        caller.set_string("glovesname", "palladium_gloves");
 
-            caller.set_f32("damagereduction", caller.get_f32("damagereduction") + 0.35);
+            caller.set_f32("damagereduction", caller.get_f32("damagereduction") + 0.85);
             caller.set_f32("critchance", caller.get_f32("critchance") + 15.0);
             if (player !is null && player.isMyPlayer()) caller.set_f32("damagebuff", caller.get_f32("damagebuff") + 1.5);
             caller.set_f32("bashchance", caller.get_f32("bashchance") + 5.0);

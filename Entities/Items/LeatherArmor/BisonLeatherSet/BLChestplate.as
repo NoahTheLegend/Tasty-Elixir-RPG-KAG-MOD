@@ -26,12 +26,12 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
     {
         CBitStream params;
 	    params.write_u16(caller.getNetworkID());
-	    caller.CreateGenericButton("$rl_chestplate$", Vec2f(0, 0), this, this.getCommandID("equip"), getTranslatedString("Equip"), params);
+	    caller.CreateGenericButton("$bl_chestplate$", Vec2f(0, 0), this, this.getCommandID("equip"), getTranslatedString("Equip"), params);
     }
     else
     {
         CBitStream params;
-	    caller.CreateGenericButton("$rl_chestplate$", Vec2f(0, 0), this, this.getCommandID("unequip"), getTranslatedString("Unequip chestplate first!"), params);
+	    caller.CreateGenericButton("$bl_chestplate$", Vec2f(0, 0), this, this.getCommandID("unequip"), getTranslatedString("Unequip chestplate first!"), params);
     }
 }
 
@@ -49,7 +49,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
             if (caller.getCarriedBlob() !is null) caller.getCarriedBlob().server_Die();
 
             caller.set_bool("hasarmor", true);
-	        caller.set_string("armorname", "rl_chestplate");
+	        caller.set_string("armorname", "bl_chestplate");
 
 	        caller.set_f32("velocity", caller.get_f32("velocity") - 0.1);
             caller.set_f32("dodgechance", caller.get_f32("dodgechance") + 7.0);

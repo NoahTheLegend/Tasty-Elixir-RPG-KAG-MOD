@@ -33,13 +33,13 @@ string getEffectIcon(u16 eff)
         case Effects::CONCENTRATION: return "ConcentrationEffectIcon.png";
         case Effects::SILENCE: return "SilenceEffectIcon.png";
         case Effects::REASSURANCE: return "ReassuranceEffectIcon.png";
-		case Effects::FURY: return "FuryIcon.png";
-		case Effects::ENDURANCE: return "EnduranceIcon.png";
-		case Effects::INNERRAGE: return "InnerrageIcon.png";
-		case Effects::POWERCORE: return "PowercoreIcon.png";
-		case Effects::FIRERING: return "FireringIcon.png";
-		case Effects::MASSSTRENGTH: return "MassstrengthIcon.png";
-		case Effects::SWORDSMASTERY: return "SwordsmasteryIcon.png";
+		case Effects::FURY: return "FuryEffectIcon.png";
+		case Effects::ENDURANCE: return "EnduranceEffectIcon.png";
+		case Effects::INNERRAGE: return "InnerrageEffectIcon.png";
+		case Effects::POWERCORE: return "PowercoreEffectIcon.png";
+		case Effects::FIRERING: return "FireringEffectIcon.png";
+		case Effects::MASSSTRENGTH: return "MassstrengtEffecthIcon.png";
+		case Effects::SWORDSMASTERY: return "SwordsmasteryEffectIcon.png";
     }
     return "No Icon";
 }

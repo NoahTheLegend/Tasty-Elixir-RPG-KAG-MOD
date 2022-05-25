@@ -5,9 +5,9 @@ void onInit(CBlob@ this)
 
     this.Tag("armor");
     //move these vars to code bodies. My bad.
-    this.set_f32("velocity", -0.25);
+    this.set_f32("velocity", -0.15);
     this.set_f32("dodgechance", 10.0);
-    this.set_f32("damagereduction", 1.25);
+    this.set_f32("damagereduction", 1.0);
     this.set_f32("hpregtime", 5*30);
 }
 void onInit(CSprite@ this)
@@ -50,9 +50,9 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
             caller.set_bool("hasarmor", true);
 	        caller.set_string("armorname", "demon_chestplate");
 
-	        caller.set_f32("velocity", caller.get_f32("velocity") + 0.25);
+	        caller.set_f32("velocity", caller.get_f32("velocity") + 0.15);
             caller.set_f32("dodgechance", caller.get_f32("dodgechance") + 10.0);
-            caller.set_f32("damagereduction", caller.get_f32("damagereduction") + 1.25);
+            caller.set_f32("damagereduction", caller.get_f32("damagereduction") + 1.0);
             if (player !is null && player.isMyPlayer()) caller.set_f32("hpregtime", caller.get_f32("hpregtime") - 5*30);
         }
     }

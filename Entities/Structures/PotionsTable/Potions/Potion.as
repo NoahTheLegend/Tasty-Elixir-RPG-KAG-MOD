@@ -85,7 +85,7 @@ void setEffect(CBlob@ this)
     // buffs that are fit in their main category get x3 multiplier
     if (a1 == k1) // defining main buff type
     { // Strength
-        if (a2 == k2) this.set_string("buff1", "damagebuff`f32`2.25"); //str
+        if (a2 == k2) this.set_string("buff1", "damagebuff`f32`1.25"); //str
         else if (a2 == k3) this.set_string("buff1", "damagereduction`f32`0.50"); //def
         else if (a2 == k4) this.set_string("buff1", "velocity`f32`0.30"); //agi
         else if (a2 == k5) this.set_string("buff1", "glowness`bool`true"); //oth
@@ -119,7 +119,7 @@ void setEffect(CBlob@ this)
         }
         if (a4 == k2) this.set_string("buff3", "attackspeed`f32`1.2"); //str
         else if (a4 == k3) this.set_string("buff3", "hpregtime`f32`-60"); //def
-        else if (a4 == k4) this.set_string("buff3", "gravity`f32`-?"); //agi
+        else if (a4 == k4) this.set_string("buff3", "gravity`f32`-6"); //agi
         else if (a4 == k5) this.set_string("buff3", "vampirism-`f32`0.03"); //oth
         else if (a4 == k6) this.set_string("buff3", "attackspeed`f32`-0.50"); //deb
         else
@@ -137,7 +137,7 @@ void setEffect(CBlob@ this)
     else if (a1 == k2)
     { // Defence
 
-        if (a2 == k1) this.set_string("buff1", "damagebuff`f32`0.75"); //str
+        if (a2 == k1) this.set_string("buff1", "damagebuff`f32`0.5"); //str
         else if (a2 == k3) this.set_string("buff1", "damagereduction`f32`1.50"); //def
         else if (a2 == k4) this.set_string("buff1", "velocity`f32`0.30"); //agi
         else if (a2 == k5) this.set_string("buff1", "glowness`bool`true"); //oth
@@ -171,7 +171,7 @@ void setEffect(CBlob@ this)
         }
         if (a4 == k2) this.set_string("buff3", "attackspeed`f32`0.40"); //str
         else if (a4 == k3) this.set_string("buff3", "hpregtime`f32`-180"); //def
-        else if (a4 == k4) this.set_string("buff3", "gravity`f32`-?"); //agi
+        else if (a4 == k4) this.set_string("buff3", "gravity`f32`-6"); //agi
         else if (a4 == k5) this.set_string("buff3", "vampirism`f32`0.03"); //oth
         else if (a4 == k6) this.set_string("buff3", "hpregtime`f32`120"); //deb
         else
@@ -188,7 +188,7 @@ void setEffect(CBlob@ this)
     }
     else if (a1 == k3)
     { // Agility
-        if (a2 == k2) this.set_string("buff1", "damagebuff`f32`0.75"); //str
+        if (a2 == k2) this.set_string("buff1", "damagebuff`f32`0.5"); //str
         else if (a2 == k1) this.set_string("buff1", "damagereduction`f32`0.50"); //def
         else if (a2 == k4) this.set_string("buff1", "velocity`f32`0.90"); //agi
         else if (a2 == k5) this.set_string("buff1", "glowness`bool`true"); //oth
@@ -239,7 +239,7 @@ void setEffect(CBlob@ this)
     }
     else if (a1 == k4)
     { // Other
-        if (a2 == k2) this.set_string("buff1", "damagebuff`f32`0.75"); //str
+        if (a2 == k2) this.set_string("buff1", "damagebuff`f32`0.5"); //str
         else if (a2 == k3) this.set_string("buff1", "damagereduction`f32`0.50"); //def
         else if (a2 == k1) this.set_string("buff1", "velocity`f32`0.30"); //agi
         else if (a2 == k5) this.set_string("buff1", "glowness2`bool`true"); //oth

@@ -431,15 +431,19 @@ void onRestart(CRules@ this)
 			string name = player.getUsername();
 			player.set_u16("level", 0);
 			player.set_u32("exp", 0);
-			player.set_u16("lvlr1", 1);
-			player.set_u16("lvlr2", 1);
+			player.set_u16("knightlvlr1", 1);
+			player.set_u16("knightlvlr2", 1);
+			player.set_u16("archerlvlr1", 1);
+			player.set_u16("archerlvlr2", 1);
+			player.set_u16("roguelvlr1", 1);
+			player.set_u16("roguelvlr2", 1);
 			player.set_u16("skillpoints", 1);
 			
 			for (u8 i = 1; i <= 20; i++)
 			{
 				player.set_u16("hasskill"+i, 255);
-				player.Tag("resetTags");
 			}
+			player.Tag("resetTags");
 		}
 	}
 	Reset(this);

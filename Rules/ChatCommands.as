@@ -91,6 +91,7 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 
 	if (isMod)
 	{
+		string[] args = text_in.split(" ");
 		if (text_in == "!givespice")
 		{
 			CBlob@ blob1 = server_CreateBlob("burdockspice", 0, blob.getPosition());
@@ -101,6 +102,23 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 			CBlob@ blob6 = server_CreateBlob("thymespice", 0, blob.getPosition());
 
 			return true;
+		}
+		else if (args.length >= 2 && args[0] == "!set")
+		{
+			string alloy = args[1];
+
+			CBlob@ blob1 = server_CreateBlob(alloy+"_boots", 0, blob.getPosition());
+			CBlob@ blob2 = server_CreateBlob(alloy+"_gloves", 0, blob.getPosition());
+			CBlob@ blob3 = server_CreateBlob(alloy+"_chestplate", 0, blob.getPosition());
+			CBlob@ blob4 = server_CreateBlob(alloy+"_helmet", 0, blob.getPosition());
+
+			if (args.length == 3 && args[2] == "wep")
+			{
+				CBlob@ blob5 = server_CreateBlob(alloy+"_sword", 0, blob.getPosition());
+				CBlob@ blob6 = server_CreateBlob(alloy+"_shield", 0, blob.getPosition());
+				CBlob@ blob7 = server_CreateBlob(alloy+"_dagger", 0, blob.getPosition());
+				CBlob@ blob8 = server_CreateBlob(alloy+"_bow", 0, blob.getPosition());
+			}
 		}
 		else if (text_in == "!poisonme")
 		{
@@ -411,7 +429,7 @@ bool onClientProcessChat(CRules@ this, const string& in text_in, string& out tex
 		if (isClient() && player.isMyPlayer()) client_AddToChat("!showhelp to disable and enable the help sheet", SColor(255, 50, 50, 50));
 		if (isClient() && player.isMyPlayer()) client_AddToChat("!showall to disable and enable HUD", SColor(255, 50, 50, 50));
 	}
-	else if (text_in == "!addxp" || (args.length == 2 && args[0] == "!addxp"))
+	else if (player.isMod() && (text_in == "!addxp" || (args.length == 2 && args[0] == "!addxp")))
 	{
 		if (args.length > 1)
 		{
@@ -419,7 +437,7 @@ bool onClientProcessChat(CRules@ this, const string& in text_in, string& out tex
 		}
 		else player.set_u32("exp", player.get_u32("exp") + 100);
 	}
-	else if (args.length == 3 && args[0] == "!addskill")
+	else if (player.isMod() && args.length == 3 && args[0] == "!addskill")
 	{
 		u16 index = parseFloat(args[2]);
 		string type = args[1];
@@ -429,6 +447,36 @@ bool onClientProcessChat(CRules@ this, const string& in text_in, string& out tex
 			giveSkill(blob, type, index);
 		}
 	}
+	else if (text_in == "!resetskills")
+	{
+		CBlob@ blob = player.getBlob();
+		if (player is null) return false;
+		string name = blob.getName();
+		player.set_u32("exp", 0);
+
+		u16 klr1 = player.get_u16("knightlvlr1")-1;
+		u16 klr2 = player.get_u16("knightlvlr2")-1;
+		u16 alr1 = player.get_u16("archerlvlr1")-1;
+		u16 alr2 = player.get_u16("archerlvlr2")-1;
+		u16 rlr1 = player.get_u16("roguelvlr1")-1;
+		u16 rlr2 = player.get_u16("roguelvlr2")-1;
+
+		player.set_u16("skillpoints", klr1+klr2+alr1+alr2+rlr1+rlr2);
+		if (player.get_u16("skillpoints") == 0) player.set_u16("skillpoints", 1);
+
+		player.set_u16("knightlvlr1", 1);
+		player.set_u16("knightlvlr2", 1);
+		player.set_u16("archerlvlr1", 1);
+		player.set_u16("archerlvlr2", 1);
+		player.set_u16("roguelvlr1", 1);
+		player.set_u16("roguelvlr2", 1);
+		player.set_u16("level", 0);
+		for (u8 i = 1; i <= 20; i++)
+		{
+			player.set_u16("hasskill"+i, 255);
+		}
+		player.Tag("resetTags");
+	}
 	else if (args.length == 2 && args[0] == "!takeskill")
 	{
 		u8 pos = parseFloat(args[1]);
@@ -436,6 +484,8 @@ bool onClientProcessChat(CRules@ this, const string& in text_in, string& out tex
 		if (blob !is null)
 		{
 			takeSkill(blob, pos);
+			CPlayer@ player = blob.getPlayer();
+			if (player !is null) player.set_u16("skillpoints", player.get_u16("skillpoints") + 1);
 		}
 	}
 	else if (text_in == "!showstats")

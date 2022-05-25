@@ -7,7 +7,7 @@ void onInit(CBlob@ this)
 
 	this.set_f32("velocity", 0.25);
     this.set_f32("blockchance", 10.0);
-    this.set_f32("damagereduction", 0.35);
+    this.set_f32("damagereduction", 0.85);
 }
 
 void onInit(CSprite@ this)
@@ -50,7 +50,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 
 	        caller.set_f32("velocity", caller.get_f32("velocity") - 0.25);
             caller.set_f32("blockchance", caller.get_f32("blockchance") + 10.0);
-            caller.set_f32("damagereduction", caller.get_f32("damagereduction") + 0.35);
+            caller.set_f32("damagereduction", caller.get_f32("damagereduction") + 0.85);
         }
     }
     else if (cmd==this.getCommandID("unequip")) {}

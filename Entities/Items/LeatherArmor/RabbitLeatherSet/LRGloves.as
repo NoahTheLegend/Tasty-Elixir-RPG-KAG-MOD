@@ -6,7 +6,7 @@ void onInit(CBlob@ this)
     this.Tag("armor");
     //move these vars to code bodies. My bad.
     this.set_f32("damagereduction", 0.05);
-    this.set_f32("damagebuff", 0.1);
+    this.set_f32("damagebuff", 0.25);
     this.set_f32("critchance", 7.5);
 }
 
@@ -51,7 +51,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 	        caller.set_string("glovesname", "rl_gloves");
 
             caller.set_f32("damagereduction", caller.get_f32("damagereduction") + 0.05);
-            if (player !is null && player.isMyPlayer()) caller.set_f32("damagebuff", caller.get_f32("damagebuff") + 0.1);
+            if (player !is null && player.isMyPlayer()) caller.set_f32("damagebuff", caller.get_f32("damagebuff") + 0.25);
             caller.set_f32("critchance", caller.get_f32("critchance") + 7.5);
         }
     }

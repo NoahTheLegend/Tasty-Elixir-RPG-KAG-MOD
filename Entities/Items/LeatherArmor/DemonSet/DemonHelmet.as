@@ -9,7 +9,6 @@ void onInit(CBlob@ this)
     this.set_f32("manaregtime", 5*30);
     this.set_u16("maxmana", 50);
     this.set_u16("manareg", 25);
-    this.set_f32("vampirism", 0.05); // 10%
 }
 
 void onInit(CSprite@ this)
@@ -56,7 +55,6 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
             if (player !is null && player.isMyPlayer()) caller.set_f32("manaregtime", caller.get_f32("manaregtime") - 5*30);
             caller.set_u16("maxmana", caller.get_u16("maxmana") + 50);
             caller.set_u16("manareg", caller.get_u16("manareg") + 25);
-            caller.set_f32("vampirism", caller.get_f32("vampirism") + 0.05);
         }
     }
     else if (cmd==this.getCommandID("unequip")) {}

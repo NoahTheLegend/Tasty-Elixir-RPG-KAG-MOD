@@ -289,7 +289,7 @@ string getSkillDescription(string pclass, u16 ski)
     {
         switch(ski)
         {
-            case SkillsCommon::REASSURANCE: return "\nWhat a wonderful day!\nYour damage reduction will\nbe increased by 0.5 hearts\nfor 60 seconds.";
+            case SkillsCommon::REASSURANCE: return "\nWhat a wonderful day!\nYour damage reduction will\nbe increased by 5%\nfor 60 seconds.";
         }
     }
     return "No Description";

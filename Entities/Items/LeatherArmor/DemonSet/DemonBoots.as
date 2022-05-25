@@ -5,9 +5,9 @@ void onInit(CBlob@ this)
 
     this.Tag("armor");
     //move these vars to code bodies. My bad.
-    this.set_f32("velocity", -0.25);
+    this.set_f32("velocity", -0.15);
     this.set_f32("dodgechance", 12.5);
-    this.set_f32("damagereduction", 0.75);
+    this.set_f32("damagereduction", 0.25);
     this.set_f32("attackspeed", 0.3);
 }
 
@@ -49,9 +49,9 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
             caller.set_bool("hasboots", true);
 	        caller.set_string("bootsname", "demon_boots");
 
-	        caller.set_f32("velocity", caller.get_f32("velocity") + 0.25);
+	        caller.set_f32("velocity", caller.get_f32("velocity") + 0.15);
             caller.set_f32("dodgechance", caller.get_f32("dodgechance") + 12.5);
-            caller.set_f32("damagereduction", caller.get_f32("damagereduction") + 0.75);
+            caller.set_f32("damagereduction", caller.get_f32("damagereduction") + 0.25);
             caller.set_f32("attackspeed", caller.get_f32("attackspeed") + 0.3);
 
             CBitStream params;

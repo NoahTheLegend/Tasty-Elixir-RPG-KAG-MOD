@@ -161,6 +161,12 @@ void onSetPlayer(CBlob@ this, CPlayer@ player)
 void onTick(CBlob@ this)
 {
 	RPGUpdate(this); // do update all things
+	CPlayer@ player = this.getPlayer();
+	if (player !is null)
+	{
+		LevelUpdate(this, player);
+		//printf(""+player.get_u16("hasskill2"));
+	}
 
 	//if(getGameTime()%15==0) printf("dred = "+this.get_u16("attackdelayreduce"));
 	//if(getGameTime()%15==0) printf("time = "+this.get_u16("attackdelay"));
@@ -260,73 +266,6 @@ void onTick(CBlob@ this)
 			this.set_u16("attackdelay", 0);
 		else
  			this.set_u16("attackdelay", this.get_u16("attackdelay") - 10);
-	}
-
-	if (getGameTime() % 30 == 0)
-	{
-		if (this.get_u16("hpregtimer") > 0) this.set_u16("hpregtimer", this.get_u16("hpregtimer") - 30);
-		if (this.get_u16("manaregtimer") > 0) this.set_u16("manaregtimer", this.get_u16("manaregtimer") - 30);
-		if (this.get_u16("hpregtimer") < 0 || this.get_u16("hpregtimer") > 30000) this.set_u16("hpregtimer", 0);
-		if (this.get_u16("manaregtimer") < 0 || this.get_u16("manaregtimer") > 30000) this.set_u16("manaregtimer", 0);
-		
-		//CPlayer@ player = this.getPlayer();
-		//if (player is null || player.isMyPlayer()) return;
-		
-		//stat timers
-		if (this.get_u16("timer1") > 0)
-		{
-			TimerCheck(this, 1);
-		}
-		if (this.get_u16("timer2") > 0)
-		{
-			TimerCheck(this, 2);
-		}
-		if (this.get_u16("timer3") > 0)
-		{
-			TimerCheck(this, 3);
-		}
-		if (this.get_u16("timer4") > 0)
-		{
-			TimerCheck(this, 4);
-		}
-		if (this.get_u16("timer5") > 0)
-		{
-			TimerCheck(this, 5);
-		}
-		if (this.get_u16("timer6") > 0)
-		{
-			TimerCheck(this, 6);
-		}
-		if (this.get_u16("timer7") > 0)
-		{
-			TimerCheck(this, 7);
-		}
-		if (this.get_u16("timer8") > 0)
-		{
-			TimerCheck(this, 8);
-		}
-		if (this.get_u16("timer9") > 0)
-		{
-			TimerCheck(this, 9);
-		}
-		if (this.get_u16("timer10") > 0)
-		{
-			TimerCheck(this, 10);
-		}
-	}
-	//hunger & thirst
-	if (getGameTime() % 750 == 0 && this.getTickSinceCreated() >= 750) // 25 sec
-	{
-		if (XORRandom(11) <= 5 && this.getVelocity().x == 0) return; // if player is not moving, with some chance (5 to 10)
-
-		if (this.get_u8("thirst") < 100) this.set_u8("thirst", this.get_u8("thirst") + 1);
-		else if (isServer()) this.server_Hit(this, this.getPosition(), Vec2f(0,0), 1.5f,  Hitters::stab);
-		
-		if (this.get_u8("hunger") < 100) this.set_u8("hunger", this.get_u8("hunger") + 1);
-		else if (isServer()) this.server_Hit(this, this.getPosition(), Vec2f(0,0), 1.5f,  Hitters::stab);
-
-		this.Sync("hunger", true);
-		this.Sync("thirst", true);
 	}
 	
 	if (this.get_f32("velocity") > 0 && this.get_u8("thirst") < 50 && this.get_u8("hunger") < 50)
@@ -1203,14 +1142,16 @@ void DoAttack(CBlob@ this, f32 damage, f32 aimangle, f32 arcdegrees, u8 type, in
 
 					if (XORRandom(100) < this.get_f32("critchance"))
 					{
-						this.server_Hit(b, hi.hitpos, velocity, (damage + this.get_f32("damagebuff"))*2, type, true);
+						f32 dmg = (damage + this.get_f32("damagebuff"))*2;
+						this.server_Hit(b, hi.hitpos, velocity, dmg - (dmg * (b.get_f32("damageredudction")/10)) , type, true);
 						Sound::Play("AnimeSword.ogg", this.getPosition(), 1.3f);
-						this.set_f32("dealtdamage", (damage + this.get_f32("damagebuff"))*2 - b.get_f32("damagereduction"));
+						this.set_f32("dealtdamage", dmg - (dmg * (b.get_f32("damagereduction")/10)));
 					}
 					else
 					{
-						this.server_Hit(b, hi.hitpos, velocity, damage + this.get_f32("damagebuff"), type, true);  // server_Hit() is server-side only
-						this.set_f32("dealtdamage", damage + this.get_f32("damagebuff") - b.get_f32("damagereduction"));
+						f32 dmg = damage + this.get_f32("damagebuff");
+						this.server_Hit(b, hi.hitpos, velocity, dmg - (dmg * (b.get_f32("damagereduction")/10)), type, true);  // server_Hit() is server-side only
+						this.set_f32("dealtdamage", dmg - (dmg * (b.get_f32("damagereduction")/10)));
 					}
 
 					// end hitting if we hit something solid, don't if its flesh
@@ -1385,7 +1326,7 @@ void onHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@
 		return;
 	}
 
-	damage -= hitBlob.get_f32("damagereduction");
+	damage -= (damage * (hitBlob.get_f32("damagereduction")/10));
 	if (damage <= 0 || damage > 500) damage = 0.05;
 
 	if (XORRandom(100) < this.get_f32("bashchance"))

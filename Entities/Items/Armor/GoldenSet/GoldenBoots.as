@@ -5,10 +5,10 @@ void onInit(CBlob@ this)
 
     this.Tag("armor");
 
-	this.set_f32("velocity", -0.3);
+	this.set_f32("velocity", 0.3);
     this.set_f32("damagereduction", 0.2);
     this.set_f32("manaregtime", 3*30);
-    this.set_u16("maxmana", 30);
+    this.set_u16("maxmana", 10);
     this.set_u16("manareg", 10);
 }
 
@@ -50,10 +50,10 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
             caller.set_bool("hasboots", true);
 	        caller.set_string("bootsname", "golden_boots");
 
-	        caller.set_f32("velocity", caller.get_f32("velocity") + 0.3);
+	        caller.set_f32("velocity", caller.get_f32("velocity") - 0.3);
             caller.set_f32("damagereduction", caller.get_f32("damagereduction") + 0.2);
             caller.set_f32("manaregtime", caller.get_f32("manaregtime") - 3*30);
-            caller.set_u16("maxmana", caller.get_u16("maxmana") + 30);
+            caller.set_u16("maxmana", caller.get_u16("maxmana") + 10);
             caller.set_u16("manareg", caller.get_u16("manareg") + 10);
         }
     }

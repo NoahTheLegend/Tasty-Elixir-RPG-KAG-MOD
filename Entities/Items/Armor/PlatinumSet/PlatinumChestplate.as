@@ -9,7 +9,7 @@ void onInit(CBlob@ this)
     this.set_f32("blockchance", 15.0);
     this.set_f32("damagereduction", 1.0);
     this.set_f32("hpregtime", 3*30);
-    this.set_f32("gravityresist", 1.5);
+    this.set_f32("gravityresist", 3.5);
 }
 
 void onInit(CSprite@ this)

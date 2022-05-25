@@ -259,7 +259,7 @@ void onTick(CBlob@ this)
 											this.set_u16("lastbite",0);
 											return;
 										}
-										else if (other.get_f32("damagereduction") >= 0) power = this.get_f32("bite damage") - other.get_f32("damagereduction");
+										else if (other.get_f32("damagereduction") >= 0) power = this.get_f32("bite damage") - (this.get_f32("bite damage") * (other.get_f32("damagereduction")/10));
 										else power = this.get_f32("bite damage");
 										/*if (chance > 0 && XORRandom(100) < chance) //sounds are not working in mp
 										{
@@ -275,10 +275,10 @@ void onTick(CBlob@ this)
 										}*/
 										//power = this.get_f32("bite damage") - other.get_f32("damagereduction");
 									}
-									else if (other.get_f32("damagereduction") >= 0) power = this.get_f32("bite damage") - other.get_f32("damagereduction");
+									else if (other.get_f32("damagereduction") >= 0) power = this.get_f32("bite damage") - (this.get_f32("bite damage") * (other.get_f32("damagereduction")/10));
 									else power = this.get_f32("bite damage");
 
-									//printf(""+power);
+									//printf("pw: "+power);
 									if (power < 0.05) power = 0.05;
 
 									this.server_Hit(other,other.getPosition(),vel,power,Hitters::bite, true);

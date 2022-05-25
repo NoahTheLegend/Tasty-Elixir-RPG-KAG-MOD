@@ -51,8 +51,6 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 
             caller.set_f32("critchance", caller.get_f32("critchance") + 15);
             if (player !is null && player.isMyPlayer()) caller.set_f32("damagebuff", caller.get_f32("damagebuff") + 0.5);
-            caller.set_f32("manaregtime", caller.get_f32("manaregtime") - 1*30);
-            caller.set_u16("maxmana", caller.get_u16("maxmana") + 5);    
         }
     }
     else if (cmd==this.getCommandID("unequip")) {}

@@ -72,7 +72,7 @@ void DrawStats(CSprite@ this)
 				GUI::DrawText("Agility: " + 2.5, Vec2f(20, height + -75), SColor(255, 50, 225, 100));
 						GUI::DrawText("Lightness: " + blob.get_f32("gravityresist"), Vec2f(20, height + -90), SColor(255, 50, 225, 100));
 			GUI::DrawText("Dodge chance: " + blob.get_f32("dodgechance") + "%", Vec2f(20, height + -105), SColor(255, 50, 225, 100));
-			GUI::DrawText("Dmg. reduction: " + blob.get_f32("damagereduction") + " HP", Vec2f(20, height + -120), SColor(255, 50, 225, 100));
+			GUI::DrawText("Dmg. reduction: " + (blob.get_f32("damagereduction")*10) + "%", Vec2f(20, height + -120), SColor(255, 50, 225, 100));
 			GUI::DrawText("Attack speed: " + blob.get_f32("attackspeed"), Vec2f(20, height + -145), SColor(255,  255, 195, 0));
 			GUI::DrawText("Additional damage: " + blob.get_f32("damagebuff"), Vec2f(20, height + -160), SColor(255, 255, 195, 0));
 			GUI::DrawText("Crit chance: " + blob.get_f32("critchance") + "%", Vec2f(20, height + -175), SColor(255, 255, 195, 0));
@@ -183,7 +183,7 @@ bool canResearchSkill(CBlob@ this, u8 index, u8 row)
 
 bool hasSkill(CPlayer@ player, u8 index, u8 row)
 {
-	if (player.get_u16("lvlr"+row) <= index) return false;
+	if (player.get_u16("roguelvlr"+row) <= index) return false;
 	return true;
 }
 
@@ -284,18 +284,37 @@ void Draw3RowSkills(CBlob@ blob)
 	DrawSkill(blob, 255, "Indevelopment.png", 9, 3, true, gap*9, gapy);
 }
 
+
 const u16 scrwidth = getDriver().getScreenWidth();
 const u16 scrheight = getDriver().getScreenHeight();
 
 void DrawSkill(CBlob@ blob, u8 idx, string filename, u8 lvl, u8 row, bool hasArrow, u16 gapx, u8 gapy)
 {
+	CPlayer@ player = blob.getPlayer();
 	GUI::DrawIcon(filename, 0, dim, Vec2f(offsetx+32+gapx, offsety+32+gapy), scale);
 	if (hasArrow && canResearchSkill(blob, lvl, row)) GUI::DrawArrow2D(Vec2f(offsetx+32+50+gapx-gap, offsety+32+24+gapy), Vec2f(offsetx+32+gapx-2, offsety+32+24+gapy), SColor(255,0,0,0));
 	if (mouseOverIcon(blob, Vec2f(offsetx+32+gapx, offsety+32+gapy), scale))
 	{
 		GUI::DrawRectangle(Vec2f(offsetx+32+gapx, offsety+32+gapy), Vec2f(offsetx+32+48+gapx, offsety+32+48+gapy), SColor(100, 255, 255, 255));
-				GUI::DrawTextCentered(""+getSkillName(blob.getName(), idx), Vec2f(scrwidth/2, scrheight/2+170), SColor(255,135,255,135));
+		GUI::DrawTextCentered(""+getSkillName(blob.getName(), idx), Vec2f(scrwidth/2, scrheight/2+170), SColor(255,135,255,135));
 		GUI::DrawTextCentered(""+getSkillDescription(blob.getName(), idx), Vec2f(scrwidth/2, scrheight/2+220), SColor(255,255,255,255));
+	
+		if (blob.isKeyJustReleased(key_action1))
+		{
+			u8 ridx = idx;
+			if (ridx > 10) ridx -= 10;
+			string name = getSkillName(blob.getName(), idx);
+			if (player !is null && player.isMyPlayer() && !player.hasTag(name)
+			&& canResearchSkill(blob, lvl, row))
+			{
+				player.Tag(name);
+				player.set_u16("skillpoints", player.get_u16("skillpoints") - 1);
+				if (player.get_u16("skillpoints") > 500) player.set_u16("skillpoints", 0);
+
+				player.set_u16("roguelvlr"+row, player.get_u16("roguelvlr"+row)+1);
+				giveSkill(blob, blob.getName(), idx);
+			}
+		}
 	}
 	else if (!canResearchSkill(blob, lvl, row))
 		GUI::DrawRectangle(Vec2f(offsetx+32+gapx, offsety+32+gapy), Vec2f(offsetx+32+48+gapx, offsety+32+48+gapy), SColor(150, 0, 0, 0));

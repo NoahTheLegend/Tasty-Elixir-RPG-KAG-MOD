@@ -26,12 +26,12 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
     {
         CBitStream params;
 	    params.write_u16(caller.getNetworkID());
-	    caller.CreateGenericButton("$rl_boots$", Vec2f(0, 0), this, this.getCommandID("equip"), getTranslatedString("Equip"), params);
+	    caller.CreateGenericButton("$bl_boots$", Vec2f(0, 0), this, this.getCommandID("equip"), getTranslatedString("Equip"), params);
     }
     else
     {
         CBitStream params;
-	    caller.CreateGenericButton("$rl_boots$", Vec2f(0, 0), this, this.getCommandID("unequip"), getTranslatedString("Unequip boots first!"), params);
+	    caller.CreateGenericButton("$bl_boots$", Vec2f(0, 0), this, this.getCommandID("unequip"), getTranslatedString("Unequip boots first!"), params);
     }
 }
 
@@ -47,11 +47,11 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
             if (caller.getCarriedBlob() !is null) caller.getCarriedBlob().server_Die();
 
             caller.set_bool("hasboots", true);
-	        caller.set_string("bootsname", "rl_boots");
+	        caller.set_string("bootsname", "bl_boots");
 
-	        caller.set_f32("velocity", caller.get_f32("velocity") + 0.1);
+	        caller.set_f32("velocity", caller.get_f32("velocity") - 0.1);
             caller.set_f32("dodgechance", caller.get_f32("dodgechance") + 5.0);
-            caller.set_f32("damagereduction", caller.get_f32("damagereduction") + 0.05);
+            caller.set_f32("damagereduction", caller.get_f32("damagereduction") + 0.5);
             caller.set_f32("bashchance", caller.get_f32("bashchance") + 5.0);
         }
     }

@@ -107,6 +107,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			}
 
 			server_CreateLoot(this, this.getPosition(), caller.getTeamNum());
+			this.server_SetTimeToDie(10);
 		}
 
 		this.Tag("_chest_open");

@@ -206,13 +206,20 @@ void RPGUpdate(CBlob@ this)
 		}
 	}
 	CPlayer@ player = this.getPlayer();
-	if (player.hasTag("resetTags"))
+	if (player !is null && player.hasTag("resetTags"))
 	{
 		player.Untag("resetTags");
 		for (u8 i = 1; i < 20; i++)
 		{
 			string name = getSkillName(this.getName(), i);
 			player.Untag(name);
+
+			this.set_string("skill"+i, "");
+        	this.set_string("skilltype"+i, "");
+        	this.set_u8("skillpos"+i, i);
+        	this.set_u16("skillidx"+i, 255);
+        	this.set_u16("skillcd"+i, 0);
+        	this.set_u16("skillmaxcd"+i, 0);
 		}
 	}
 	//soundtracks
@@ -495,183 +502,122 @@ void RPGUpdate(CBlob@ this)
 
 void RPGUpdateKnightSets(CBlob@ this)
 {
-    //set buffs
-	if (this.get_string("armorname") == "iron_chestplate"
-	&& this.get_string("helmetname") == "iron_helmet"
-	&& this.get_string("glovesname") == "iron_gloves"
-	&& this.get_string("bootsname") == "iron_boots")
-	{
-		this.Tag("ironset");
-	}
-	else this.Untag("ironset");
-
-	if (this.hasTag("ironset") && !this.get_bool("hasironset"))
-	{
-		this.set_f32("damagereduction", this.get_f32("damagereduction") + 0.2);
-		this.set_bool("hasironset", true);
-	}
-	else if (!this.hasTag("ironset") && this.get_bool("hasironset"))
-	{
-		this.set_f32("damagereduction", this.get_f32("damagereduction") - 0.2);
-		this.set_bool("hasironset", false);
-	}
-
-	if (this.get_string("armorname") == "steel_chestplate"
-	&& this.get_string("helmetname") == "steel_helmet"
-	&& this.get_string("glovesname") == "steel_gloves"
-	&& this.get_string("bootsname") == "steel_boots")
-	{
-		this.Tag("steelset");
-	}
-	else this.Untag("steelset");
-
-	if (this.hasTag("steelset") && !this.get_bool("hassteelset"))
-	{
-		this.set_f32("damagereduction", this.get_f32("damagereduction") + 0.35);
-		this.set_f32("damagebuff", this.get_f32("damagebuff") + 0.25);
-		this.set_bool("hassteelset", true);
-	}
-	else if (!this.hasTag("steelset") && this.get_bool("hassteelset"))
-	{
-		this.set_f32("damagereduction", this.get_f32("damagereduction") - 0.35);
-		this.set_f32("damagebuff", this.get_f32("damagebuff") - 0.25);
-		this.set_bool("hassteelset", false);
-	}
-	
-	if (this.get_string("armorname") == "golden_chestplate"
-	&& this.get_string("helmetname") == "golden_helmet"
-	&& this.get_string("glovesname") == "golden_gloves"
-	&& this.get_string("bootsname") == "golden_boots")
-	{
-		this.Tag("goldenset");
-	}
-	else this.Untag("goldenset");
-
-	if (this.hasTag("goldenset") && !this.get_bool("hasgoldenset"))
-	{
-		this.set_f32("damagereduction", this.get_f32("damagereduction") + 0.35);
-		this.set_f32("damagebuff", this.get_f32("damagebuff") + 0.25);
-		this.set_bool("hasgoldenset", true);
-	}
-	else if (!this.hasTag("goldenset") && this.get_bool("hasgoldenset"))
-	{
-		this.set_f32("damagereduction", this.get_f32("damagereduction") - 0.35);
-		this.set_f32("damagebuff", this.get_f32("damagebuff") - 0.25);
-		this.set_bool("hasgoldenset", false);
-	}
-
-	if (this.get_string("armorname") == "chromium_chestplate"
-	&& this.get_string("helmetname") == "chromium_helmet"
-	&& this.get_string("glovesname") == "chromium_gloves"
-	&& this.get_string("bootsname") == "chromium_boots")
-	{
-		this.Tag("chromiumset");
-	}
-	else this.Untag("chromiumset");
-
-	if (this.hasTag("chromiumset") && !this.get_bool("haschromiumset"))
-	{
-		this.set_f32("damagereduction", this.get_f32("damagereduction") + 0.35);
-		this.set_f32("damagebuff", this.get_f32("damagebuff") + 0.25);
-		this.set_bool("haschromiumset", true);
-	}
-	else if (!this.hasTag("chromiumset") && this.get_bool("haschromiumset"))
-	{
-		this.set_f32("damagereduction", this.get_f32("damagereduction") - 0.35);
-		this.set_f32("damagebuff", this.get_f32("damagebuff") - 0.25);
-		this.set_bool("haschromiumset", false);
-	}
-
-	if (this.get_string("armorname") == "palladium_chestplate"
-	&& this.get_string("helmetname") == "palladium_helmet"
-	&& this.get_string("glovesname") == "palladium_gloves"
-	&& this.get_string("bootsname") == "palladium_boots")
-	{
-		this.Tag("palladiumset");
-	}
-	else this.Untag("palladiumset");
-
-	if (this.hasTag("palladiumset") && !this.get_bool("haspalladiumset"))
-	{
-		this.set_f32("damagereduction", this.get_f32("damagereduction") + 0.35);
-		this.set_f32("damagebuff", this.get_f32("damagebuff") + 0.25);
-		this.set_bool("haspalladiumset", true);
-	}
-	else if (!this.hasTag("palladiumset") && this.get_bool("haspalladiumset"))
-	{
-		this.set_f32("damagereduction", this.get_f32("damagereduction") - 0.35);
-		this.set_f32("damagebuff", this.get_f32("damagebuff") - 0.25);
-		this.set_bool("haspalladiumset", false);
-	}
-
-	if (this.get_string("armorname") == "platinum_chestplate"
-	&& this.get_string("helmetname") == "platinum_helmet"
-	&& this.get_string("glovesname") == "platinum_gloves"
-	&& this.get_string("bootsname") == "platinum_boots")
-	{
-		this.Tag("platinumset");
-	}
-	else this.Untag("platinumset");
-
-	if (this.hasTag("platinumset") && !this.get_bool("hasplatinumset"))
-	{
-		this.set_f32("damagereduction", this.get_f32("damagereduction") + 0.35);
-		this.set_f32("damagebuff", this.get_f32("damagebuff") + 0.25);
-		this.set_bool("hasplatinumset", true);
-	}
-	else if (!this.hasTag("platinumset") && this.get_bool("hasplatinumset"))
-	{
-		this.set_f32("damagereduction", this.get_f32("damagereduction") - 0.35);
-		this.set_f32("damagebuff", this.get_f32("damagebuff") - 0.25);
-		this.set_bool("hasplatinumset", false);
-	}
-
-	if (this.get_string("armorname") == "titanium_chestplate"
-	&& this.get_string("helmetname") == "titanium_helmet"
-	&& this.get_string("glovesname") == "titanium_gloves"
-	&& this.get_string("bootsname") == "titanium_boots")
-	{
-		this.Tag("titaniumset");
-	}
-	else this.Untag("titaniumset");
-
-	if (this.hasTag("titaniumset") && !this.get_bool("hastitaniumset"))
-	{
-		this.set_f32("damagereduction", this.get_f32("damagereduction") + 0.35);
-		this.set_f32("damagebuff", this.get_f32("damagebuff") + 0.25);
-		this.set_bool("hastitaniumset", true);
-	}
-	else if (!this.hasTag("titaniumset") && this.get_bool("hastitaniumset"))
-	{
-		this.set_f32("damagereduction", this.get_f32("damagereduction") - 0.35);
-		this.set_f32("damagebuff", this.get_f32("damagebuff") - 0.25);
-		this.set_bool("hastitaniumset", false);
-	}
+	//set buffs
+	SetArmorSet(this, "iron", "f32`damagereduction`0.35_f32`damagebuff`0.25_f32`velocity`0.3");
+	SetArmorSet(this, "steel", "f32`blockchance`5_f32`damagereduction`0.5_f32`damagebuff`0.3_f32`hpregtime`-90_f32`critchance`5");
+	SetArmorSet(this, "golden", "f32`blockchance`3_f32`damagebuff`0.5_f32`manaregtime`-90_u16`manareg`20_f32`velocity`0.25_bool`glowness`true");
+	SetArmorSet(this, "chromium", "f32`damagebuff`0.75_f32`attackspeed`0.5_f32`hpregtime`-60_f32`velocity`0.75_f32`critchance`7.5");
+	SetArmorSet(this, "palladium", "f32`blockchance`15_f32`damagereduction`0.25_f32`damagebuff`1.0_f32`hpregtime`-150_f32`bashchance`15_f32`critchance`10");
+	SetArmorSet(this, "platinum", "f32`blockchance`7_f32`damagebuff`1.25_f32`manaregtime`-150_u16`manareg`35_f32`critchance`15_f32`vampirism`1.25");
+	SetArmorSet(this, "titanium", "f32`blockchance`10_f32`damagebuff`1.5_f32`hpregtime`-150_f32`bashchance`10_f32`critchance`5_f32`velocity`0.35");
+	SetArmorSet(this, "mythicalalloy", "f32`blockchance`10_f32`damagereduction`1.0_f32`damagebuff`2.0_f32`hpregtime`1-80_f32`bashchance`15_f32`critchance`5_f32`velocity`0.35");
 }
+
 
 void RPGUpdateArcherRogueSets(CBlob@ this)
 {
-    //set buffs
-	if (this.get_string("armorname") == "rl_chestplate"
-	&& this.get_string("helmetname") == "rl_helmet"
-	&& this.get_string("glovesname") == "rl_gloves"
-	&& this.get_string("bootsname") == "rl_boots")
-	{
-		this.Tag("rlset");
-	}
-	else this.Untag("rlset");
+	//set buffs
+	SetArmorSet(this, "rl", "f32`dodgechance`5_f32`damagereduction`0.35_f32`damagebuff`0.5_f32`velocity`0.2");
+	SetArmorSet(this, "dl", "f32`dodgechance`7.5_f32`damagereduction`0.5_f32`damagebuff`0.75_f32`hpregtime`-90_f32`critchance`10");
+	SetArmorSet(this, "bl", "f32`dodgechance`7.5_f32`damagereduction`1.0_f32`damagebuff`1.0_f32`hpregtime`-90_f32`manaregtime`-90_u16`manareg`20");
+	SetArmorSet(this, "demon", "f32`dodgechance`12.5_f32`damagereduction`0.25_f32`damagebuff`1.5_f32`attackspeed`0.5_f32`hpregtime`-150_f32`velocity`0.35_f32`critchance`7.5_f32`vampirism`1");
+	SetArmorSet(this, "shadow", "f32`dodgechance`15_f32`damagereduction`1.0_f32`damagebuff`1.0_f32`attackspeed`0.75_f32`hpregtime`-90_f32`manaregtime`-90_f32`bashchance`15_f32`critchance`15");
+	SetArmorSet(this, "dragon", "f32`dodgechance`10_f32`damagebuff`2.5_f32`manaregtime`-150_u16`manareg`50_f32`critchance`25_f32`vampirism`2_f32`velocity`0.3");
+}
 
-	if (this.hasTag("rlset") && !this.get_bool("hasrlset"))
+void SetArmorSet(CBlob@ this, string mat, string params)
+{
+	if (this.get_string("armorname") == mat+"_chestplate"
+	&& this.get_string("helmetname") == mat+"_helmet"
+	&& this.get_string("glovesname") == mat+"_gloves"
+	&& this.get_string("bootsname") == mat+"_boots") this.Tag(mat+"set");
+	else this.Untag(mat+"set");
+
+	string[] splpar = params.split("_");
+
+	if (this.hasTag(mat+"set") && !this.get_bool("has"+mat+"set"))
 	{
-		this.set_f32("damagereduction", this.get_f32("damagereduction") + 0.1);
-		this.set_f32("velocity", this.get_f32("velocity") + 0.2);
-		this.set_bool("hasrlset", true);
+		//printf("set");
+		for (u8 i = 0; i < splpar.length; i++)
+		{
+			string[] buffs = splpar[i].split("`");
+			if (buffs.length == 3)
+			{
+				string type = buffs[0];
+				string name = buffs[1];
+				string value = buffs[2];
+
+				if (type == "u16")
+				{
+					this.set_u16(name, this.get_u16(name) + parseInt(value));
+				}
+				else if (type == "f32")
+				{
+					if (name == "vampirism") // returns weird numbers
+					{
+						f32 vval = parseFloat(value);
+						vval *= 0.1;
+						this.set_f32(name, this.get_f32(name) + vval);
+					}
+					else this.set_f32(name, this.get_f32(name) + parseFloat(value));
+					if (name == "attackspeed") 
+					{
+						CBitStream params;
+						params.write_f32(parseFloat(value));
+						params.write_bool(true);
+						this.SendCommand(this.getCommandID("doattackspeedchange"), params);
+					}
+				}
+				else if (type == "bool")
+				{
+					this.set_bool(name, true);
+				}
+
+			}
+		}
+		this.set_bool("has"+mat+"set", true);
 	}
-	else if (!this.hasTag("rlset") && this.get_bool("hasrlset"))
+	else if (!this.hasTag(mat+"set") && this.get_bool("has"+mat+"set"))
 	{
-		this.set_f32("damagereduction", this.get_f32("damagereduction") - 0.1);
-		this.set_f32("velocity", this.get_f32("velocity") - 0.2);
-		this.set_bool("hasrlset", false);
+		//printf("reset");
+		for (u8 i = 0; i < splpar.length; i++)
+		{
+			string[] buffs = splpar[i].split("`");
+			if (buffs.length == 3)
+			{
+				string type = buffs[0];
+				string name = buffs[1];
+				string value = buffs[2];
+
+				if (type == "u16")
+				{
+					this.set_u16(name, this.get_u16(name) - parseInt(value));
+				}
+				else if (type == "f32")
+				{
+					if (name == "vampirism") // returns weird numbers
+					{
+						f32 vval = parseFloat(value);
+						vval *= 0.1;
+						this.set_f32(name, this.get_f32(name) - vval);
+					}
+					else this.set_f32(name, this.get_f32(name) - parseFloat(value));
+
+					if (name == "attackspeed") 
+					{
+						CBitStream params;
+						params.write_f32(parseFloat(value));
+						params.write_bool(false);
+						this.SendCommand(this.getCommandID("doattackspeedchange"), params);
+					}
+				}
+				else if (type == "bool")
+				{
+					this.set_bool(name, false);
+				}
+			}
+		}
+		this.set_bool("has"+mat+"set", false);
 	}
 }
 
@@ -877,7 +823,6 @@ void onDie(CBlob@ this)
 
 			player.set_u16("hasskill"+i, index);
 		}
-		printf(" ");
 	}
 
 	

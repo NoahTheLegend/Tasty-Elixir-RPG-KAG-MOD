@@ -2,6 +2,7 @@
 #include "SkillsCommon.as";
 #include "StatEffectsCommon.as";
 #include "KnockedCommon.as";
+#include "SkillsActive.as";
 
 void onInit(CBlob@ this)
 {
@@ -156,15 +157,77 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
         {
             switch(skill)
             {
-                case 0:
+                case 0: // shield block
                 {
                     SetToFreeSlot(this, skillpos, "shieldblock`bool`true_blockchance`f32`25");
                     break;
                 }
-                case 1: break;
-                case 2: break;
-                case 3: break;
-                case 4: break;
+                case 2: // mass bash
+                {
+                    break;
+                }
+                case 5: // power core
+                {
+                    break;
+                }
+                case 6: // fiery breath
+                {
+                    break;
+                }
+                case 7: // fire ring
+                {
+                    break;
+                }
+                case 8: // mass strength
+                {
+
+                    break;
+                }
+                case 9: // meteor summon 
+                {
+
+                    break;
+                }
+                case 13: // penetrating hit
+                {
+
+                    break;
+                }
+                case 14: // sword throw
+                {
+
+                    break;
+                }
+                case 15: // sword spin
+                {
+
+                    break;
+                }
+                case 16: // fulminant hits
+                {
+
+                    break;
+                }
+                case 17: // mana flame
+                {
+
+                    break;
+                }
+                case 18: // proclamation
+                {
+
+                    break;
+                }
+                case 19: // quake
+                {
+
+                    break;
+                }
+                case 20: // hyper waves
+                {
+
+                    break;
+                }
             }
         }
         else if (this.get_string("skilltype") == "archer")
@@ -443,7 +506,7 @@ void DrawSkillWheel(CBlob@ this, Vec2f mousePos, f32 scale)
         wskills.push_back(this.get_string("skill"+i));
     }
 
-    SetScreenFlash(125, 0,0,0 , 0.1f);
+    SetScreenFlash(125, 0,0,0 , 0.25f);
     
     for (u8 i = 0; i < wskills.length; i++)
     {

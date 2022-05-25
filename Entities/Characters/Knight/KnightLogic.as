@@ -280,6 +280,7 @@ void onTick(CBlob@ this)
 	if (player !is null)
 	{
 		LevelUpdate(this, player);
+		//printf(""+player.get_u16("hasskill2"));
 	}
 
 	//if (getGameTime()%30==0)printf(""+this.get_u16("skillidx3"));
@@ -288,7 +289,7 @@ void onTick(CBlob@ this)
 	this.Sync("damagebuff", true);
 	this.Sync("dealtdamage", true);
 
-	RPGUpdateKnightSets(this);
+	if (getGameTime()%5==0) RPGUpdateKnightSets(this);
 
 	RunnerMoveVars@ moveVars;
 	if (!this.get("moveVars", @moveVars))
@@ -1781,14 +1782,17 @@ void DoAttack(CBlob@ this, f32 damage, f32 aimangle, f32 arcdegrees, u8 type, in
 
 					if (XORRandom(100) < this.get_f32("critchance"))
 					{
-						this.server_Hit(b, hi.hitpos, velocity, (temp_damage + this.get_f32("damagebuff"))*2, type, true);
+						f32 dmg = (temp_damage + this.get_f32("damagebuff"))*2;
+						//printf("dmg "+dmg);
+						this.server_Hit(b, hi.hitpos, velocity, dmg - (dmg * (b.get_f32("damagereduction")/10)), type, true);
 						Sound::Play("AnimeSword.ogg", this.getPosition(), 1.3f);
-						this.set_f32("dealtdamage", (temp_damage + this.get_f32("damagebuff"))*2 - b.get_f32("damagereduction"));
+						this.set_f32("dealtdamage", dmg - (dmg * (b.get_f32("damagereduction")/10)));
 					}
 					else
 					{
-						this.server_Hit(b, hi.hitpos, velocity, temp_damage + this.get_f32("damagebuff"), type, true);  // server_Hit() is server-side only
-						this.set_f32("dealtdamage", temp_damage + this.get_f32("damagebuff") - b.get_f32("damagereduction"));
+						f32 dmg = temp_damage + this.get_f32("damagebuff");
+						this.server_Hit(b, hi.hitpos, velocity, dmg, type, true);  // server_Hit() is server-side only
+						this.set_f32("dealtdamage", dmg - (dmg * (b.get_f32("damagereduction")/10)));
 					}
 					// end hitting if we hit something solid, don't if its flesh
 					if (large)
@@ -1981,7 +1985,7 @@ void onHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@
 		return;
 	}
 
-	damage -= hitBlob.get_f32("damagereduction");
+	damage -= (damage * (hitBlob.get_f32("damagereduction")/10));
 	if (damage <= 0 || damage > 500) damage = 0.05;
 
 	if (XORRandom(100) < this.get_f32("bashchance"))

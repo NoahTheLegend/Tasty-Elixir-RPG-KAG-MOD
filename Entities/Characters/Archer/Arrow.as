@@ -255,7 +255,10 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 			CBlob@ shooter = getBlobByNetworkID(this.get_u16("shooternetid"));
 			if (shooter !is null) 
 			{
-				shooter.set_f32("dealtdamage", dmg - (dmg * (blob.get_f32("damagereduction")/10)));
+				f32 damage = dmg - (dmg * (blob.get_f32("damagereduction")/10));
+				damage = Maths::Round(damage*1000);
+				damage /= 1000;
+				shooter.set_f32("dealtdamage", damage);
 			}
 			/*CBitStream@ params;
 			if (params is null) return;

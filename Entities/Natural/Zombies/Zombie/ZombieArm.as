@@ -278,17 +278,16 @@ void onTick(CBlob@ this)
 
 	if (this.isOnGround() && (this.isKeyPressed(key_left) || this.isKeyPressed(key_right)) )
 	{
-	
-		if (XORRandom(break_chance)==0)
-		{
-			Vec2f dir = Vec2f( XORRandom(16)-8, XORRandom(16)-8 )/8.0;
-			dir.Normalize();
-			Vec2f tp = this.getPosition() + (dir)*(this.getRadius() + 4.0f);
-			TileType tile = this.getMap().getTile( tp ).type;
-			if ( !this.getMap().isTileGroundStuff( tile ) ) {		
-			this.getMap().server_DestroyTile(tp, 0.1);
-			}
-		}
+		//if (XORRandom(break_chance)==0)
+		//{
+		//	Vec2f dir = Vec2f( XORRandom(16)-8, XORRandom(16)-8 )/8.0;
+		//	dir.Normalize();
+		//	Vec2f tp = this.getPosition() + (dir)*(this.getRadius() + 4.0f);
+		//	TileType tile = this.getMap().getTile( tp ).type;
+		//	if ( !this.getMap().isTileGroundStuff( tile ) ) {		
+		//	this.getMap().server_DestroyTile(tp, 0.1);
+		//	}
+		//}
 		if ((this.getNetworkID() + getGameTime()) % 9 == 0)
 		{
 			f32 volume = Maths::Min( 0.1f + Maths::Abs(this.getVelocity().x)*0.1f, 1.0f );

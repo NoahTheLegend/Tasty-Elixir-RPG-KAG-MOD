@@ -249,7 +249,7 @@ string getSkillDescription(string pclass, u16 ski)
         {
             case SkillsKnight::SHIELDBLOCK: return "Active:\nYou gain additional\n+25% of block chance for 15 seconds";
             case SkillsKnight::FURY: return "Passive:\nWhenever you are being hit, you receive\n+0.1 of additional damage.\nMax stacks: 5";
-            case SkillsKnight::MASSBASH: return "Active:\nStuns all enemies in 6 blocks radius for 2 seconds";
+            case SkillsKnight::MASSBASH: return "Active:\nStuns all enemies in 6 blocks radius for 3 seconds";
             case SkillsKnight::ENDURANCE: return "Passive:\nIf your health is lower,\nthan 3 HP, you gain +0.5 of\nhealth regen";
             case SkillsKnight::INNERRAGE: return "Passive:\nIf your health is lower,\nthan 3 HP, you gain +15% of crit\n+0.5 of attack speed,\nand you burst an explosion";
             case SkillsKnight::POWERCORE: return "Active:\nYou become immune to damage for\n10 seconds and gain -1.0 of agility.\nAfter that time lasts,\nyou gain +1.0 agility for 10 seconds";

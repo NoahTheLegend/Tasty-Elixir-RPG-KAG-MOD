@@ -681,6 +681,9 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			if (spl.length > 1) splb2 = spl[1].split("`");
 			if (spl.length > 2) splb3 = spl[2].split("`");
 
+			if (this.hasTag("wpotioned") && splb1.length > 0 && splb2.length == 0
+			&& (splb1[0] == "glowness" || splb1[0] == "glowness2")) this.Untag("wpotioned");
+			else this.Untag("potioned");
 			//reminder: name`type`val_
 			if (splb1.length >= 3)
 			{
@@ -1332,6 +1335,7 @@ void onHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@
 	if (XORRandom(100) < this.get_f32("bashchance"))
 	{
 		if (isClient()) Sound::Play("Bash.ogg", hitBlob.getPosition(), 1.0f);
+		hitBlob.set_u16("sknocked", 60);
 		hitBlob.Tag("wait");
 	}
 

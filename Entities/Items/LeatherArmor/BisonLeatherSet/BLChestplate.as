@@ -55,7 +55,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
             caller.set_f32("dodgechance", caller.get_f32("dodgechance") + 7.0);
             caller.set_f32("damagereduction", caller.get_f32("damagereduction") + 0.75);
             if (player !is null && player.isMyPlayer()) caller.set_f32("hpregtime", caller.get_f32("hpregtime") - 2*30);
-            caller.set_f32("bashchance", caller.get_f32("bashchance") + 10.0);
+            if (player !is null && player.isMyPlayer()) caller.set_f32("bashchance", caller.get_f32("bashchance") + 10.0);
         }
     }
     else if (cmd==this.getCommandID("unequip")) {}

@@ -20,9 +20,62 @@ void onInit(CBlob@ this)
 
 	// SHOP
 	this.set_Vec2f("shop offset", Vec2f(0, 0));
-	this.set_Vec2f("shop menu size", Vec2f(2, 2));
+	this.set_Vec2f("shop menu size", Vec2f(4, 4));
 	this.set_string("shop description", "Witch's Dilapidated Shack");
 	this.set_u8("shop icon", 25);
+
+	string[] synonyms = {
+		" weird",
+		" strange",
+		" bright",
+		" muddy",
+		" bubbling",
+		" smelly",
+		" tart",
+		" curious",
+		" unusual",
+		" kinky",
+		" good",
+		" prime",
+		"n epic",
+		" superior",
+		" bewitching",
+		" definitely not deadly"
+	};
+
+	for (u8 i = 0; i <= 15; i++)
+	{
+		AddIconToken("$witcherypotion"+i+"$", "WitcheryPotions.png", Vec2f(8, 8), i, this.getTeamNum());
+		u16 cost = 75;
+		u8 rand = XORRandom(synonyms.length);
+		if (i < 4) 
+		{
+			cost = 60+XORRandom(21);
+			cost *= i+1;
+		}
+		else if (i < 8 && i >= 4) 
+		{
+			cost = 25+XORRandom(21);
+			cost *= i-3;
+		}
+		else if (i < 12 && i >= 8) 
+		{
+			cost = 90+XORRandom(21);
+			cost *= i-7;
+		}
+		else if (i >= 12) 
+		{
+			cost = 15+XORRandom(21);
+			cost *= i-11;
+		}
+		{
+			ShopItem@ s = addShopItem(this, "Purchase a"+synonyms[rand]+" potion", "$witcherypotion"+i+"$", "wpotion_"+i, "Witchery potion", true);
+			AddRequirement(s.requirements, "coin", "", "Coins", cost);
+
+			s.spawnNothing = true;
+		}
+		synonyms.erase(rand);
+	}
 
 	CSprite@ sprite = this.getSprite();
 
@@ -91,6 +144,31 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 					}
 				}
 			}
+			else if (name.findFirst("wpotion_") != -1)
+			{
+				string[] args = name.split("_");
+				u8 idx;
+				if (args.length == 2)
+				{
+					idx = parseInt(args[1]);
+				}
+				CBlob@ blob = server_CreateBlobNoInit("wpotion");
+				blob.server_setTeamNum(callerBlob.getTeamNum());
+				blob.setPosition(callerBlob.getPosition());
+				blob.set_u8("type", idx);
+				blob.Init();
+
+				if (blob is null) return;
+
+				if (!blob.canBePutInInventory(callerBlob))
+				{
+					callerBlob.server_Pickup(blob);
+				}
+				else if (callerBlob.getInventory() !is null && !callerBlob.getInventory().isFull())
+				{
+					callerBlob.server_PutInInventory(blob);
+				}
+			}
 			else
 			{
 				CBlob@ blob = server_CreateBlob(spl[0], callerBlob.getTeamNum(), this.getPosition());
@@ -114,6 +192,7 @@ void onTick(CSprite@ this)
 {
 	//TODO: empty? show it.
 	CBlob@ blob = this.getBlob();
+	if (blob is null) return;
 	CSpriteLayer@ trader = this.getSpriteLayer("trader");
 	bool trader_moving = blob.get_bool("trader moving");
 	bool moving_left = blob.get_bool("moving left");
@@ -161,20 +240,6 @@ void onTick(CSprite@ this)
 			blob.set_u32("move timer", getGameTime() + (traderRandom.NextRanged(5) + 7)*getTicksASecond());
 			blob.set_u32("next offset", traderRandom.NextRanged(16));
 			trader.SetAnimation("stop");
-		}
-	}
-}
-
-void onHealthChange(CBlob@ this, f32 oldHealth)
-{
-	CSprite@ sprite = this.getSprite();
-	if (sprite !is null)
-	{
-		Animation@ destruction = sprite.getAnimation("destruction");
-		if (destruction !is null)
-		{
-			f32 frame = Maths::Floor((this.getInitialHealth() - this.getHealth()) / (this.getInitialHealth() / sprite.animation.getFramesCount()));
-			sprite.animation.frame = frame;
 		}
 	}
 }

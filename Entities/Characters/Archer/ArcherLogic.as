@@ -473,6 +473,7 @@ void ManageBow(CBlob@ this, ArcherInfo@ archer, RunnerMoveVars@ moveVars)
 							if (XORRandom(100) < this.get_f32("bashchance"))
 							{
 								if (isClient()) Sound::Play("Bash.ogg", stabTarget.getPosition(), 1.0f);
+								stabTarget.set_u16("sknocked", 60);
 								stabTarget.Tag("wait");
 							}
 						}
@@ -919,6 +920,9 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			if (spl.length > 1) splb2 = spl[1].split("`");
 			if (spl.length > 2) splb3 = spl[2].split("`");
 
+			if (this.hasTag("wpotioned") && splb1.length > 0 && splb2.length == 0
+			&& (splb1[0] == "glowness" || splb1[0] == "glowness2")) this.Untag("wpotioned");
+			else this.Untag("potioned");
 			//reminder: name`type`val_
 			if (splb1.length >= 3)
 			{
@@ -1226,6 +1230,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	}
 	else if (cmd == this.getCommandID("doattackspeedchange"))
 	{
+		if (!getNet().isServer()) return;
 		f32 current = params.read_f32();
 		bool increase = params.read_bool();
 		if (increase)

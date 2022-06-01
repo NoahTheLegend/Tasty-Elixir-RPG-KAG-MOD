@@ -2,7 +2,8 @@
 
 #define SERVER_ONLY
 
-#include "BrainCommon.as"
+#include "BrainCommon.as";
+#include "KnockedCommon.as";
 #include "PressOldKeys.as";
 #include "AnimalConsts.as";
 
@@ -11,6 +12,16 @@ void onInit( CBrain@ this )
 	CBlob @blob = this.getBlob();
 	blob.set_u8( delay_property , 5+XORRandom(5));
 	blob.set_u8(state_property, MODE_IDLE);
+	blob.Tag("enemy");
+	CSprite@ sprite = blob.getSprite();
+
+    CSpriteLayer@ bashlayer = sprite.addSpriteLayer("bashed", "BashAnim.png", 16, 8);
+	Animation@ anim = sprite.addAnimation("bash", 0, false);
+	int[] frames = {0, 1, 2, 3}; //put your frames here
+	anim.AddFrames(frames);
+	bashlayer.SetAnimation("bash");
+	bashlayer.SetRelativeZ(4.0f);
+	bashlayer.SetOffset(Vec2f(0, blob.getShape().getHeight()/2*-1 - 4));
 
 	if (!blob.exists(terr_rad_property)) 
 	{
@@ -58,6 +69,42 @@ void onInit( CBrain@ this )
 void onTick( CBrain@ this )
 {
 	CBlob@ blob = this.getBlob();
+	if (blob !is null && blob.get_u16("sknocked") > 0)
+	{
+		CSprite@ sprite = blob.getSprite();
+		blob.set_u16("sknocked", blob.get_u16("sknocked") - 1);
+		if (sprite !is null)
+		{
+    		CSpriteLayer@ bash = sprite.getSpriteLayer("bashed");
+    		if (bash is null) return;
+
+    		u32 gametime = getGameTime();
+
+			if (gametime % 3 == 0)
+			{
+				bash.SetAnimation("bash");
+    			bash.SetVisible(true);
+    			bash.SetFacingLeft(false);
+
+				u8 index = blob.get_u8("bashidx");
+				if (index < 3) blob.set_u8("bashidx", index + 1);
+				else blob.set_u8("bashidx", 0);
+
+				//printf("i "+index);
+
+				bash.SetFrameIndex(index);
+			}
+		}
+		return;
+	}
+	else
+	{
+		CSprite@ sprite = blob.getSprite();
+		CSpriteLayer@ bash = sprite.getSpriteLayer("bashed");
+    	if (bash is null) return;	
+		bash.SetVisible(false);
+	}
+
 	if (blob is null) return;
 
 	if (getGameTime() % 60 == 0) 

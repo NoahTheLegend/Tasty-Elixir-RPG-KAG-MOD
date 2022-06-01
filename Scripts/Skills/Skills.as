@@ -164,6 +164,23 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
                 }
                 case 2: // mass bash
                 {
+                    CBlob@[] blobs;
+                    CMap@ map = this.getMap();
+                    map.getBlobsInRadius(this.getPosition(), 6*8.0f, blobs);
+                    CBlob@[] stun;
+                    for (u16 i = 0; i < blobs.length; i++)
+                    {
+                        CBlob@ target = blobs[i];
+                        if (target is null) continue;
+                        if (target.hasTag("enemy")) stun.push_back(target);
+                    }
+                    for (u16 i = 0; i < stun.length; i++)
+                    {
+                        CBlob@ target = stun[i];
+                        if (target is null) continue;
+                        if (isClient()) Sound::Play("Bash.ogg", this.getPosition(), 1.0f);
+				        target.set_u16("sknocked", 90);
+                    }
                     break;
                 }
                 case 5: // power core
@@ -284,9 +301,10 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
         }
     }
     else if (cmd == this.getCommandID("receive_skill"))
-    { // made giving more open but messy in code, because i will want to see a knight w rogue skills
+    {
         string type = params.read_string();
         u16 skill = params.read_u16();
+        //printf("e:"+skill);
 
         //printf("type: "+type);
         //printf("skill: "+getSkillName(this.getName(), skill));

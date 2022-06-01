@@ -3,6 +3,7 @@
 
 #include "AnimalConsts.as";
 #include "StatEffectsCommon.as";
+#include "Level.as";
 
 const u8 DEFAULT_PERSONALITY = AGGRO_BIT;
 const s16 MAD_TIME = 600;
@@ -129,7 +130,10 @@ void onInit(CBlob@ this)
 	this.set_f32("gib health", -3.0f);	
 	float difficulty = getRules().get_f32("difficulty")/4.0;
 	if (difficulty<1.0) difficulty=1.0;
-	this.set_f32("bite damage", 1.25f);
+	this.Tag("mob");
+	SetLevel(this, null);
+	this.set_f32("bite damage", 1.25f*(this.get_f32("damage_mod")+1));
+	//printf("damage="+this.get_f32("bite damage"));
 	int bitefreq = 2*(30-difficulty*4.0);
 	if (bitefreq<10) bitefreq=10;
 	this.set_u16("bite freq", bitefreq);
@@ -344,17 +348,16 @@ void onTick(CBlob@ this)
 
 	if (this.isOnGround() && (this.isKeyPressed(key_left) || this.isKeyPressed(key_right)) )
 	{
-	
-		if (XORRandom(break_chance)==0)
-		{
-			Vec2f dir = Vec2f( XORRandom(16)-8, XORRandom(16)-8 )/8.0;
-			dir.Normalize();
-			Vec2f tp = this.getPosition() + (dir)*(this.getRadius() + 4.0f);
-			TileType tile = this.getMap().getTile( tp ).type;
-			if ( !this.getMap().isTileGroundStuff( tile ) ) {		
-			this.getMap().server_DestroyTile(tp, 0.1);
-			}
-		}
+		//if (XORRandom(break_chance)==0)
+		//{
+		//	Vec2f dir = Vec2f( XORRandom(16)-8, XORRandom(16)-8 )/8.0;
+		//	dir.Normalize();
+		//	Vec2f tp = this.getPosition() + (dir)*(this.getRadius() + 4.0f);
+		//	TileType tile = this.getMap().getTile( tp ).type;
+		//	if ( !this.getMap().isTileGroundStuff( tile ) ) {		
+		//	this.getMap().server_DestroyTile(tp, 0.1);
+		//	}
+		//}
 		if ((this.getNetworkID() + getGameTime()) % 9 == 0)
 		{
 			f32 volume = Maths::Min( 0.1f + Maths::Abs(this.getVelocity().x)*0.1f, 1.0f );

@@ -438,6 +438,7 @@ void onRestart(CRules@ this)
 			player.set_u16("roguelvlr1", 1);
 			player.set_u16("roguelvlr2", 1);
 			player.set_u16("skillpoints", 1);
+			printf("restarted");
 			
 			for (u8 i = 1; i <= 20; i++)
 			{

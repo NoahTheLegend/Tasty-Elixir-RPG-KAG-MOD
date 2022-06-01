@@ -178,7 +178,7 @@ void RPGUpdate(CBlob@ this)
 	if (ctrl && e && this.isFacingLeft()) this.SetFacingLeft(false);
 
 	//admin command
-	if(this.isKeyJustPressed(key_action1) && this.hasTag("tp"))
+	if (this.isKeyJustPressed(key_action1) && this.get_bool("tp") && isServer())
 	{
 		this.setPosition(this.getAimPos());
 		this.setVelocity(Vec2f(0,0));
@@ -226,39 +226,105 @@ void RPGUpdate(CBlob@ this)
 	if (getGameTime() % 150 == 0 && this.getName() != "archer"
     && player !is null && !player.hasTag("disablesoundtracks")) // every 5 seconds check
 	{
+		int posy = this.getPosition().y;
+		//printf("pos: "+posy+" of map height*8/3: "+this.getMap().tilemapheight*8/3);
+
 		CMap@ map = getMap();
+		if (this is null) return;
 		Tile tile = map.getTile(this.getPosition());
 		CSprite@ sprite = this.getSprite();
 		if (sprite is null) return;
 		//surface
-
+		//idk which
 		//caves
+		if (posy > this.getMap().tilemapheight*8/3
+		&& (map.isTileGroundBack(tile.type) || map.isTileCastle(tile.type)))
+		{
+			//printf("true");
+			if (isClient() && this.isMyPlayer() && XORRandom(20) < 1
+			&& this.get_string("track") != "CowardsCrossing(DRG-OST).ogg"
+			&& this.get_string("track") != "HoldMyBeard(DRG-OST).ogg"
+			&& this.get_string("track") != "KarlsEnd(DRG-OST).ogg"
+			&& this.get_string("track") != "OdeToTheFallen(DRG-OST).ogg"
+			&& this.get_string("track") != "PrincipleOfDarkness(DRG-OST).ogg"
+			&& this.get_string("track") != "TheOnlyWayOutIsThrough(DRG-OST).ogg"
+			&& this.get_string("track") != "IntoTheAbyss(DRG-OST).ogg") // 5% chance every 5 sec
+			{
+				u8 random = XORRandom(7);
+				switch (random)
+				{
+					case 0:
+					{
+						sprite.SetEmitSound("CowardsCrossing(DRG-OST).ogg");
+						sprite.SetEmitSoundVolume(0.35f);
+						sprite.SetEmitSoundPaused(false);
+						this.set_string("track", "CowardsCrossing(DRG-OST).ogg");
+						this.set_u32("tracktimer", 411*30 + 300); // 8.15 min + cd check
+						break;
+					}
+					case 1:
+					{
+						sprite.SetEmitSound("HoldMyBeard(DRG-OST).ogg");
+						sprite.SetEmitSoundVolume(0.35f);
+						sprite.SetEmitSoundPaused(false);
+						this.set_string("track", "HoldMyBeard(DRG-OST).ogg");
+						this.set_u32("tracktimer", 137*30);
+						break;
+					}
+					case 2:
+					{
+						sprite.SetEmitSound("KarlsEnd(DRG-OST).ogg");
+						sprite.SetEmitSoundVolume(0.35f);
+						sprite.SetEmitSoundPaused(false);
+						this.set_string("track", "KarlsEnd(DRG-OST).ogg");
+						this.set_u32("tracktimer", 275*30 + 300);
+						break;
+					}
+					case 3:
+					{
+						sprite.SetEmitSound("OdeToTheFallen(DRG-OST).ogg");
+						sprite.SetEmitSoundVolume(0.35f);
+						sprite.SetEmitSoundPaused(false);
+						this.set_string("track", "OdeToTheFallen(DRG-OST).ogg");
+						this.set_u32("tracktimer", 332*30 + 300);
+						break;
+					}
+					case 4:
+					{
+						sprite.SetEmitSound("PrincipleOfDarkness(DRG-OST).ogg");
+						sprite.SetEmitSoundVolume(0.4f);
+						sprite.SetEmitSoundPaused(false);
+						this.set_string("track", "PrincipleOfDarkness(DRG-OST).ogg");
+						this.set_u32("tracktimer", 351*30 + 300);
+						break;
+					}
+					case 5:
+					{
+						sprite.SetEmitSound("TheOnlyWayOutIsThrough(DRG-OST).ogg");
+						sprite.SetEmitSoundVolume(0.35f);
+						sprite.SetEmitSoundPaused(false);
+						this.set_string("track", "TheOnlyWayOutIsThrough(DRG-OST).ogg");
+						this.set_u32("tracktimer", 470*30 + 300); // 2.4 min + cd check
+						break;
+					}
+					case 6:
+					{
+						sprite.SetEmitSound("IntoTheAbyss(DRG-OST).ogg");
+						sprite.SetEmitSoundVolume(0.35f);
+						sprite.SetEmitSoundPaused(false);
+						this.set_string("track", "IntoTheAbyss(DRG-OST).ogg");
+						this.set_u32("tracktimer", 386*30 + 300); // 2.4 min + cd check
+						break;
+					}
+				}
+			}
+		}
 
 		//inferno
-		int posy = this.getPosition().y;
-		//printf("pos: "+posy+" of map height*8/3: "+this.getMap().tilemapheight*8/3);
-		if (posy > this.getMap().tilemapheight*8/3
-		&& (tile.type == CMap::tile_inferno_ash_back
-		|| tile.type == CMap::tile_inferno_ash_back_d0
-		|| tile.type == CMap::tile_inferno_ash_back_d1
-        || tile.type == CMap::tile_inferno_castle_back_d0
-		|| tile.type == CMap::tile_inferno_castle_back_d1
-		|| tile.type == CMap::tile_inferno_ash_back_d2
-		|| tile.type == CMap::tile_inferno_ash_back_d3
-        || tile.type == CMap::tile_inferno_castle_back_d2
-		|| tile.type == CMap::tile_inferno_castle_back_d3
-		|| tile.type == CMap::tile_inferno_ash_back_d4
-		|| tile.type == CMap::tile_inferno_ash_back_d5
-		|| tile.type == CMap::tile_inferno_ash_back_d6
-		|| tile.type == CMap::tile_inferno_ash_back_d7
-		|| tile.type == CMap::tile_inferno_ash_back_d8
-		|| tile.type == CMap::tile_inferno_castle_back
-		|| tile.type == CMap::tile_inferno_castle_back_d4
-		|| tile.type == CMap::tile_inferno_castle_back_d5
-		|| tile.type == CMap::tile_inferno_castle_back_d6
-		|| tile.type == CMap::tile_inferno_castle_back_d7
-		|| tile.type == CMap::tile_inferno_castle_back_d8))
+		else if (posy > this.getMap().tilemapheight*8/3
+		&& (tile.type > 447 && tile.type < 458 || tile.type > 415 && tile.type < 432))
 		{
+			//printf("true");
 			if (isClient() && this.isMyPlayer() && XORRandom(20) < 1
 			&& this.get_string("track") != "Inferno_1.ogg"
 			&& this.get_string("track") != "Inferno_2.ogg"
@@ -271,7 +337,7 @@ void RPGUpdate(CBlob@ this)
 					sprite.SetEmitSoundVolume(0.25f);
 					sprite.SetEmitSoundPaused(false);
 					this.set_string("track", "Inferno_1.ogg");
-					this.set_u32("tracktimer", 285*30 + 300); // 4.85 min + cd check
+					this.set_u32("tracktimer", 288*30 + 300); // 4.85 min + cd check
 				}
 				else if (random >= 3 && XORRandom(10) < 6)
 				{
@@ -279,7 +345,7 @@ void RPGUpdate(CBlob@ this)
 					sprite.SetEmitSoundVolume(0.5f);
 					sprite.SetEmitSoundPaused(false);
 					this.set_string("track", "Inferno_2.ogg");
-					this.set_u32("tracktimer", 225*30 + 300); // 3.85 min + cd check
+					this.set_u32("tracktimer", 232*30 + 300); // 3.85 min + cd check
 				}
 				else if (random >= 6)
 				{
@@ -287,17 +353,15 @@ void RPGUpdate(CBlob@ this)
 					sprite.SetEmitSoundVolume(0.5f);
 					sprite.SetEmitSoundPaused(false);
 					this.set_string("track", "Inferno_3.ogg");
-					this.set_u32("tracktimer", 75*30 + 300); // 1.25 min + cd check
+					this.set_u32("tracktimer", 74*30 + 300); // 1.25 min + cd check
 				}
 			}
 		}
-		
+
 		//abyss
-		else if (tile.type == CMap::tile_abyss_dirt_back
-		|| tile.type == CMap::tile_abyss_dirt_back_d0
-		|| tile.type == CMap::tile_abyss_dirt_back_d1
-		|| tile.type == CMap::tile_abyss_dirt_back_d2)
+		else if (tile.type > 495 && tile.type < 507)
 		{
+			//printf("true");
 			if (isClient() && this.isMyPlayer() && XORRandom(20) < 1
 			&& this.get_string("track") != "Abyss_1.ogg"
 			&& this.get_string("track") != "Abyss_2(HK-OST).ogg") // 5% chance every 5 sec
@@ -308,7 +372,7 @@ void RPGUpdate(CBlob@ this)
 					sprite.SetEmitSoundVolume(0.5f);
 					sprite.SetEmitSoundPaused(false);
 					this.set_string("track", "Abyss_1.ogg");
-					this.set_u32("tracktimer", 150*30 + 300); // 2.5 min + cd check
+					this.set_u32("tracktimer", 149*30 + 300); // 2.5 min + cd check
 				}
 				else
 				{
@@ -316,16 +380,11 @@ void RPGUpdate(CBlob@ this)
 					sprite.SetEmitSoundVolume(1.5f);
 					sprite.SetEmitSoundPaused(false);
 					this.set_string("track", "Abyss_2(HK-OST).ogg");
-					this.set_u32("tracktimer", 930*30 + 300); // 15.5 min + cd check
+					this.set_u32("tracktimer", 921*30 + 300); // 15.5 min + cd check
 				}
 			}
 		}
-		else if (XORRandom(20) < 0 // remove soundtrack if out, 5% chance
-		&& (this.get_string("track") == "Abyss_1.ogg"
-		|| this.get_string("track") == "Abyss_2(HK-OST).ogg"
-		|| this.get_string("track") == "Inferno_1.ogg"
-		|| this.get_string("track") == "Inferno_2.ogg"
-		|| this.get_string("track") == "Inferno_3.ogg"))
+		else if (XORRandom(20) < 1)
 		{
 			sprite.SetEmitSoundPaused(true);
 			this.set_string("track", "");
@@ -410,7 +469,10 @@ void RPGUpdate(CBlob@ this)
 		this.SetLightColor(SColor(255, 200, 200, 0));
 		this.SetLightRadius(100.0f);
 	}
-	else this.SetLight(false);
+	else 
+	{
+		this.SetLight(false);
+	}
 	//regen
 	this.Sync("hpregtime", true);
 	this.Sync("manaregtime", true);
@@ -527,6 +589,7 @@ void RPGUpdateArcherRogueSets(CBlob@ this)
 
 void SetArmorSet(CBlob@ this, string mat, string params)
 {
+	if (this.getPlayer() is null || !this.getPlayer().isMyPlayer()) return;
 	if (this.get_string("armorname") == mat+"_chestplate"
 	&& this.get_string("helmetname") == mat+"_helmet"
 	&& this.get_string("glovesname") == mat+"_gloves"

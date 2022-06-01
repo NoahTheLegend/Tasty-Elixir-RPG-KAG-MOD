@@ -26,10 +26,10 @@ void onInit(CBlob@ this)
 	float difficulty = getRules().get_f32("difficulty")/4.0;
 	if (difficulty<1.0) difficulty=1.0;
 	if (difficulty>3.0) difficulty=3.0;
-	vars.walkForce.Set(difficulty*4.0f,0.0f);
-	vars.runForce.Set(difficulty*4.0f,0.0f);
-	vars.slowForce.Set(difficulty*2.0f,0.0f);
-	vars.jumpForce.Set(0.0f,-1.6f);
+	vars.walkForce.Set(difficulty*6.5f,0.0f);
+	vars.runForce.Set(difficulty*5.5f,0.0f);
+	vars.slowForce.Set(difficulty*1.0f,0.0f);
+	vars.jumpForce.Set(0.2f,-0.9f);
 	vars.maxVelocity = difficulty*0.5f;
 	this.set( "vars", vars );
 
@@ -90,7 +90,8 @@ void onTick( CMovement@ this )
 			(up || (right && map.isTileSolid( Vec2f( pos.x + (radius+1.0f), pos.y ))) || (left && map.isTileSolid( Vec2f( pos.x - (radius+1.0f), pos.y )))))
 			{ 
 				f32 mod = blob.isInWater() ? 0.23f : 1.0f;
-				blob.AddForce(Vec2f( mod*vars.jumpForce.x*blob.getMass(), mod*vars.jumpForce.y*blob.getMass()));
+				if (!blob.isFacingLeft()) blob.AddForce(Vec2f( mod*(vars.jumpForce.x*XORRandom(10))/10*blob.getMass(), mod*vars.jumpForce.y*blob.getMass()));
+				else blob.AddForce(Vec2f( mod*((vars.jumpForce.x*-1)*XORRandom(10))/10*blob.getMass(), mod*vars.jumpForce.y*blob.getMass()));
 				blob.set_s32("climb",1);
 			} else
 			if (( (right && map.isTileSolid( Vec2f( pos.x + (radius+1.0f), pos.y ))) || (left && map.isTileSolid( Vec2f( pos.x - (radius+1.0f), pos.y )))))

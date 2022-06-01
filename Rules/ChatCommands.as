@@ -103,6 +103,67 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 
 			return true;
 		}
+		else if (player.isMod() && (text_in == "!addxp" || (args.length == 2 && args[0] == "!addxp")))
+		{
+			if (args.length > 1)
+			{
+				player.set_u32("exp", player.get_u32("exp") + parseFloat(args[1]));
+			}
+			else player.set_u32("exp", player.get_u32("exp") + 100);
+			printf("added");
+		}
+		else if (player.isMod() && args.length == 3 && args[0] == "!addskill")
+		{
+			u16 index = parseFloat(args[2]);
+			string type = args[1];
+			CBlob@ blob = player.getBlob();
+			if (blob !is null)
+			{
+				giveSkill(blob, type, index);
+			}
+		}
+		else if (text_in == "!resetskills")
+		{
+			CBlob@ blob = player.getBlob();
+			if (player is null) return false;
+			string name = blob.getName();
+			player.set_u32("exp", 0);
+
+			u16 klr1 = player.get_u16("knightlvlr1")-1;
+			u16 klr2 = player.get_u16("knightlvlr2")-1;
+			u16 alr1 = player.get_u16("archerlvlr1")-1;
+			u16 alr2 = player.get_u16("archerlvlr2")-1;
+			u16 rlr1 = player.get_u16("roguelvlr1")-1;
+			u16 rlr2 = player.get_u16("roguelvlr2")-1;
+
+			player.set_u16("skillpoints", klr1+klr2+alr1+alr2+rlr1+rlr2);
+			if (player.get_u16("skillpoints") == 0) player.set_u16("skillpoints", 1);
+			printf("reset");
+
+			player.set_u16("knightlvlr1", 1);
+			player.set_u16("knightlvlr2", 1);
+			player.set_u16("archerlvlr1", 1);
+			player.set_u16("archerlvlr2", 1);
+			player.set_u16("roguelvlr1", 1);
+			player.set_u16("roguelvlr2", 1);
+			player.set_u16("level", 0);
+			for (u8 i = 1; i <= 20; i++)
+			{
+				player.set_u16("hasskill"+i, 255);
+			}
+			player.Tag("resetTags");
+		}
+		else if (args.length == 2 && args[0] == "!takeskill")
+		{
+			u8 pos = parseFloat(args[1]);
+			CBlob@ blob = player.getBlob();
+			if (blob !is null)
+			{
+				takeSkill(blob, pos);
+				CPlayer@ player = blob.getPlayer();
+				if (player !is null) player.set_u16("skillpoints", player.get_u16("skillpoints") + 1);
+			}
+		}
 		else if (args.length >= 2 && args[0] == "!set")
 		{
 			string alloy = args[1];
@@ -155,11 +216,13 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 		}
 		else if (text_in == "!tp")
 		{
-			blob.Tag("tp");
+			blob.set_bool("tp", true);
+			blob.Sync("tp", true);
 		}
 		else if (text_in == "!notp")
 		{
-			blob.Untag("tp");
+			blob.set_bool("tp", false);
+			blob.Sync("tp", true);
 		}
 		else if (text_in == "!debug")
 		{
@@ -428,65 +491,6 @@ bool onClientProcessChat(CRules@ this, const string& in text_in, string& out tex
 		if (isClient() && player.isMyPlayer()) client_AddToChat("!showstats to disable and enable stats list\n!showstate to disable and enable state list", SColor(255, 50, 50, 50));
 		if (isClient() && player.isMyPlayer()) client_AddToChat("!showhelp to disable and enable the help sheet", SColor(255, 50, 50, 50));
 		if (isClient() && player.isMyPlayer()) client_AddToChat("!showall to disable and enable HUD", SColor(255, 50, 50, 50));
-	}
-	else if (player.isMod() && (text_in == "!addxp" || (args.length == 2 && args[0] == "!addxp")))
-	{
-		if (args.length > 1)
-		{
-			player.set_u32("exp", player.get_u32("exp") + parseFloat(args[1]));
-		}
-		else player.set_u32("exp", player.get_u32("exp") + 100);
-	}
-	else if (player.isMod() && args.length == 3 && args[0] == "!addskill")
-	{
-		u16 index = parseFloat(args[2]);
-		string type = args[1];
-		CBlob@ blob = player.getBlob();
-		if (blob !is null)
-		{
-			giveSkill(blob, type, index);
-		}
-	}
-	else if (text_in == "!resetskills")
-	{
-		CBlob@ blob = player.getBlob();
-		if (player is null) return false;
-		string name = blob.getName();
-		player.set_u32("exp", 0);
-
-		u16 klr1 = player.get_u16("knightlvlr1")-1;
-		u16 klr2 = player.get_u16("knightlvlr2")-1;
-		u16 alr1 = player.get_u16("archerlvlr1")-1;
-		u16 alr2 = player.get_u16("archerlvlr2")-1;
-		u16 rlr1 = player.get_u16("roguelvlr1")-1;
-		u16 rlr2 = player.get_u16("roguelvlr2")-1;
-
-		player.set_u16("skillpoints", klr1+klr2+alr1+alr2+rlr1+rlr2);
-		if (player.get_u16("skillpoints") == 0) player.set_u16("skillpoints", 1);
-
-		player.set_u16("knightlvlr1", 1);
-		player.set_u16("knightlvlr2", 1);
-		player.set_u16("archerlvlr1", 1);
-		player.set_u16("archerlvlr2", 1);
-		player.set_u16("roguelvlr1", 1);
-		player.set_u16("roguelvlr2", 1);
-		player.set_u16("level", 0);
-		for (u8 i = 1; i <= 20; i++)
-		{
-			player.set_u16("hasskill"+i, 255);
-		}
-		player.Tag("resetTags");
-	}
-	else if (args.length == 2 && args[0] == "!takeskill")
-	{
-		u8 pos = parseFloat(args[1]);
-		CBlob@ blob = player.getBlob();
-		if (blob !is null)
-		{
-			takeSkill(blob, pos);
-			CPlayer@ player = blob.getPlayer();
-			if (player !is null) player.set_u16("skillpoints", player.get_u16("skillpoints") + 1);
-		}
 	}
 	else if (text_in == "!showstats")
 	{

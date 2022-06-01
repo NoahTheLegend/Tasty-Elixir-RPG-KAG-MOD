@@ -5,7 +5,7 @@ void onInit(CBlob@ this)
 
 	this.SetFacingLeft(((this.getNetworkID() + 27) * 31) % 18 > 9);
 
-	this.set_f32("damagereduction", 0);
+	this.set_f32("damagereduction", 5.0);
 }
 
 void onGib(CSprite@ this)

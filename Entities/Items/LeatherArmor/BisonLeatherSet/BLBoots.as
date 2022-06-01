@@ -41,7 +41,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
     {
         u16 callerid = params.read_u16();
         CBlob@ caller = getBlobByNetworkID(callerid);
-
+        CPlayer@ player = caller.getPlayer();
         if (caller !is null)
         {
             if (caller.getCarriedBlob() !is null) caller.getCarriedBlob().server_Die();
@@ -52,7 +52,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 	        caller.set_f32("velocity", caller.get_f32("velocity") - 0.1);
             caller.set_f32("dodgechance", caller.get_f32("dodgechance") + 5.0);
             caller.set_f32("damagereduction", caller.get_f32("damagereduction") + 0.5);
-            caller.set_f32("bashchance", caller.get_f32("bashchance") + 5.0);
+            if (player !is null && player.isMyPlayer()) caller.set_f32("bashchance", caller.get_f32("bashchance") + 5.0);
         }
     }
     else if (cmd==this.getCommandID("unequip")) {}

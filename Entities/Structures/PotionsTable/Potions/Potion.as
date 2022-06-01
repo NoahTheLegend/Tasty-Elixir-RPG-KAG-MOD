@@ -338,95 +338,20 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
             if (splb2[0] != "") effdata = effdata+splb2[0]+" "+splb2[2]+"`";
             if (splb3[0] != "") effdata = effdata+splb3[0]+" "+splb3[2];
 
-            if (blob.get_string("eff1") == "")
+            //printf(effdata);
+
+            for (u8 i = 1; i <= 20; i++)
             {
-                blob.set_string("eff1", "1_potion_"+effdata);
-                blob.set_string("buffs1", buffs);
-                blob.set_u16("timer1", spl.length * XORRandom(300) + XORRandom(1800)+900);
-                blob.Sync("eff1", true);
-                blob.Sync("buffs1", true);
-                blob.Sync("timer1", true);
-            }
-            else if (blob.get_string("eff2") == "")
-            {
-                blob.set_string("eff2", "1_potion_"+effdata);
-                blob.set_string("buffs2", buffs);
-                blob.set_u16("timer2", spl.length * XORRandom(300) + XORRandom(1800)+900);
-                blob.Sync("eff2", true);
-                blob.Sync("buffs2", true);
-                blob.Sync("timer2", true);
-            }
-            else if (blob.get_string("eff3") == "")
-            {
-                blob.set_string("eff3", "1_potion_"+effdata);
-                blob.set_string("buffs3", buffs);
-                blob.set_u16("timer3", spl.length * XORRandom(300) + XORRandom(1800)+900);
-                blob.Sync("eff3", true);
-                blob.Sync("buffs3", true);
-                blob.Sync("timer3", true);
-            }
-            else if (blob.get_string("eff4") == "")
-            {
-                blob.set_string("eff4", "1_potion_"+effdata);
-                blob.set_string("buffs4", buffs);
-                blob.set_u16("timer4", spl.length * XORRandom(300) + XORRandom(1800)+900);
-                blob.Sync("eff4", true);
-                blob.Sync("buffs4", true);
-                blob.Sync("timer4", true);
-            }
-            else if (blob.get_string("eff5") == "")
-            {
-                blob.set_string("eff5", "1_potion_"+effdata);
-                blob.set_string("buffs5", buffs);
-                blob.set_u16("timer5", spl.length * XORRandom(300) + XORRandom(1800)+900);
-                blob.Sync("eff5", true);
-                blob.Sync("buffs5", true);
-                blob.Sync("timer5", true);
-            }
-            else if (blob.get_string("eff6") == "")
-            {
-                blob.set_string("eff6", "1_potion_"+effdata);
-                blob.set_string("buffs6", buffs);
-                blob.set_u16("timer6", spl.length * XORRandom(300) + XORRandom(1800)+900);
-                blob.Sync("eff6", true);
-                blob.Sync("buffs6", true);
-                blob.Sync("timer6", true);
-            }
-            else if (blob.get_string("eff7") == "")
-            {
-                blob.set_string("eff7", "1_potion_"+effdata);
-                blob.set_string("buffs7", buffs);
-                blob.set_u16("timer7", spl.length * XORRandom(300) + XORRandom(1800)+900);
-                blob.Sync("eff7", true);
-                blob.Sync("buffs7", true);
-                blob.Sync("timer7", true);
-            }
-            else if (blob.get_string("eff8") == "")
-            {
-                blob.set_string("eff8", "1_potion_"+effdata);
-                blob.set_string("buffs8", buffs);
-                blob.set_u16("timer8", spl.length * XORRandom(300) + XORRandom(1800)+900);
-                blob.Sync("eff8", true);
-                blob.Sync("buffs8", true);
-                blob.Sync("timer8", true);
-            }
-            else if (blob.get_string("eff9") == "")
-            {
-                blob.set_string("eff9", "1_potion_"+effdata);
-                blob.set_string("buffs9", buffs);
-                blob.set_u16("timer9", spl.length * XORRandom(300) + XORRandom(1800)+900);
-                blob.Sync("eff9", true);
-                blob.Sync("buffs9", true);
-                blob.Sync("timer9", true);
-            }
-            else if (blob.get_string("eff10") == "")
-            {
-                blob.set_string("eff10", "1_potion_"+effdata);
-                blob.set_string("buffs10", buffs);
-                blob.set_u16("timer10", spl.length * XORRandom(300) + XORRandom(1800)+900);
-                blob.Sync("eff10", true);
-                blob.Sync("buffs10", true);
-                blob.Sync("timer10", true);
+                if (blob.get_string("eff"+i) == "")
+                {
+                    blob.set_string("eff"+i, "1_potion_"+effdata);
+                    blob.set_string("buffs"+i, buffs);
+                    blob.set_u16("timer"+i, spl.length * XORRandom(600) + XORRandom(1800)+1200);
+                    blob.Sync("eff"+i, true);
+                    blob.Sync("buffs"+i, true);
+                    blob.Sync("timer"+i, true);
+                    break;
+                }
             }
 
             if (buff1 != "")
@@ -512,6 +437,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
                 blob.Tag("potioned");
             }
         }
-        this.server_Die();
+        if (isClient()) this.getSprite().PlaySound("WitcheryPotionDrink.ogg", 1.0f);
+        if (isServer()) this.server_Die();
     }
 }

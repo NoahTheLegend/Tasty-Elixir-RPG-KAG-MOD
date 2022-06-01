@@ -334,21 +334,21 @@ void onTick(CBlob@ this)
 
 		if (this.isOnGround() && (this.isKeyPressed(key_left) || this.isKeyPressed(key_right)) )
 		{
-			if (XORRandom(20)==0)
-			{
-				Vec2f tp = this.getPosition() + (Vec2f( XORRandom(16)-8, XORRandom(16)-8 )/8.0)*(this.getRadius() + 4.0f);
-				TileType tile = this.getMap().getTile( tp ).type;
-				if ( this.getMap().isTileWood( tile ) ) {		
-				this.getMap().server_DestroyTile(tp, 0.1);
-				}
-			}	
-			if (this.isKeyPressed(key_right))
-			{
-				TileType tile = this.getMap().getTile( this.getPosition() + Vec2f( this.getRadius() + 4.0f, 0.0f )).type;
-				if (this.getMap().isTileCastle( tile )) {		
-				//this.getMap().server_DestroyTile(this.getPosition() + Vec2f( this.getRadius() + 4.0f, 0.0f ), 0.1);
-				}
-			}
+			//if (XORRandom(20)==0)
+			//{
+			//	Vec2f tp = this.getPosition() + (Vec2f( XORRandom(16)-8, XORRandom(16)-8 )/8.0)*(this.getRadius() + 4.0f);
+			//	TileType tile = this.getMap().getTile( tp ).type;
+			//	if ( this.getMap().isTileWood( tile ) ) {		
+			//	this.getMap().server_DestroyTile(tp, 0.1);
+			//	}
+			//}	
+			//if (this.isKeyPressed(key_right))
+			//{
+			//	TileType tile = this.getMap().getTile( this.getPosition() + Vec2f( this.getRadius() + 4.0f, 0.0f )).type;
+			//	if (this.getMap().isTileCastle( tile )) {		
+			//	//this.getMap().server_DestroyTile(this.getPosition() + Vec2f( this.getRadius() + 4.0f, 0.0f ), 0.1);
+			//	}
+			//}
 			if ((this.getNetworkID() + getGameTime()) % 9 == 0)
 			{
 				f32 volume = Maths::Min( 0.1f + Maths::Abs(this.getVelocity().x)*0.1f, 1.0f );

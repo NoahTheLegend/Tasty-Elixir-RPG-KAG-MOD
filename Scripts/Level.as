@@ -32,6 +32,41 @@ void SetLevel(CBlob@ this, CPlayer@ player)
         if (this.hasTag("mob"))
         {
             // mob modifications here
+            CBlob@[] blobs;
+            CMap@ map = getMap();
+            if (map is null) return;
+            map.getBlobsInRadius(this.getPosition(), 400.0f, blobs);
+            CBlob@[] players;
+            for (u16 i = 0; i < blobs.length; i++)
+            {
+                if (blobs[i] is null) continue;
+                if (blobs[i].getPlayer() !is null) players.push_back(blobs[i]);
+            }
+
+            u16[] levels;
+            for (u8 i = 0; i < players.length; i++)
+            {
+                CPlayer@ p = players[i].getPlayer();
+                levels.push_back(p.get_u16("level"));
+                //printf(""+p.get_u16("level"));
+            }
+
+            u16 mod;
+            for (u8 i = 0; i < levels.length; i++)
+            {
+                mod += levels[i];
+            }
+            mod /= levels.length;
+            //printf("mod="+mod);
+
+            if (isServer())
+            {
+                this.server_SetHealth(this.getInitialHealth()*mod/2);
+                this.server_SetHealth(this.getHealth()-(XORRandom(this.getHealth()/2)));
+                this.set_f32("damage_mod", mod/15);
+                //printf("hp="+this.getHealth());
+                //printf("damage_mod="+this.get_f32("damage_mod"));
+            }
         }
     }
 }

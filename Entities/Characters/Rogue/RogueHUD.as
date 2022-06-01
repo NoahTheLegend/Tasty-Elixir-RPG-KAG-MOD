@@ -149,6 +149,7 @@ void DrawStats(CSprite@ this)
 		}
 		if (!player.hasTag("helpsheet"))
 		{
+			GUI::DrawTextCentered("Skill wheel: V button (default). You can drag skills to free slots.", Vec2f(scrwidth/2, scrheight-108), SColor(255,255,255,255));
 			GUI::DrawText("E to drink, use, equip armor. CTRL + E to unequip armor", Vec2f(width - 400, 15), SColor(255, 255, 255, 255));
 			GUI::DrawText("!help, !commands to see needed info", Vec2f(width - 271, 35), SColor(255, 255, 255, 255));
 			GUI::DrawText("You can move skills (drag them to free slots)", Vec2f(width - 320, 55), SColor(255, 255, 255, 255));

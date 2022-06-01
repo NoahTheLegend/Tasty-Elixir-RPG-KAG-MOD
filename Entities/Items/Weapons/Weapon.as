@@ -472,31 +472,30 @@ void ApplyStats(CBlob@ this, CBlob@ blob)
     //printf('start');
 	if (this is null || blob is null) return;
     CPlayer@ player = blob.getPlayer();
-    if (player is null) return;
+    if (player is null || !player.isMyPlayer()) return;
 	
     blob.set_f32("dodgechance", this.get_f32("dodgechance") + blob.get_f32("dodgechance")); blob.Sync("dodgechance", true);
 	blob.set_f32("blockchance", this.get_f32("blockchance") + blob.get_f32("blockchance")); blob.Sync("blockchance", true);
     blob.set_f32("damagereduction", this.get_f32("damagereduction") + blob.get_f32("damagereduction")); blob.Sync("damagereduction", true);
-	if (player.isMyPlayer()) blob.set_f32("manaregtime", this.get_f32("manaregtime") - (blob.get_f32("manaregtime"))*-1); blob.Sync("manaregtime", true);
+	blob.set_f32("manaregtime", this.get_f32("manaregtime") - (blob.get_f32("manaregtime"))*-1); blob.Sync("manaregtime", true);
 	blob.set_u16("manareg", this.get_u16("manareg") + blob.get_u16("manareg")); blob.Sync("manareg", true);
 	blob.set_u16("maxmana", this.get_u16("maxmana") + blob.get_u16("maxmana")); blob.Sync("maxmana", true);
 	blob.set_f32("critchance", this.get_f32("critchance") + blob.get_f32("critchance")); blob.Sync("critchance", true);
-	if (player.isMyPlayer()) 
+
+    string[] wep = this.getName().split("_");
+    string type;
+    if (wep.length > 1) type = wep[1];
+    if (blob.getName() == "archer" && type == "dagger")
     {
-        string[] wep = this.getName().split("_");
-        string type;
-        if (wep.length > 1) type = wep[1];
-        if (blob.getName() == "archer" && type == "dagger")
-        {
-            blob.set_f32("stabdmg", this.get_f32("damagebuff") + blob.get_f32("stabdmg"));
-            blob.Sync("stabdmg", true);
-        }
-        else
-        {
-            blob.set_f32("damagebuff", this.get_f32("damagebuff") + blob.get_f32("damagebuff"));
-            blob.Sync("damagebuff", true);
-        }
+        blob.set_f32("stabdmg", this.get_f32("damagebuff") + blob.get_f32("stabdmg"));
+        blob.Sync("stabdmg", true);
     }
+    else
+    {
+        blob.set_f32("damagebuff", this.get_f32("damagebuff") + blob.get_f32("damagebuff"));
+        blob.Sync("damagebuff", true);
+    }
+    
 	blob.set_f32("attackspeed", this.get_f32("attackspeed") + blob.get_f32("attackspeed")); blob.Sync("attackspeed", true);
 	blob.set_f32("vampirism", this.get_f32("vampirism") + blob.get_f32("vampirism")); blob.Sync("vampirism", true);
 	blob.set_f32("bashchance", this.get_f32("bashchance") + blob.get_f32("bashchance")); blob.Sync("bashchance", true);

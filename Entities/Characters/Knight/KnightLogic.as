@@ -279,6 +279,7 @@ void onTick(CBlob@ this)
 	CPlayer@ player = this.getPlayer();
 	if (player !is null)
 	{
+		//if (getGameTime() % 30 == 0) printf("exp: "+player.get_u32("exp"));
 		LevelUpdate(this, player);
 		//printf(""+player.get_u16("hasskill2"));
 	}
@@ -1246,10 +1247,12 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			if (spl.length > 1) splb2 = spl[1].split("`");
 			if (spl.length > 2) splb3 = spl[2].split("`");
 
+			if (this.hasTag("wpotioned") && splb1.length > 0 && splb2.length == 0
+			&& (splb1[0] == "glowness" || splb1[0] == "glowness2")) this.Untag("wpotioned");
+			else this.Untag("potioned");
 			//reminder: name`type`val_
 			if (splb1.length >= 3)
 			{
-				this.Untag("potioned");
 				if (splb1[1] == "bool")
 				{
 					this.set_bool(splb1[0], false);
@@ -1421,27 +1424,25 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
         {
 			CPlayer@ player = this.getPlayer();
 
-			if (this.hasTag("doublesword"))
-			{
-				this.set_f32("attackspeed", this.get_f32("attackspeed") - 0.8);
-				this.set_f32("critchance", this.get_f32("critchance") - 10.0);
-				this.Untag("doublesword");
-
-				CBitStream params;
-				params.write_f32(0.8);
-				params.write_bool(false);
-				this.SendCommand(this.getCommandID("doattackspeedchange"), params);
-			}
-
-			UpdateStats(this, this.get_string("weaponname"));
-
 			if (player !is null && player.isMyPlayer())
 			{
-				this.set_bool("hasweapon", false);
-				this.Sync("hasweapon", true);
-	       		this.set_string("weaponname", "");
-				this.Sync("weaponname", true);
+				if (this.hasTag("doublesword"))
+				{
+					this.set_f32("attackspeed", this.get_f32("attackspeed") - 0.8);
+					this.set_f32("critchance", this.get_f32("critchance") - 10.0);
+					this.Untag("doublesword");
+
+					CBitStream params;
+					params.write_f32(0.8);
+					params.write_bool(false);
+					this.SendCommand(this.getCommandID("doattackspeedchange"), params);
+				}
 			}
+			UpdateStats(this, this.get_string("weaponname"));
+			this.set_bool("hasweapon", false);
+			this.Sync("hasweapon", true);
+	       	this.set_string("weaponname", "");
+			this.Sync("weaponname", true);
 		}
 	}
 	else if (cmd == this.getCommandID("unequipsecondaryweapon"))
@@ -1449,28 +1450,25 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		if (this.get_bool("hassecondaryweapon"))
         {
 			CPlayer@ player = this.getPlayer();
-
-			if (this.hasTag("doublesword"))
-			{
-				this.set_f32("attackspeed", this.get_f32("attackspeed") - 0.8);
-				this.set_f32("critchance", this.get_f32("critchance") - 10.0);
-				this.Untag("doublesword");
-
-				CBitStream params;
-				params.write_f32(0.8);
-				params.write_bool(false);
-				this.SendCommand(this.getCommandID("doattackspeedchange"), params);
-			}
-
-			UpdateStats(this, this.get_string("secondaryweaponname"));
-
 			if (player !is null && player.isMyPlayer())
 			{
-				this.set_bool("hassecondaryweapon", false);
-				this.Sync("hassecondaryweapon", true);
-	       		this.set_string("secondaryweaponname", "");
-				this.Sync("secondaryweaponname", true);
+				if (this.hasTag("doublesword"))
+				{
+					this.set_f32("attackspeed", this.get_f32("attackspeed") - 0.8);
+					this.set_f32("critchance", this.get_f32("critchance") - 10.0);
+					this.Untag("doublesword");
+
+					CBitStream params;
+					params.write_f32(0.8);
+					params.write_bool(false);
+					this.SendCommand(this.getCommandID("doattackspeedchange"), params);
+				}
 			}
+			UpdateStats(this, this.get_string("secondaryweaponname"));
+			this.set_bool("hassecondaryweapon", false);
+			this.Sync("hassecondaryweapon", true);
+	       	this.set_string("secondaryweaponname", "");
+			this.Sync("secondaryweaponname", true);
 		}
 	}
 	else if (cmd == this.getCommandID("update_stats"))
@@ -1991,6 +1989,7 @@ void onHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@
 	if (XORRandom(100) < this.get_f32("bashchance"))
 	{
 		if (isClient()) Sound::Play("Bash.ogg", hitBlob.getPosition(), 1.0f);
+		hitBlob.set_u16("sknocked", 60);
 		hitBlob.Tag("wait");
 	}
 

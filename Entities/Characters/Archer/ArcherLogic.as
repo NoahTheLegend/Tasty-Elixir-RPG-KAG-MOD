@@ -1127,7 +1127,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	else if (cmd == this.getCommandID("update_stats"))
 	{
 		CPlayer@ player = this.getPlayer();
-		if (player is null || !player.isMyPlayer()) return;
+		if (player is null) return;
 
 		u16 blobid = params.read_u16();
 		CBlob@ blob = getBlobByNetworkID(blobid);
@@ -1137,8 +1137,8 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
     	this.set_f32("dodgechance", this.get_f32("dodgechance") - blob.get_f32("dodgechance"));
 		this.set_f32("blockchance", this.get_f32("blockchance") - blob.get_f32("blockchance"));
     	this.set_f32("damagereduction", this.get_f32("damagereduction") - blob.get_f32("damagereduction"));
-		this.set_f32("hpregtime", this.get_f32("hpregtime") - (blob.get_f32("hpregtime"))*-1);
-		this.set_f32("manaregtime", this.get_f32("manaregtime") - (blob.get_f32("manaregtime"))*-1);
+		if (player.isMyPlayer()) this.set_f32("hpregtime", this.get_f32("hpregtime") - (blob.get_f32("hpregtime"))*-1);
+		if (player.isMyPlayer()) this.set_f32("manaregtime", this.get_f32("manaregtime") - (blob.get_f32("manaregtime"))*-1);
 		this.set_u16("manareg", this.get_u16("manareg") - blob.get_u16("manareg"));
 		this.set_u16("mana", this.get_u16("mana") - blob.get_u16("mana"));
 		this.set_u16("maxmana", this.get_u16("maxmana") - blob.get_u16("maxmana"));
@@ -1152,7 +1152,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
     	}
     	else
    		{
-        	this.set_f32("stabdmg", this.get_f32("stabdmg") - blob.get_f32("damagebuff"));
+        	if (player.isMyPlayer()) this.set_f32("damagebuff", this.get_f32("damagebuff") - blob.get_f32("damagebuff"));
     	}
 
 		this.set_f32("critchance", this.get_f32("critchance") - blob.get_f32("critchance"));

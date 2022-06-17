@@ -284,8 +284,6 @@ void onTick(CBlob@ this)
 		//printf(""+player.get_u16("hasskill2"));
 	}
 
-	//if (getGameTime()%30==0)printf(""+this.get_u16("skillidx3"));
-
 	CControls@ controls = this.getControls();
 	this.Sync("damagebuff", true);
 	this.Sync("dealtdamage", true);
@@ -1431,6 +1429,8 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 					this.set_f32("attackspeed", this.get_f32("attackspeed") - 0.8);
 					this.set_f32("critchance", this.get_f32("critchance") - 10.0);
 					this.Untag("doublesword");
+					//printf("set attackspeed "+this.get_f32("attackspeed")+" to "+(this.get_f32("attackspeed") - 0.8));
+					//printf("set critchance "+this.get_f32("critchance")+" to "+(this.get_f32("critchance") - 10.0));
 
 					CBitStream params;
 					params.write_f32(0.8);
@@ -1450,6 +1450,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		if (this.get_bool("hassecondaryweapon"))
         {
 			CPlayer@ player = this.getPlayer();
+
 			if (player !is null && player.isMyPlayer())
 			{
 				if (this.hasTag("doublesword"))
@@ -1457,6 +1458,8 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 					this.set_f32("attackspeed", this.get_f32("attackspeed") - 0.8);
 					this.set_f32("critchance", this.get_f32("critchance") - 10.0);
 					this.Untag("doublesword");
+					//printf("set attackspeed "+this.get_f32("attackspeed")+" to "+(this.get_f32("attackspeed") - 0.8));
+					//printf("set critchance "+this.get_f32("critchance")+" to "+(this.get_f32("critchance") - 10.0));
 
 					CBitStream params;
 					params.write_f32(0.8);
@@ -1474,7 +1477,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	else if (cmd == this.getCommandID("update_stats"))
 	{
 		CPlayer@ player = this.getPlayer();
-		if (player is null || !player.isMyPlayer()) return;
+		if (player is null) return;
 
 		u16 blobid = params.read_u16();
 		CBlob@ blob = getBlobByNetworkID(blobid);
@@ -1484,13 +1487,13 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
     	this.set_f32("dodgechance", this.get_f32("dodgechance") - blob.get_f32("dodgechance"));
 		this.set_f32("blockchance", this.get_f32("blockchance") - blob.get_f32("blockchance"));
     	this.set_f32("damagereduction", this.get_f32("damagereduction") - blob.get_f32("damagereduction"));
-		this.set_f32("hpregtime", this.get_f32("hpregtime") - (blob.get_f32("hpregtime"))*-1);
-		this.set_f32("manaregtime", this.get_f32("manaregtime") - (blob.get_f32("manaregtime"))*-1);
+		if (player.isMyPlayer()) this.set_f32("hpregtime", this.get_f32("hpregtime") - (blob.get_f32("hpregtime"))*-1);
+		if (player.isMyPlayer()) this.set_f32("manaregtime", this.get_f32("manaregtime") - (blob.get_f32("manaregtime"))*-1);
 		this.set_u16("manareg", this.get_u16("manareg") - blob.get_u16("manareg"));
 		this.set_u16("mana", this.get_u16("mana") - blob.get_u16("mana"));
 		this.set_u16("maxmana", this.get_u16("maxmana") - blob.get_u16("maxmana"));
 		this.set_f32("critchance", this.get_f32("critchance") - blob.get_f32("critchance"));
-		this.set_f32("damagebuff", this.get_f32("damagebuff") - blob.get_f32("damagebuff"));
+		if (player.isMyPlayer()) this.set_f32("damagebuff", this.get_f32("damagebuff") - blob.get_f32("damagebuff"));
 		this.set_f32("attackspeed", this.get_f32("attackspeed") - blob.get_f32("attackspeed"));
 		this.set_f32("vampirism", this.get_f32("vampirism") - blob.get_f32("vampirism"));
 		this.set_f32("bashchance", this.get_f32("bashchance") - blob.get_f32("bashchance"));

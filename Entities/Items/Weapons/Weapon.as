@@ -198,6 +198,26 @@ void onInit(CBlob@ this)
         this.set_f32("attackspeed", 0.5);
         this.set_f32("bashchance", 7.5);
     }
+    else if (name == "crystal_sword")
+    {
+        index = 17;
+        size = Vec2f(16,16);
+
+        this.set_f32("damagebuff", 2.0);
+        this.set_f32("critchance", 8.5);
+        this.set_f32("attackspeed", 0.3);
+    }
+    else if (name == "vamp_sword")
+    {
+        index = 28;
+        size = Vec2f(16, 16);
+
+        this.set_f32("damagebuff", 1.25);
+        this.set_f32("critchance", 5.0);
+        this.set_f32("attackspeed", 0.2);
+        this.set_f32("bashchance", 17.5);
+        this.set_f32("vampirism", 0.05);
+    }
     else if (name == "wooden_dagger")
     {
         index = 18;
@@ -276,6 +296,25 @@ void onInit(CBlob@ this)
         this.set_f32("attackspeed", 0.7);
         this.set_f32("bashchance", 7.5);
         this.set_f32("vampirism", 0.025);
+    }
+    else if (name == "crystal_dagger")
+    {
+        index = 26;
+        size = Vec2f(16, 16);
+
+        this.set_f32("damagebuff", 2.0);
+        this.set_f32("attackspeed", 0.2);
+        this.set_f32("bashchance", 7.5);
+    }
+    else if (name == "vamp_dagger")
+    {
+        index = 29;
+        size = Vec2f(16, 16);
+
+        this.set_f32("damagebuff", 1.3);
+        this.set_f32("critchance", 7.5);
+        this.set_f32("attackspeed", 0.6);
+        this.set_f32("vampirism", 0.05);
     }
     else if (name == "wooden_bow")
     {
@@ -378,6 +417,15 @@ void onInit(CBlob@ this)
         infbow.AddFrames(frames);
         sprite.SetAnimation("infernobow");
         this.set_bool("infernobow?", true);
+    }
+    else if (name == "crystal_bow")
+    {
+        index = 12;
+        size = Vec2f(32, 32);
+
+        this.set_f32("damagebuff", 1.5);
+        this.set_f32("critchance", 7.5);
+        this.set_f32("attackspeed", 1.0);
     }
 
     sprite.SetFrameIndex(index);

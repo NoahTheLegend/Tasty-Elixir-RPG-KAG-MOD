@@ -122,8 +122,6 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
         u16 callerid = params.read_u16();
         CBlob@ caller = getBlobByNetworkID(callerid);
         if (caller is null) return;
-        CPlayer@ player = caller.getPlayer();
-        if (!player.isMyPlayer()) return;
 
         string effect;
         if (i < 4)
@@ -150,7 +148,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
             effect = "mana";
         }
 
-        if (effect == "lightness")
+        if (effect == "lightness" && isServer())
         {
             caller.Tag("wpotioned");
             for (u8 i = 1; i <= 20; i++)
@@ -181,7 +179,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
         {
             if (isServer()) caller.server_Heal(1.0f*size);
         }
-        else if (effect == "glowness")
+        else if (effect == "glowness" && isServer())
         {
             caller.Tag("wpotioned");
             for (u8 i = 1; i <= 20; i++)

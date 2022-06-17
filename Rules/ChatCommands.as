@@ -103,6 +103,25 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 
 			return true;
 		}
+		else if (args.length == 3 && args[0] == "!write")
+		{
+			if (args[1] == "f32")
+			{
+				printf(args[1]+" "+args[2]+" on server: "+blob.get_f32(args[2]));
+			}
+			else if (args[1] == "u16")
+			{
+				printf(args[1]+" "+args[2]+" on server: "+blob.get_u16(args[2]));
+			}
+			else if (args[1] == "bool")
+			{
+				printf(args[1]+" "+args[2]+" on server: "+blob.get_bool(args[2]));
+			}
+			else if (args[1] == "string")
+			{
+				printf(args[1]+" "+args[2]+" on server: "+blob.get_string(args[2]));
+			}
+		}
 		else if (player.isMod() && (text_in == "!addxp" || (args.length == 2 && args[0] == "!addxp")))
 		{
 			if (args.length > 1)
@@ -110,7 +129,7 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 				player.set_u32("exp", player.get_u32("exp") + parseFloat(args[1]));
 			}
 			else player.set_u32("exp", player.get_u32("exp") + 100);
-			printf("added");
+			printf("added xp");
 		}
 		else if (player.isMod() && args.length == 3 && args[0] == "!addskill")
 		{
@@ -491,6 +510,27 @@ bool onClientProcessChat(CRules@ this, const string& in text_in, string& out tex
 		if (isClient() && player.isMyPlayer()) client_AddToChat("!showstats to disable and enable stats list\n!showstate to disable and enable state list", SColor(255, 50, 50, 50));
 		if (isClient() && player.isMyPlayer()) client_AddToChat("!showhelp to disable and enable the help sheet", SColor(255, 50, 50, 50));
 		if (isClient() && player.isMyPlayer()) client_AddToChat("!showall to disable and enable HUD", SColor(255, 50, 50, 50));
+	}
+	else if (args.length == 3 && args[0] == "!write")
+	{
+		CBlob@ blob = player.getBlob();
+		if (blob is null) return false;
+		if (args[1] == "f32")
+		{
+			printf(args[1]+" "+args[2]+" on client: "+blob.get_f32(args[2]));
+		}
+		else if (args[1] == "u16")
+		{
+			printf(args[1]+" "+args[2]+" on client: "+blob.get_u16(args[2]));
+		}
+		else if (args[1] == "bool")
+		{
+			printf(args[1]+" "+args[2]+" on client: "+blob.get_bool(args[2]));
+		}
+		else if (args[1] == "string")
+		{
+			printf(args[1]+" "+args[2]+" on client: "+blob.get_string(args[2]));
+		}
 	}
 	else if (text_in == "!showstats")
 	{
